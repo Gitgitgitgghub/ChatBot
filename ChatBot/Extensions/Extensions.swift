@@ -1,0 +1,12 @@
+//
+//  extensions.swift
+//  ChatBot
+//
+//  Created by 吳俊諺 on 2024/6/14.
+//
+
+import Foundation
+
+func delay(delay: Double, block: @escaping () -> ()) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: block)
+}
