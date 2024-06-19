@@ -14,17 +14,22 @@ protocol ControllerViewProtocol {
     
 }
 
-class ControllerView: ControllerViewProtocol {
+class ControllerView: NSObject, ControllerViewProtocol {
     
     var view: UIView
     
     required init(view: UIView) {
         self.view = view
+        super.init()
         initUI()
     }
     
     func initUI() {
         
+    }
+    
+    deinit {
+        print("object: \(className) had been deinited")
     }
     
 }

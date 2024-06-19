@@ -15,7 +15,28 @@ protocol OpenAIProtocol {
     
     func chatQuery(message: String) -> AnyPublisher<ChatResult, Error>
     
+    func createImage(prompt: String, size: ImagesQuery.Size) -> AnyPublisher<ImagesResult, Error>
+    
 }
+
+enum OpenAIResult {
+    
+    case userChatQuery(message: String)
+    case chatResult(data: ChatResult?)
+    case imageResult(prompt: String, data: ImagesResult)
+    
+    var message: String {
+        switch self {
+        case .userChatQuery(let message):
+            return message
+        case .chatResult(let data):
+            return data?.choices.first?.message.content?.string ?? ""
+        case .imageResult(data: let data):
+            return ""
+        }
+    }
+}
+
 
 protocol ChatService {
     

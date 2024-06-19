@@ -7,8 +7,17 @@
 
 import Foundation
 
+protocol Applyable {}
 
-extension NSObject {
+extension Applyable {
+    @discardableResult
+    func apply(_ closure: (Self) -> Void) -> Self {
+        closure(self)
+        return self
+    }
+}
+
+extension NSObject: Applyable {
     class var className: String {
         return String(describing: self)
     }
@@ -18,3 +27,4 @@ extension NSObject {
     }
     
 }
+

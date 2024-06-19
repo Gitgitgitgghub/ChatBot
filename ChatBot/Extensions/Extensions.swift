@@ -10,3 +10,10 @@ import Foundation
 func delay(delay: Double, block: @escaping () -> ()) {
     DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: block)
 }
+
+func unwrap<T>(_ lhs: T?, _ rhs: T) -> T {
+    if let unwrappedLhs = lhs {
+        return unwrappedLhs
+    }
+    return rhs
+}

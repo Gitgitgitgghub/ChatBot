@@ -88,6 +88,22 @@ class LogingViews: ControllerView {
         button.layer.masksToBounds = true
         return button
     }()
+    lazy var calcelAllButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("boom", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.gray, for: .disabled)
+        button.backgroundColor = .blue.withAlphaComponent(0.8)
+        button.layer.cornerRadius = 10
+        button.layer.masksToBounds = true
+        return button
+    }()
+    lazy var loadingView: LoadingView = {
+        let view = LoadingView(messgae: "登入中請稍候")
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .lightGray
+        return view
+    }()
     
     override func initUI() {
         view.backgroundColor = .white
@@ -99,6 +115,8 @@ class LogingViews: ControllerView {
         view.addSubview(confirmPwTextField)
         view.addSubview(loginButton)
         view.addSubview(errorLabel)
+        view.addSubview(loadingView)
+        view.addSubview(calcelAllButton)
         accountTextField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(50)
             make.top.equalToSuperview().inset(250)
@@ -131,9 +149,18 @@ class LogingViews: ControllerView {
             make.centerX.equalToSuperview()
             make.top.equalTo(confirmPwTextField.snp.bottom).offset(20)
         }
+        calcelAllButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 100, height: 40))
+            make.centerX.equalToSuperview()
+            make.top.equalTo(loginButton.snp.bottom).offset(20)
+        }
         errorLabel.snp.makeConstraints { make in
             make.bottom.equalTo(accountLabel.snp.top).offset(-10)
             make.centerX.equalToSuperview()
+        }
+        loadingView.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 200, height: 200))
+            make.center.equalToSuperview()
         }
     }
     

@@ -9,84 +9,79 @@ import Foundation
 import OpenAI
 import Combine
 
-class ChatViewModel: ObservableObject {
+class ChatViewModel: NSObject {
     
     private let openai: OpenAIProtocol
-    private var cancellables = Set<AnyCancellable>()
-    private var subscription: AnyCancellable?
+    private var subscriptions = Set<AnyCancellable>()
+    @Published var inputMessage: String?
+    @Published var messages: [OpenAIResult] = []
     var messagesSubject = CurrentValueSubject<[MessageModel], Never>([])
-    var messages: AnyPublisher<[MessageModel], Never> {
-        get {
-            return messagesSubject
-                .eraseToAnyPublisher()
-        }
-    }
-    private var requestCountSubject = CurrentValueSubject<Int, Never>(0)
-    var requestCount: AnyPublisher<Int, Never> {
-        get {
-            return requestCountSubject.eraseToAnyPublisher()
-        }
-    }
     private let inputSubject = PassthroughSubject<InputEvent, Never>()
+
     
+    /// 輸入事件
     enum InputEvent {
-        case sendMessage(message: String)
+        case sendMessage
+        case createImage
     }
     
     init(openai: OpenAIProtocol) {
         self.openai = openai
     }
     
+    deinit {
+        subscriptions.removeAll()
+        print("\(className) deinit")
+    }
+    
     func bindInput() {
         inputSubject
-            .sink { completion in
-                
-            } receiveValue: { [unowned self] event in
-                switch event {
-                case .sendMessage(message: let message):
-                    self.sendMessage(message: message)
-                }
+            .filter { event in
+                return event == .sendMessage && !unwrap(self.inputMessage, "").isEmpty
             }
-            .store(in: &cancellables)
+            .map({ _ in
+                return self.inputMessage!
+            })
+            .handleEvents(receiveSubscription: { _ in
+                
+            }, receiveOutput: { [weak self] output in
+                self?.messages.append(.userChatQuery(message: output))
+            })
+            .flatMap { message in
+                return self.openai.chatQuery(message: message)
+            }
+            .sink { _ in
+                
+            } receiveValue: { [weak self] chatResult in
+                self?.messages.append(.chatResult(data: chatResult))
+            }
+            .store(in: &subscriptions)
+        inputSubject
+            .filter { event in
+                return event == .createImage && !unwrap(self.inputMessage, "").isEmpty
+            }
+            .map({ _ in
+                return self.inputMessage!
+            })
+            .handleEvents(receiveSubscription: { _ in
+                
+            }, receiveOutput: { [weak self] output in
+                self?.messages.append(.userChatQuery(message: output))
+            })
+            .flatMap { message in
+                return self.openai.createImage(prompt: message, size: ._1024)
+            }
+            .sink { _ in
+                
+            } receiveValue: { [weak self] imageResult in
+                self?.messages.append(.imageResult(prompt: unwrap(self?.inputMessage, ""), data: imageResult))
+                self?.inputMessage = ""
+            }
+            .store(in: &subscriptions)
     }
     
     func transform(inputEvent: InputEvent) {
         inputSubject.send(inputEvent)
-    }
-    
-    private func sendMessage(message: String) {
-        let subject = PassthroughSubject<MessageModel, Never>()
-        let userMessage = MessageModel(message: message, isUser: true)
-        let taskId = (0...100).randomElement() ?? -1
-        subject
-            .throttle(for: .seconds(1), scheduler: DispatchSerialQueue.main, latest: true)
-            .setFailureType(to: Error.self)
-            .handleEvents(receiveSubscription: { [unowned self] _ in
-                self.messagesSubject.send(self.messagesSubject.value + [userMessage])
-                print("receiveSubscription: \(taskId)")
-            }, receiveOutput: { _ in
-                print("receiveOutput")
-            }, receiveCompletion: { completion in
-                print("receiveCompletion \(completion)")
-            }, receiveCancel: { [unowned self] in
-                print("receiveCancel: \(taskId)")
-                self.messagesSubject.value.removeAll(where: { $0.id == userMessage.id })
-            }, receiveRequest: { demand in
-                print("receiveRequest \(demand)")
-            })
-            .flatMap{ [unowned self] messageModel in
-                return self.openai.chatQuery(message: message)
-            }
-            .sink(receiveCompletion: { _ in
-                print("receiveCompletion")
-            }, receiveValue: { [unowned self] result in
-                print("receive Value thread: \(Thread.current)")
-                let systemMessage = MessageModel(message:  result.choices.first?.message.content?.string ?? "", isUser: false)
-                self.messagesSubject.send(self.messagesSubject.value + [systemMessage])
-                self.requestCountSubject.value += 1
-            })
-            .store(in: &cancellables)
-        subject.send(userMessage)
     }
     
 }

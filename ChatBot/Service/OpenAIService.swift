@@ -21,5 +21,12 @@ class OpenAIService: OpenAIProtocol {
             .eraseToAnyPublisher()
     }
     
+    func createImage(prompt: String, size: ImagesQuery.Size) -> AnyPublisher<ImagesResult, any Error> {
+        let query = ImagesQuery(prompt: prompt, size: size)
+        return openai.images(query: query)
+            .subscribe(on: DispatchSerialQueue.global())
+            .receive(on: DispatchSerialQueue.main)
+            .eraseToAnyPublisher()
+    }
     
 }
