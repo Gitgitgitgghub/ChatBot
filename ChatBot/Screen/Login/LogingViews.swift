@@ -99,7 +99,7 @@ class LogingViews: ControllerView {
         return button
     }()
     lazy var loadingView: LoadingView = {
-        let view = LoadingView(messgae: "登入中請稍候")
+        let view = LoadingView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .lightGray
         return view

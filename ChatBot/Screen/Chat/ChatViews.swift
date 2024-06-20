@@ -88,11 +88,10 @@ extension ChatViews {
         
         func initUI() {
             addSubview(imageResultView)
-            imageResultView.snp.makeConstraints { make in
-                make.top.bottom.equalToSuperview().inset(10)
-                make.height.greaterThanOrEqualTo(30)
+            imageResultView.snp.remakeConstraints { make in
+                make.top.trailing.bottom.equalToSuperview().inset(10)
+                make.height.greaterThanOrEqualTo(296)
                 make.width.lessThanOrEqualToSuperview().inset(30)
-                make.leading.equalToSuperview().inset(10)
             }
         }
         
