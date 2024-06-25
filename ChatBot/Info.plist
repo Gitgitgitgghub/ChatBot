@@ -6,6 +6,11 @@
 	<string>我想要你拍個照</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>我想要偷窺你的相簿</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>http</string>
+        <string>https</string>
+    </array>
 	<key>CFBundleIdentifier</key>
 	<string></string>
 	<key>UIApplicationSceneManifest</key>

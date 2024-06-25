@@ -12,9 +12,13 @@ import Combine
 class ChatViewController: BaseUIViewController {
     
     
-    
     private let viewModel = ChatViewModel(openai: OpenAIService())
     private lazy var views = ChatViews(view: self.view)
+    private let loadingView = LoadingView()
+    /// tableVIew是否正在滾動
+    private var isScrolling = false
+    /// 是否該更新tableView
+    private var shouldUpdateTable = false
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -35,8 +39,6 @@ class ChatViewController: BaseUIViewController {
         views.messageTableView.rowHeight = UITableView.automaticDimension
         views.messageTableView.register(cellType: ChatViews.UserMessageCell.self)
         views.messageTableView.register(cellType: ChatViews.SystemMessageCell.self)
-        views.messageTableView.register(cellType: ChatViews.UserImageCell.self)
-        views.messageTableView.register(cellType: ChatViews.SystemImageCell.self)
         views.chatInputView.messageInputTextField.delegate = self
         views.messageTableView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
             .apply { obj in
@@ -52,7 +54,7 @@ class ChatViewController: BaseUIViewController {
     }
     
     private func bind() {
-        viewModel.bindInput()
+        _ = viewModel.bindInput()
         viewModel.$messages
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
@@ -63,6 +65,7 @@ class ChatViewController: BaseUIViewController {
             .eraseToAnyPublisher()
             .assign(to: \.text, on: views.chatInputView.messageInputTextField)
             .store(in: &subscriptions)
+        viewModel.mock()
     }
     
     //MARK: - objc
@@ -88,11 +91,12 @@ class ChatViewController: BaseUIViewController {
     }
     
     @objc private func sendMessage() {
-        //viewModel.transform(inputEvent: .sendMessage)
+        //viewModel.transform(inputEvent: .createImage)
         dismissKeyboard()
-        viewModel.transform(inputEvent: .createImage)
+        //viewModel.transform(inputEvent: .editImage)
+        viewModel.transform(inputEvent: .sendMessage)
     }
-
+    
 }
 
 //MARK: - 用戶選擇照片上傳方式處理相關
@@ -120,7 +124,7 @@ extension ChatViewController: UploadImageSelectorViewControllerDelegate, UIImage
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let selectedImage = info[.originalImage] as? UIImage else { return }
+        viewModel.pickedImageInfo = info
         dismiss(animated: true, completion: nil)
     }
     
@@ -130,26 +134,60 @@ extension ChatViewController: UploadImageSelectorViewControllerDelegate, UIImage
     
 }
 
-//MARK: - UITableViewDelegate, UITableViewDataSource
-extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
+//MARK: - UITableViewDelegate, UITableViewDataSource, MessageCellProtocol
+extension ChatViewController:  UITableViewDelegate, UITableViewDataSource, MessageCellProtocol {
+    
+    func cellHeighChange() {
+        if isScrolling {
+            shouldUpdateTable = true
+        } else {
+            views.messageTableView.performBatchUpdates(nil)
+        }
+    }
+    
+    // UIScrollViewDelegate methods
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        isScrolling = true
+        shouldUpdateTable = false
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            isScrolling = false
+            if shouldUpdateTable {
+                views.messageTableView.performBatchUpdates(nil)
+            }
+        }
+    }
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.messages.count
+        return viewModel.messages.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: MessageCellProtocol
         let result = viewModel.messages[indexPath.row]
+        print("tableView cellForRowAt \(indexPath)")
         switch result {
         case .userChatQuery(message: _):
-            cell = tableView.dequeueReusableCell(with: ChatViews.UserMessageCell.self, for: indexPath)
+            let cell = tableView.dequeueReusableCell(with: ChatViews.UserMessageCell.self, for: indexPath)
+            cell.bindResult(result: result)
+            cell.messageCellProtocol = self
+            return cell
         case .chatResult(data: _):
-            cell = tableView.dequeueReusableCell(with: ChatViews.SystemMessageCell.self, for: indexPath)
+            let cell = tableView.dequeueReusableCell(with: ChatViews.SystemMessageCell.self, for: indexPath)
+            cell.bindResult(result: result)
+            cell.messageCellProtocol = self
+            return cell
         case .imageResult(prompt: _, data: _):
-            cell = tableView.dequeueReusableCell(with: ChatViews.SystemImageCell.self, for: indexPath)
+            let cell = tableView.dequeueReusableCell(with: ChatViews.SystemMessageCell.self, for: indexPath)
+            cell.bindResult(result: result)
+            return cell
+        case .imageEditResult(prompt: _, data: _):
+            let cell = tableView.dequeueReusableCell(with: ChatViews.SystemMessageCell.self, for: indexPath)
+            cell.bindResult(result: result)
+            return cell
         }
-        cell.bindResult(result: result)
-        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

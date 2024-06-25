@@ -16,6 +16,8 @@
 		322A2D012C194C88007A8075 /* UITableView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D002C194C88007A8075 /* UITableView+.swift */; };
 		322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */; };
 		322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D052C198BA8007A8075 /* MessageModel.swift */; };
+		326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728A2C29554B00B06DF8 /* UITextView+.swift */; };
+		326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 326F728D2C2A5CDE00B06DF8 /* SDWebImage */; };
 		32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EE92C1C229500FE5786 /* LoginViewController.swift */; };
 		32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEC2C1C233D00FE5786 /* LogingViews.swift */; };
 		32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEE2C1C239300FE5786 /* ControllerView.swift */; };
@@ -31,6 +33,9 @@
 		32800F042C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F032C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift */; };
 		32800F072C22A45900FE5786 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 32800F062C22A45900FE5786 /* Kingfisher */; };
 		32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F082C22AC5F00FE5786 /* UIImageView+KF.swift */; };
+		32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */; };
+		32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0C2C2405EC00FE5786 /* UIImage+.swift */; };
+		32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F112C251E5400FE5786 /* AttributedStringParsable.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
 		32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32C77FCF2C18504F00F335FE /* Assets.xcassets */; };
@@ -68,6 +73,7 @@
 		322A2D002C194C88007A8075 /* UITableView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+.swift"; sourceTree = "<group>"; };
 		322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIProtocol.swift; sourceTree = "<group>"; };
 		322A2D052C198BA8007A8075 /* MessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
+		326F728A2C29554B00B06DF8 /* UITextView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+.swift"; sourceTree = "<group>"; };
 		32800EE92C1C229500FE5786 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		32800EEC2C1C233D00FE5786 /* LogingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogingViews.swift; sourceTree = "<group>"; };
 		32800EEE2C1C239300FE5786 /* ControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerView.swift; sourceTree = "<group>"; };
@@ -82,6 +88,9 @@
 		32800F012C21850A00FE5786 /* UploadImageSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImageSelectorViewController.swift; sourceTree = "<group>"; };
 		32800F032C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatViewController+CamraPermissionRequest.swift"; sourceTree = "<group>"; };
 		32800F082C22AC5F00FE5786 /* UIImageView+KF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+KF.swift"; sourceTree = "<group>"; };
+		32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenAIProtocol+ ImageFileHandler.swift"; sourceTree = "<group>"; };
+		32800F0C2C2405EC00FE5786 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
+		32800F112C251E5400FE5786 /* AttributedStringParsable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedStringParsable.swift; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32C77FC82C18504E00F335FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -105,6 +114,7 @@
 			files = (
 				32800F072C22A45900FE5786 /* Kingfisher in Frameworks */,
 				320421952C19331500D72203 /* OpenAI in Frameworks */,
+				326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */,
 				3204219E2C19405500D72203 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -148,6 +158,8 @@
 				32E264332C1BE75C0083EC63 /* Extensions.swift */,
 				32800EF82C202F8800FE5786 /* UIView+.swift */,
 				32800F082C22AC5F00FE5786 /* UIImageView+KF.swift */,
+				32800F0C2C2405EC00FE5786 /* UIImage+.swift */,
+				326F728A2C29554B00B06DF8 /* UITextView+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -183,6 +195,14 @@
 			path = Launch;
 			sourceTree = "<group>";
 		};
+		32800F102C251DAF00FE5786 /* protocol */ = {
+			isa = PBXGroup;
+			children = (
+				32800F112C251E5400FE5786 /* AttributedStringParsable.swift */,
+			);
+			path = protocol;
+			sourceTree = "<group>";
+		};
 		32C77FBA2C18504E00F335FE = {
 			isa = PBXGroup;
 			children = (
@@ -206,6 +226,7 @@
 		32C77FC52C18504E00F335FE /* ChatBot */ = {
 			isa = PBXGroup;
 			children = (
+				32800F102C251DAF00FE5786 /* protocol */,
 				32800EE82C1C225500FE5786 /* Screen */,
 				32E264302C1BDA200083EC63 /* Service */,
 				32E2642D2C1AA9B50083EC63 /* CustomView */,
@@ -251,6 +272,7 @@
 			children = (
 				322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */,
 				32E264312C1BDA8D0083EC63 /* OpenAIService.swift */,
+				32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -275,6 +297,7 @@
 				320421942C19331500D72203 /* OpenAI */,
 				3204219D2C19405500D72203 /* SnapKit */,
 				32800F062C22A45900FE5786 /* Kingfisher */,
+				326F728D2C2A5CDE00B06DF8 /* SDWebImage */,
 			);
 			productName = ChatBot;
 			productReference = 32C77FC32C18504E00F335FE /* ChatBot.app */;
@@ -352,6 +375,7 @@
 				320421932C19331500D72203 /* XCRemoteSwiftPackageReference "OpenAI" */,
 				3204219C2C19405500D72203 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				32800F052C22A45900FE5786 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 			);
 			productRefGroup = 32C77FC42C18504E00F335FE /* Products */;
 			projectDirPath = "";
@@ -396,6 +420,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */,
+				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
 				32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
@@ -411,6 +436,7 @@
 				32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */,
 				322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */,
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
+				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */,
 				322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */,
@@ -418,6 +444,8 @@
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,
 				32800F042C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift in Sources */,
+				326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */,
+				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
 				32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */,
@@ -762,6 +790,14 @@
 				minimumVersion = 5.7.1;
 			};
 		};
+		326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.19.3;
+			};
+		};
 		32800F052C22A45900FE5786 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
@@ -782,6 +818,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3204219C2C19405500D72203 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		326F728D2C2A5CDE00B06DF8 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
 		};
 		32800F062C22A45900FE5786 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;

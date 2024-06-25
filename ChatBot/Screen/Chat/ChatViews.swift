@@ -18,6 +18,7 @@ class ChatViews: ControllerView {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 30
         tableView.keyboardDismissMode = .interactive
+        tableView.allowsSelection = false
         return tableView
     }()
     let chatInputView = ChatInputView().apply { view in
@@ -53,99 +54,27 @@ class ChatViews: ControllerView {
     }
 }
 
-protocol MessageCellProtocol where Self: UITableViewCell {
+protocol MessageCellProtocol: AnyObject {
     
-    var result: OpenAIResult? { get set }
-    
-    func initUI()
-    
-    func bindResult(result: OpenAIResult)
+    func cellHeighChange()
     
 }
 
 extension ChatViews {
     
-    //MARK: - 用戶圖片訊息Cell
-    class UserImageCell: UITableViewCell, MessageCellProtocol {
-        
-        var labelBackgroundColor: UIColor = .green.withAlphaComponent(0.8)
-        var result: OpenAIResult?
-        
-        let imageResultView = ImageResultView().apply { view in
-            view.translatesAutoresizingMaskIntoConstraints = false
-            view.cornerRadius = 10
-        }
-        
-        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-            super.init(style: style, reuseIdentifier: reuseIdentifier)
-            initUI()
-        }
-        
-        required init?(coder: NSCoder) {
-            super.init(coder: coder)
-            initUI()
-        }
-        
-        func initUI() {
-            addSubview(imageResultView)
-            imageResultView.snp.remakeConstraints { make in
-                make.top.trailing.bottom.equalToSuperview().inset(10)
-                make.height.greaterThanOrEqualTo(296)
-                make.width.lessThanOrEqualToSuperview().inset(30)
-            }
-        }
-        
-        func bindResult(result: OpenAIResult) {
-            self.result = result
-            setupUI()
-        }
-        
-        func setupUI() {
-            guard let result = result else { return }
-//            switch result {
-//            case .userChatQuery(let message):
-//                <#code#>
-//            case .chatResult(let data):
-//                <#code#>
-//            case .imageResult(let prompt, let data):
-//                <#code#>
-//            }
-        }
-    }
-    
-    //MARK: - 系統圖片訊息Cell
-    class SystemImageCell: UserImageCell {
-        
-        override func initUI() {
-            super.initUI()
-            imageResultView.snp.remakeConstraints { make in
-                make.top.leading.bottom.equalToSuperview().inset(10)
-                make.height.greaterThanOrEqualTo(296)
-                make.width.lessThanOrEqualToSuperview().inset(30)
-            }
-        }
-        
-        override func setupUI() {
-            guard let result = result else { return }
-            switch result {
-            case .imageResult(let prompt, let data):
-                imageResultView.promptLabel.backgroundColor = labelBackgroundColor
-                imageResultView.promptLabel.text = "prompt: \(prompt)"
-                imageResultView.contentImageView.loadImage(url: data.data.first?.url, indicatorType: .activity)
-            default: break
-            }
-        }
-    }
     
     //MARK: - 用戶文字訊息Cell
-    class UserMessageCell: UITableViewCell, MessageCellProtocol {
+    class UserMessageCell: UITableViewCell, WebImageDownloadDelegate {
         
-        let messageView = MessageResultView().apply { view in
+        
+        weak var messageCellProtocol: MessageCellProtocol?
+        let messageView = MessageTextView().apply { view in
             view.translatesAutoresizingMaskIntoConstraints = false
             view.cornerRadius = 10
         }
         var result: OpenAIResult?
         private(set) var labelBackgroundColor = UIColor.green.withAlphaComponent(0.8)
+        private let parser = AttributedStringParser()
         
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -158,7 +87,7 @@ extension ChatViews {
         }
         
         func initUI() {
-            addSubview(messageView)
+            contentView.addSubview(messageView)
             messageView.snp.remakeConstraints { make in
                 make.top.bottom.equalToSuperview().inset(10)
                 make.height.greaterThanOrEqualTo(30)
@@ -169,17 +98,33 @@ extension ChatViews {
         
         func bindResult(result: OpenAIResult) {
             self.result = result
+            parser.webImageDownloadDelegate = self
             setupUI()
         }
         
         func setupUI() {
             guard let result = result else { return }
             switch result {
-            case .userChatQuery(let message):
+            case .userChatQuery(_):
                 messageView.backgroundColor = labelBackgroundColor
-                messageView.messageLabel.text = message
+                parser.parseToAttributedString(string: result.message, completion: { [weak self] attr in
+                    DispatchQueue.main.async {
+                        self?.messageView.messageTextView.attributedText = attr
+                    }
+                })
+            case .chatResult(data: _):
+                parser.parseToAttributedString(string: result.message, completion: { [weak self] attr in
+                    DispatchQueue.main.async {
+                        self?.messageView.messageTextView.attributedText = attr
+                    }
+                })
             default: break
             }
+        }
+        
+        func imageDownloadComplete() {
+            messageView.messageTextView.updateHeight()
+            messageCellProtocol?.cellHeighChange()
         }
     }
     
@@ -201,43 +146,68 @@ extension ChatViews {
         }
         
         override func setupUI() {
-            guard let result = result else { return }
-            switch result {
-            case .chatResult:
-                messageView.backgroundColor = labelBackgroundColor
-                messageView.messageLabel.text = result.message
-            default: break
-            }
+            super.setupUI()
+            messageView.backgroundColor = labelBackgroundColor
         }
     }
     
-    class MessageResultView: UIView {
+    class MessageTextView: UIView, UITextViewDelegate {
         
-        let messageLabel = PaddingLabel(withInsets: .init(top: 10, left: 20, bottom: 10, right: 20)).apply { label in
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.textColor = .white
-            label.textAlignment = .left
-            label.numberOfLines = 0
-            label.cornerRadius = 10
+        let messageTextView = UITextView().apply { textView in
+            textView.translatesAutoresizingMaskIntoConstraints = false
+            textView.textColor = .white
+            textView.textAlignment = .left
+            textView.dataDetectorTypes = .link
+            textView.cornerRadius = 10
+            textView.isScrollEnabled = false
+            textView.backgroundColor = .clear
+            textView.isFindInteractionEnabled = true
+            textView.isUserInteractionEnabled = true
+            textView.isEditable = false
         }
-        override var backgroundColor: UIColor? {
-            didSet {
-                messageLabel.backgroundColor = backgroundColor
+        
+        var attributedText: NSAttributedString {
+            set {
+                messageTextView.attributedText = newValue
+            }
+            get {
+                return messageTextView.attributedText
             }
         }
         
         override init(frame: CGRect) {
             super.init(frame: frame)
-            addSubview(messageLabel)
-            messageLabel.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
+            addSubview(messageTextView)
+            messageTextView.snp.makeConstraints { make in
+                make.edges.equalToSuperview().inset(10)
             }
+            messageTextView.delegate = self
         }
         
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
         
+        func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+            UIApplication.shared.open(URL)
+            return false // 返回 false，表示讓系統處理超連結的點擊事件
+        }
+        
+        func textView(_ textView: UITextView, primaryActionFor textItem: UITextItem, defaultAction: UIAction) -> UIAction? {
+            switch textItem.content {
+            case .link(let uRL):
+                return .init { _ in
+                    UIApplication.shared.open(uRL)
+                }
+            case .textAttachment(_):
+                break
+            case .tag(_):
+                break
+            @unknown default:
+                break
+            }
+            return nil
+        }
     }
     
     class ImageResultView: UIView {
