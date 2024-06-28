@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 let apiKey = "sk-proj-YPmNXCAOPcOYYyvzp3teT3BlbkFJmuQfmIfhnwkREoiZLBar"
@@ -13,6 +14,8 @@ let apiKey = "sk-proj-YPmNXCAOPcOYYyvzp3teT3BlbkFJmuQfmIfhnwkREoiZLBar"
 let godzilla = "https://cdn.wowscreen.com.tw/uploadfile/202309/goods_030567_395649.jpg"
 
 let swiftImage = "https://developer.apple.com/assets/elements/icons/swift/swift-96x96_2x.png"
+
+let kanahei = "https://flipa-production.s3-ap-southeast-1.amazonaws.com/uploads/beautynew_image/24413/1/_775x400_24413.jpg"
 
 //    static let godzilla = "https://image-cdn.hypb.st/https%3A%2F%2Fhk.hypebeast.com%2Ffiles%2F2024%2F04%2F17%2Fgodzilla-minus-one-amazon-prime-video-japan-release-date-1-1.jpg?fit=max&cbr=1&q=90&w=750&h=500"
 
@@ -25,3 +28,26 @@ let mockString: String = """
 
 希望這些影片能幫助你順利學習Swift！祝你學習順利！
 """
+
+let mockString2: String = kanahei
+
+struct SystemDefine {
+    
+}
+
+extension SystemDefine {
+    
+    /// 訊息類相關變數
+    struct Message {
+        /// 預設訊息
+        static let defaultMessage = "        \n\n\n\n\n\n\n"
+        /// 訊息最小高度
+        static let minimumHeight: CGFloat = 50
+        /// 訊息最大寬度
+        static let maxWidth: CGFloat = UIScreen.main.bounds.width - 40
+        /// 訊息最小寬度
+        static let minimumWidth: CGFloat = 150
+        /// 字體顏色
+        static let textColor: UIColor = .white
+    }
+}
