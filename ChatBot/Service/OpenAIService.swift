@@ -21,9 +21,10 @@ class OpenAIService: OpenAIProtocol {
     let openai = OpenAI(apiToken: apiKey)
     let loadingStatusSubject = PassthroughSubject<LoadingStatus, Never>()
     
-    func chatQuery(message: String) -> AnyPublisher<ChatResult, Error> {
+    func chatQuery(message: String) -> AnyPublisher<MessageModel, Error> {
         let query = ChatQuery(messages: [.init(role: .user, content: message)!], model: .gpt3_5Turbo)
         return openai.chats(query: query)
+            .map({ .init(chatResult: $0, sender: .ai) })
             .subscribe(on: DispatchSerialQueue.global())
             .receive(on: DispatchSerialQueue.main)
             .eraseToAnyPublisher()

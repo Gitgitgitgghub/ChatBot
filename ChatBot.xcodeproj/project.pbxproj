@@ -18,6 +18,10 @@
 		322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D052C198BA8007A8075 /* MessageModel.swift */; };
 		326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728A2C29554B00B06DF8 /* UITextView+.swift */; };
 		326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 326F728D2C2A5CDE00B06DF8 /* SDWebImage */; };
+		326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728F2C2E4C4F00B06DF8 /* Array+.swift */; };
+		326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */; };
+		326F72942C2EB11A00B06DF8 /* WebImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F72932C2EB11A00B06DF8 /* WebImageAttachment.swift */; };
+		326F72962C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F72952C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift */; };
 		32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EE92C1C229500FE5786 /* LoginViewController.swift */; };
 		32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEC2C1C233D00FE5786 /* LogingViews.swift */; };
 		32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEE2C1C239300FE5786 /* ControllerView.swift */; };
@@ -74,6 +78,10 @@
 		322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIProtocol.swift; sourceTree = "<group>"; };
 		322A2D052C198BA8007A8075 /* MessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
 		326F728A2C29554B00B06DF8 /* UITextView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+.swift"; sourceTree = "<group>"; };
+		326F728F2C2E4C4F00B06DF8 /* Array+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+.swift"; sourceTree = "<group>"; };
+		326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
+		326F72932C2EB11A00B06DF8 /* WebImageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebImageAttachment.swift; sourceTree = "<group>"; };
+		326F72952C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebImageDownloadDelegate.swift; sourceTree = "<group>"; };
 		32800EE92C1C229500FE5786 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		32800EEC2C1C233D00FE5786 /* LogingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogingViews.swift; sourceTree = "<group>"; };
 		32800EEE2C1C239300FE5786 /* ControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerView.swift; sourceTree = "<group>"; };
@@ -160,6 +168,8 @@
 				32800F082C22AC5F00FE5786 /* UIImageView+KF.swift */,
 				32800F0C2C2405EC00FE5786 /* UIImage+.swift */,
 				326F728A2C29554B00B06DF8 /* UITextView+.swift */,
+				326F728F2C2E4C4F00B06DF8 /* Array+.swift */,
+				326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -199,6 +209,7 @@
 			isa = PBXGroup;
 			children = (
 				32800F112C251E5400FE5786 /* AttributedStringParsable.swift */,
+				326F72952C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift */,
 			);
 			path = protocol;
 			sourceTree = "<group>";
@@ -226,6 +237,7 @@
 		32C77FC52C18504E00F335FE /* ChatBot */ = {
 			isa = PBXGroup;
 			children = (
+				320421962C1933EC00D72203 /* SystemDefine.swift */,
 				32800F102C251DAF00FE5786 /* protocol */,
 				32800EE82C1C225500FE5786 /* Screen */,
 				32E264302C1BDA200083EC63 /* Service */,
@@ -236,7 +248,6 @@
 				32C77FC82C18504E00F335FE /* SceneDelegate.swift */,
 				32C77FCF2C18504F00F335FE /* Assets.xcassets */,
 				32C77FD42C18504F00F335FE /* Info.plist */,
-				320421962C1933EC00D72203 /* SystemDefine.swift */,
 			);
 			path = ChatBot;
 			sourceTree = "<group>";
@@ -263,6 +274,7 @@
 			children = (
 				32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */,
 				32800EF62C2023B400FE5786 /* LoadingView.swift */,
+				326F72932C2EB11A00B06DF8 /* WebImageAttachment.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -422,6 +434,7 @@
 				32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */,
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
 				32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */,
+				326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
 				320421972C1933EC00D72203 /* SystemDefine.swift in Sources */,
@@ -429,10 +442,12 @@
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
+				326F72962C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift in Sources */,
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,
 				32800F022C21850A00FE5786 /* UploadImageSelectorViewController.swift in Sources */,
 				32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */,
 				32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */,
+				326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */,
 				32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */,
 				322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */,
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
@@ -440,6 +455,7 @@
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */,
 				322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */,
+				326F72942C2EB11A00B06DF8 /* WebImageAttachment.swift in Sources */,
 				320421992C19343E00D72203 /* ChatViewModel.swift in Sources */,
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,

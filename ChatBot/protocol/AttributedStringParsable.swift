@@ -1,53 +1,51 @@
 import UIKit
 import SDWebImage
 import Kingfisher
+import Combine
 
 
+/// 字串轉AttributedString協定
 protocol AttributedStringParsable {
-    func parseToAttributedString(string: String, completion: @escaping (_ attr: NSAttributedString) -> Void)
-}
-
-
-protocol WebImageDownloadDelegate: AnyObject {
-    
-    func asyncDownloadImage(urlString: String, textAttachment: NSTextAttachment, completion: (() -> Void)?) throws
-    
-    func imageDownloadComplete()
-}
-
-extension WebImageDownloadDelegate {
-    
-    func asyncDownloadImage(urlString: String, textAttachment: NSTextAttachment, completion: (() -> Void)? = nil) throws {
-        guard URL(string: urlString) != nil else { throw NSError(domain: "Invalid URL", code: 0, userInfo: nil) }
-        textAttachment.setImage(from: urlString, placeholder: UIImage(systemName: "arrowshape.down.circle.fill"), completion: imageDownloadComplete)
-    }
-}
-
-
-enum ParseError: Error {
-    case invalidURL
-    case unsupportedFormat
-    case imageDownloadFailed
+    /// string轉AttributedString
+    func convertStringToAttributedString(string: String) -> AnyPublisher<NSAttributedString, Error>
+    /// string array轉AttributedString array
+    func convertStringsToAttributedStrings(strings: [String]) -> AnyPublisher<NSAttributedString, Error>
 }
 
 class AttributedStringParser: AttributedStringParsable {
     
-    
-    weak var webImageDownloadDelegate: WebImageDownloadDelegate?
-    
-    
-    func parseToAttributedString(string: String, completion: @escaping (_ attr: NSAttributedString) -> Void){
-        DispatchQueue.global(qos: .background).async { [self] in
-            let attributedString = NSMutableAttributedString(string: string)
-            attributedString.addAttributes([.font: UIFont.systemFont(ofSize: 16)], range: NSRange(location: 0, length: string.utf16.count))
-            do {
-                try self.matchTitleTexts(string: string, attributedString: attributedString)
-                try self.matchUrlTexts(string: string, attributedString: attributedString)
-                try self.matchImageUrlTexts(string: string, attributedString: attributedString)
-            } catch {
-                print("Error creating regex: \(error)")
+    func convertStringsToAttributedStrings(strings: [String]) -> AnyPublisher<NSAttributedString, Error> {
+        let publishers = strings.map { convertStringToAttributedString(string: $0) }
+        return Publishers.MergeMany(publishers).eraseToAnyPublisher()
+    }
+
+    func convertStringToAttributedString(string: String) -> AnyPublisher<NSAttributedString, Error> {
+        return Future { promise in
+            DispatchQueue.global(qos: .background).async {
+                do {
+                    let result: NSAttributedString = try self.createAttributedString(string: string)
+                    promise(.success(result))
+                } catch {
+                    promise(.failure(error))
+                }
             }
-            completion(attributedString)
+        }
+        .receive(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
+    }
+
+    
+    func createAttributedString(string: String) throws -> NSAttributedString {
+        let attributedString = NSMutableAttributedString(string: string)
+        attributedString.addAttributes([.font : UIFont.systemFont(ofSize: 16),
+                                        .foregroundColor : UIColor.white], range: NSRange(location: 0, length: string.count))
+        do {
+            try self.matchTitleTexts(string: string, attributedString: attributedString)
+            try self.matchUrlTexts(string: string, attributedString: attributedString)
+            try self.matchImageUrlTexts(string: string, attributedString: attributedString)
+            return attributedString
+        } catch {
+            throw error
         }
     }
     
@@ -76,13 +74,13 @@ class AttributedStringParser: AttributedStringParsable {
             let matches = try getImageUrlMatches(string: string)
             for (i, match) in matches.enumerated() {
                 let urlRange = Range(match.range, in: string)!
-                let urlString = String(string[urlRange])
-                let attachment = NSTextAttachment()
+                let url = URL(string: String(string[urlRange]))
+                let attachment = WebImageAttachment()
                 attachment.bounds = CGRect(x: 0, y: 0, width: 300, height: 210)
+                attachment.imageUrl = url
                 let imageAttributedString = NSAttributedString(attachment: attachment)
                 attributedString.insert(imageAttributedString, at: match.range.location + i)
                 attributedString.insert(NSAttributedString(string: "\n"), at: match.range.location + 1 + i)
-                try self.webImageDownloadDelegate?.asyncDownloadImage(urlString: urlString, textAttachment: attachment)
             }
         } catch {
             throw error
@@ -109,17 +107,5 @@ class AttributedStringParser: AttributedStringParsable {
         } catch {
             throw error
         }
-    }
-    
-    private func extractYouTubeVideoID(from url: String) throws -> String {
-        let pattern = "https?://(?:www\\.)?youtube\\.com/watch\\?v=([\\w-]+)"
-        let regex = try NSRegularExpression(pattern: pattern, options: [])
-        let nsString = url as NSString
-        let results = regex.matches(in: url, options: [], range: NSRange(location: 0, length: nsString.length))
-        
-        guard let result = results.first, result.numberOfRanges == 2 else {
-            throw ParseError.invalidURL
-        }
-        return nsString.substring(with: result.range(at: 1))
     }
 }

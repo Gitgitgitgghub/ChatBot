@@ -42,7 +42,7 @@ extension SystemDefine {
         /// 預設訊息
         static let defaultMessage = "        \n\n\n\n\n\n\n"
         /// 訊息最小高度
-        static let minimumHeight: CGFloat = 50
+        //static let minimumHeight: CGFloat = 50
         /// 訊息最大寬度
         static let maxWidth: CGFloat = UIScreen.main.bounds.width - 40
         /// 訊息最小寬度
