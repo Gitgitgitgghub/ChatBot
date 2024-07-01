@@ -14,7 +14,7 @@ class ChatViewModel: NSObject {
     
     let openai: OpenAIProtocol
     private var subscriptions = Set<AnyCancellable>()
-    @Published var inputMessage: String? = "mock"
+    @Published var inputMessage: String? = "請跟我講個小故事"
     @Published var pickedImageInfo: [UIImagePickerController.InfoKey : Any]?
     private let inputSubject = PassthroughSubject<InputEvent, Never>()
     let outputSubject = PassthroughSubject<OutPutEvent, Never>()
@@ -53,7 +53,7 @@ class ChatViewModel: NSObject {
     /// 模擬ai回覆訊息
     func mock() {
         var mocks: [MessageModel] = []
-        for _ in 0...105 {
+        for _ in 0...0 {
             let message = Bool.random() ? mockString : mockString2
             mocks.append(.init(message: message, sender: .ai))
         }
@@ -144,7 +144,7 @@ class ChatViewModel: NSObject {
     
     /// 當前是否需要執行預加載
     private func isNeedToPreload(currentIndex: Int) -> Bool {
-        return currentIndex == displayMessages.count - 11 || (currentIndex == 0 && displayMessages.isEmpty)
+        return displayMessages.count < originalMessages.count && (currentIndex == displayMessages.count - 11 || (currentIndex == 0 && displayMessages.isEmpty))
     }
     
     /// 預加載AttributedString事件
@@ -153,7 +153,7 @@ class ChatViewModel: NSObject {
         let startIndex = currentPage * proloadBatchCount
         let endIndex = min(startIndex + proloadBatchCount, originalMessages.count)
         // 確保有資料可以加載
-        guard startIndex < endIndex else { 
+        guard startIndex < endIndex else {
             print("沒有資料可以加載了")
             return
         }

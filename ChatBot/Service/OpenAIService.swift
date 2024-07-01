@@ -20,10 +20,18 @@ class OpenAIService: OpenAIProtocol {
     
     let openai = OpenAI(apiToken: apiKey)
     let loadingStatusSubject = PassthroughSubject<LoadingStatus, Never>()
+    var histroy: [ChatQuery.ChatCompletionMessageParam] = []
     
     func chatQuery(message: String) -> AnyPublisher<MessageModel, Error> {
-        let query = ChatQuery(messages: [.init(role: .user, content: message)!], model: .gpt3_5Turbo)
+        histroy.append(.init(role: .user, content: message)!)
+        let query = ChatQuery(messages: histroy, model: .gpt3_5Turbo)
         return openai.chats(query: query)
+            .map({ result in
+                if let message = result.choices.first?.message {
+                    self.histroy.append(message)
+                }
+                return result
+            })
             .map({ .init(chatResult: $0, sender: .ai) })
             .subscribe(on: DispatchSerialQueue.global())
             .receive(on: DispatchSerialQueue.main)

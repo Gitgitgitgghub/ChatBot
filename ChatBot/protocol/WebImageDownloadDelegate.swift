@@ -17,11 +17,9 @@ protocol WebImageDownloadDelegate: AnyObject {
 extension WebImageDownloadDelegate {
     
     func asyncDownloadImage(attributedString: NSAttributedString, completion: (() -> Void)?) {
-        DispatchQueue.global(qos: .background).async {
-            attributedString.enumerateAttribute(.attachment, in: NSRange(location: 0, length: attributedString.length), options: []) { (value, range, _) in
-                if let attachment = value as? WebImageAttachment {
-                    attachment.setImage(placeholder: UIImage(systemName: "arrowshape.down.circle.fill"), completion: completion)
-                }
+        attributedString.enumerateAttribute(.attachment, in: NSRange(location: 0, length: attributedString.length), options: []) { (value, range, _) in
+            if let attachment = value as? WebImageAttachment {
+                attachment.setImage(placeholder: UIImage(systemName: "arrowshape.down.circle.fill"), completion: completion)
             }
         }
     }

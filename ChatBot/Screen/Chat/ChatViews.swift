@@ -149,6 +149,7 @@ extension ChatViews {
             guard let attributedString = messageModel.attributedString else { return }
             asyncDownloadImage(attributedString: attributedString) { [weak self] in
                 self?.messageTextView.setNeedsDisplay()
+                self?.messageTextView.attributedText = attributedString
             }
             //blurView.isVisible = messageTextView.attributedText == defaultAttr
         }

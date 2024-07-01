@@ -17,6 +17,7 @@ extension WebImageAttachment {
     
     ///使用 SDWebImage 异步下载图片
     func setImage(placeholder: UIImage?, maxSize: CGSize = .init(width: 300, height: 210), completion: (() -> Void)? = nil) {
+        self.image = placeholder
         guard let url = imageUrl else { return }
         SDWebImageManager.shared.loadImage(
             with: url,
