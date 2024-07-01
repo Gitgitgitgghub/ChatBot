@@ -183,7 +183,7 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("tableView cellForRowAt \(indexPath)  已加載數量：\(viewModel.displayMessages.count)")
+        //print("tableView cellForRowAt \(indexPath)  已加載數量：\(viewModel.displayMessages.count)")
         //執行預加載動作
         viewModel.transform(inputEvent: .preloadAttributedString(currentIndex: indexPath.row))
         let message = viewModel.displayMessages.getOrNil(index: indexPath.row)

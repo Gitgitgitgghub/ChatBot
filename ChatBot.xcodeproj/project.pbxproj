@@ -21,7 +21,6 @@
 		326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728F2C2E4C4F00B06DF8 /* Array+.swift */; };
 		326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */; };
 		326F72942C2EB11A00B06DF8 /* WebImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F72932C2EB11A00B06DF8 /* WebImageAttachment.swift */; };
-		326F72962C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F72952C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift */; };
 		32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EE92C1C229500FE5786 /* LoginViewController.swift */; };
 		32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEC2C1C233D00FE5786 /* LogingViews.swift */; };
 		32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEE2C1C239300FE5786 /* ControllerView.swift */; };
@@ -81,7 +80,6 @@
 		326F728F2C2E4C4F00B06DF8 /* Array+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+.swift"; sourceTree = "<group>"; };
 		326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
 		326F72932C2EB11A00B06DF8 /* WebImageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebImageAttachment.swift; sourceTree = "<group>"; };
-		326F72952C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebImageDownloadDelegate.swift; sourceTree = "<group>"; };
 		32800EE92C1C229500FE5786 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		32800EEC2C1C233D00FE5786 /* LogingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogingViews.swift; sourceTree = "<group>"; };
 		32800EEE2C1C239300FE5786 /* ControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerView.swift; sourceTree = "<group>"; };
@@ -209,7 +207,6 @@
 			isa = PBXGroup;
 			children = (
 				32800F112C251E5400FE5786 /* AttributedStringParsable.swift */,
-				326F72952C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift */,
 			);
 			path = protocol;
 			sourceTree = "<group>";
@@ -442,7 +439,6 @@
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
-				326F72962C2EB1F700B06DF8 /* WebImageDownloadDelegate.swift in Sources */,
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,
 				32800F022C21850A00FE5786 /* UploadImageSelectorViewController.swift in Sources */,
 				32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */,

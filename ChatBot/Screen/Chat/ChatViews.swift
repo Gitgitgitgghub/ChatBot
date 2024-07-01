@@ -65,7 +65,7 @@ extension ChatViews {
     
     
     //MARK: - ＡＩ文字訊息Cell
-    class AIMessageCell: UITableViewCell, UITextViewDelegate, WebImageDownloadDelegate {
+    class AIMessageCell: UITableViewCell, UITextViewDelegate {
         
         weak var messageCellProtocol: MessageCellProtocol?
         let messageTextView = UITextView().apply { textView in
@@ -119,9 +119,9 @@ extension ChatViews {
         override func prepareForReuse() {
             super.prepareForReuse()
             messageModel = nil
+            messageTextView.cancelDownloadTask()
             messageTextView.attributedText = defaultAttr
             messageTextView.updateHeight()
-            //blurView.isVisible = true
         }
         
         func bindMessage(messageModel: MessageModel, indexPath: IndexPath) {
@@ -146,11 +146,7 @@ extension ChatViews {
             case .mock:
                 messageTextView.attributedText = messageModel.attributedString ?? defaultAttr
             }
-            guard let attributedString = messageModel.attributedString else { return }
-            asyncDownloadImage(attributedString: attributedString) { [weak self] in
-                self?.messageTextView.setNeedsDisplay()
-                self?.messageTextView.attributedText = attributedString
-            }
+            messageTextView.asyncLoadWebAttachmentImage()
             //blurView.isVisible = messageTextView.attributedText == defaultAttr
         }
         

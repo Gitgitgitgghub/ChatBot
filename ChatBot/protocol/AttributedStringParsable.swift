@@ -14,16 +14,71 @@ protocol AttributedStringParsable {
 
 class AttributedStringParser: AttributedStringParsable {
     
+    /// 最大同時解析幾個
+    private let maxTaskCount = 10
+    private let taskSubject = PassthroughSubject<AnyPublisher<NSAttributedString, Error>, Never>()
+    private var cancellable: AnyCancellable?
+    private let backgroundQueue = DispatchQueue(label: "attributedstringparser.background", qos: .background, attributes: .concurrent)
+    private var taskCount = 0
+    
+    init() {
+        setup()
+    }
+    
+    private func setup() {
+        cancellable = taskSubject
+            .flatMap(maxPublishers: .max(maxTaskCount)) { publisher in
+                publisher
+                    .handleEvents(receiveSubscription: { _ in
+                        self.incrementRunningTasks()
+                    }, receiveCompletion: { _ in
+                        self.decrementRunningTasks()
+                    }) {
+                        self.taskCount = 0
+                    }
+            }
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    print("All tasks completed")
+                case .failure(let error):
+                    print("Task failed with error: \(error)")
+                }
+            }, receiveValue: { _ in
+                print("task count \(self.taskCount)")
+            })
+    }
+    
+    private func incrementRunningTasks() {
+        self.taskCount += 1
+        print("Current running tasks: \(self.taskCount)")
+    }
+    
+    private func decrementRunningTasks() {
+        self.taskCount -= 1
+        print("Current running tasks: \(self.taskCount)")
+    }
+    
+    private func cancelTasks() {
+        cancellable?.cancel()
+        setup()
+    }
+        
     func convertStringsToAttributedStrings(strings: [String]) -> AnyPublisher<NSAttributedString, Error> {
+        cancelTasks()
         let publishers = strings.map { convertStringToAttributedString(string: $0) }
-        return Publishers.MergeMany(publishers).eraseToAnyPublisher()
+        for publisher in publishers {
+            taskSubject.send(publisher)
+        }
+        return Publishers.MergeMany(publishers)
+            .eraseToAnyPublisher()
     }
 
     func convertStringToAttributedString(string: String) -> AnyPublisher<NSAttributedString, Error> {
         return Future { promise in
-            DispatchQueue.global(qos: .background).async {
+            self.backgroundQueue.async {
                 do {
-                    let result: NSAttributedString = try self.createAttributedString(string: string)
+                    let result = try self.createAttributedString(string: string)
                     promise(.success(result))
                 } catch {
                     promise(.failure(error))
@@ -107,5 +162,12 @@ class AttributedStringParser: AttributedStringParsable {
         } catch {
             throw error
         }
+    }
+}
+
+/// 看DispatchQueue label
+extension DispatchQueue {
+    static var currentQueueLabel: String? {
+        return String(cString: __dispatch_queue_get_label(nil), encoding: .utf8)
     }
 }

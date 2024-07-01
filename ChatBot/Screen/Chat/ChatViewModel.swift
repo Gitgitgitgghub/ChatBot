@@ -14,7 +14,7 @@ class ChatViewModel: NSObject {
     
     let openai: OpenAIProtocol
     private var subscriptions = Set<AnyCancellable>()
-    @Published var inputMessage: String? = "請跟我講個小故事"
+    @Published var inputMessage: String? = "mock"
     @Published var pickedImageInfo: [UIImagePickerController.InfoKey : Any]?
     private let inputSubject = PassthroughSubject<InputEvent, Never>()
     let outputSubject = PassthroughSubject<OutPutEvent, Never>()
@@ -53,11 +53,11 @@ class ChatViewModel: NSObject {
     /// 模擬ai回覆訊息
     func mock() {
         var mocks: [MessageModel] = []
-        for _ in 0...0 {
+        for _ in 0...100 {
             let message = Bool.random() ? mockString : mockString2
             mocks.append(.init(message: message, sender: .ai))
         }
-        originalMessages = mocks
+        originalMessages.append(contentsOf: mocks)
         print("模擬資料 總筆數：\(originalMessages.count)")
         preloadAttributedStringEvent(currentIndex: 0)
     }
