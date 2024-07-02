@@ -7,6 +7,17 @@
 
 import Foundation
 
+extension Array where Element: Hashable {
+    /// 取兩個陣列相同數值
+    func commonElements(with other: [Element]) -> [Element] {
+        let set1 = Set(self)
+        let set2 = Set(other)
+        let commonSet = set1.intersection(set2)
+        return Array(commonSet)
+    }
+}
+
+
 extension Array {
     
     /// 陣列分割成Ｎ個一組的陣列

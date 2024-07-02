@@ -118,7 +118,6 @@ extension ChatViews {
         
         override func prepareForReuse() {
             super.prepareForReuse()
-            messageModel = nil
             messageTextView.cancelDownloadTask()
             messageTextView.attributedText = defaultAttr
             messageTextView.updateHeight()

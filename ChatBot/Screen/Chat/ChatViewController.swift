@@ -44,16 +44,17 @@ class ChatViewController: BaseUIViewController {
         views.chatInputView.sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
     }
     
+    /// 目前沒用到
     private func setupMessageTableViewUpdatePublisher() {
-        updatePublisher
-            .debounce(for: .milliseconds(100), scheduler: RunLoop.main)
-            .sink { [weak self] in
-                guard let `self` = self else { return }
-                if let indexs = self.views.messageTableView.indexPathsForVisibleRows {
-                    //self.views.messageTableView.reloadRows(at: indexs, with: .none)
-                }
-            }
-            .store(in: &subscriptions)
+//        updatePublisher
+//            .debounce(for: .milliseconds(100), scheduler: RunLoop.main)
+//            .sink { [weak self] in
+//                guard let `self` = self else { return }
+//                if let indexs = self.views.messageTableView.indexPathsForVisibleRows {
+//                    //self.views.messageTableView.reloadRows(at: indexs, with: .none)
+//                }
+//            }
+//            .store(in: &subscriptions)
     }
     
     /// 觀察鍵盤顯示與否
@@ -71,8 +72,9 @@ class ChatViewController: BaseUIViewController {
                 guard let `self` = self, !messages.isEmpty else { return }
                 self.views.messageTableView.reloadData()
                 //滾動到最下方
-                guard let lastIndex = self.views.messageTableView.indexPathsForVisibleRows?.last else { return }
-                self.views.messageTableView.scrollToRow(at: lastIndex, at: .bottom, animated: true)
+                delay(delay: 0.1) {
+                    self.views.messageTableView.scrollToRow(at: .init(row: self.viewModel.displayMessages.count - 1, section: 0), at: .bottom, animated: false)
+                }
             }
             .store(in: &subscriptions)
         viewModel.$inputMessage
@@ -84,17 +86,30 @@ class ChatViewController: BaseUIViewController {
             .sink { [weak self] event in
                 guard let `self` = self else { return }
                 switch event {
-                case .imageDownloadComplete:
-                    self.imageDownloadComplete()
+                case .parseComplete(indexs: let indexs):
+                    self.parseComplete(indexs: indexs)
                 }
             }
             .store(in: &subscriptions)
         //viewModel.mock()
     }
     
-    /// 處理圖片下載完成事件
-    private func imageDownloadComplete() {
-        updatePublisher.send(())
+    /// 處理預載完成事件
+    private func parseComplete(indexs: [IndexPath]) {
+        let visibleRows = views.messageTableView.indexPathsForVisibleRows
+        guard !(visibleRows?.isEmpty ?? true) && !indexs.isEmpty else { return }
+        let needUpdateIndex = visibleRows!.commonElements(with: indexs)
+        UIView.performWithoutAnimation {
+            /// 先用全部刷新 用visibleRow時好像容易漏更新
+            views.messageTableView.reloadData()
+            //views.messageTableView.reloadRows(at: needUpdateIndex, with: .none)
+        }
+    }
+    
+    /// 請求背景預加載
+    private func requestPreload() {
+        guard let visibleRows = views.messageTableView.indexPathsForVisibleRows, !visibleRows.isEmpty else { return }
+        viewModel.transform(inputEvent: .preloadAttributedString(currentIndex: visibleRows.first!.row))
     }
     
     //MARK: - objc
@@ -166,6 +181,16 @@ extension ChatViewController: UploadImageSelectorViewControllerDelegate, UIImage
 //MARK: - UITableViewDelegate, UITableViewDataSource, MessageCellProtocol
 extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
     
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        requestPreload()
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            requestPreload()
+        }
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var height = viewModel.displayMessages.getOrNil(index: indexPath.row)?.estimatedHeightForAttributedString ?? 0
         if height == 0 {
@@ -179,13 +204,10 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.originalMessages.count
+        return viewModel.displayMessages.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //print("tableView cellForRowAt \(indexPath)  已加載數量：\(viewModel.displayMessages.count)")
-        //執行預加載動作
-        viewModel.transform(inputEvent: .preloadAttributedString(currentIndex: indexPath.row))
         let message = viewModel.displayMessages.getOrNil(index: indexPath.row)
         switch message?.messageType {
         case .message, .mock:

@@ -12,15 +12,15 @@ import SDWebImage
 class WebImageAttachment: NSTextAttachment {
     var imageUrl: URL?
     var downloadTask: SDWebImageOperation?
+    var isDownloadSuccess = false
 }
 
 extension WebImageAttachment {
     
-    /// 取消下載任務並且清除圖片
+    /// 取消下載任務
     func cancelDownloadTask() {
         downloadTask?.cancel()
         downloadTask = nil
-        image = nil
     }
     
     func loadImage(placeholder: UIImage?, maxSize: CGSize = .init(width: 300, height: 210), completion: @escaping ((UIImage) -> Void)) {
@@ -36,7 +36,9 @@ extension WebImageAttachment {
                     DispatchQueue.main.async {
                         self.image = resizeImage
                         self.bounds = .init(origin: .zero, size: resizeImage.size)
+                        self.isDownloadSuccess = true
                         completion(resizeImage)
+                        self.cancelDownloadTask()
                     }
                 } else {
                     print("Failed to download image: \(error?.localizedDescription ?? "Unknown error")")
@@ -58,7 +60,9 @@ extension WebImageAttachment {
                     DispatchQueue.main.async {
                         self.image = resizeImage
                         self.bounds = .init(origin: .zero, size: resizeImage.size)
+                        self.isDownloadSuccess = true
                         completion?()
+                        self.cancelDownloadTask()
                     }
                 } else {
                     print("Failed to download image: \(error?.localizedDescription ?? "Unknown error")")
