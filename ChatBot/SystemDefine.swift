@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 
-let apiKey = "sk-proj-YPmNXCAOPcOYYyvzp3teT3BlbkFJmuQfmIfhnwkREoiZLBar"
+
 
 let godzilla = "https://cdn.wowscreen.com.tw/uploadfile/202309/goods_030567_395649.jpg"
 

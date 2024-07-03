@@ -123,7 +123,7 @@ class ChatViewModel: NSObject {
     /// - Returns: 一串數字
     private func generateAlternatingNumbers(start: Int, count: Int) -> [Int] {
         var numbersArray: [Int] = []
-        var currentNumber = start
+        let currentNumber = start
         for i in 0..<count {
             if i % 2 == 0 {
                 // 偶数索引，递增
