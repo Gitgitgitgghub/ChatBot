@@ -66,8 +66,7 @@ class LoginViewController: BaseUIViewController {
                 case .success:
                     self?.views.loadingView.isVisible = false
                     self?.views.loadingView.stopAnimating()
-                    let vc = ChatViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
+                    self?.loginSuccess()
                 }
             }
             .store(in: &subscriptions)
@@ -76,6 +75,13 @@ class LoginViewController: BaseUIViewController {
                 self.views.switchLoginMethod(method: method)
             }
             .store(in: &subscriptions)
+    }
+    
+    /// 登入成功替換掉畫面
+    private func loginSuccess() {
+        if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
+            sceneDelegate.switchToHomeViewController()
+        }
     }
     
     private func loginFailed(errorMessage: String) {

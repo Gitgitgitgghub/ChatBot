@@ -17,6 +17,11 @@
 		322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */; };
 		322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D052C198BA8007A8075 /* MessageModel.swift */; };
 		323E88A62C35251000401F50 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 323E88A52C35251000401F50 /* NVActivityIndicatorView */; };
+		323E88A82C353D2200401F50 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88A72C353D2200401F50 /* MainTabBarController.swift */; };
+		323E88AC2C353DE800401F50 /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88AB2C353DE800401F50 /* HistoryViewController.swift */; };
+		323E88AE2C353DFA00401F50 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88AD2C353DFA00401F50 /* HomeViewController.swift */; };
+		323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88AF2C353FE000401F50 /* ScreenLoader.swift */; };
+		323E88B22C354BA200401F50 /* HomeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88B12C354BA200401F50 /* HomeViews.swift */; };
 		326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728A2C29554B00B06DF8 /* UITextView+.swift */; };
 		326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 326F728D2C2A5CDE00B06DF8 /* SDWebImage */; };
 		326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728F2C2E4C4F00B06DF8 /* Array+.swift */; };
@@ -77,6 +82,11 @@
 		322A2D002C194C88007A8075 /* UITableView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+.swift"; sourceTree = "<group>"; };
 		322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIProtocol.swift; sourceTree = "<group>"; };
 		322A2D052C198BA8007A8075 /* MessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
+		323E88A72C353D2200401F50 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		323E88AB2C353DE800401F50 /* HistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewController.swift; sourceTree = "<group>"; };
+		323E88AD2C353DFA00401F50 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		323E88AF2C353FE000401F50 /* ScreenLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLoader.swift; sourceTree = "<group>"; };
+		323E88B12C354BA200401F50 /* HomeViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViews.swift; sourceTree = "<group>"; };
 		326F728A2C29554B00B06DF8 /* UITextView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+.swift"; sourceTree = "<group>"; };
 		326F728F2C2E4C4F00B06DF8 /* Array+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+.swift"; sourceTree = "<group>"; };
 		326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
@@ -174,14 +184,38 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		323E88A92C353DC000401F50 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				323E88AD2C353DFA00401F50 /* HomeViewController.swift */,
+				323E88B12C354BA200401F50 /* HomeViews.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		323E88AA2C353DCF00401F50 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				323E88AB2C353DE800401F50 /* HistoryViewController.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
 		32800EE82C1C225500FE5786 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
+				323E88AA2C353DCF00401F50 /* History */,
+				323E88A92C353DC000401F50 /* Home */,
 				32800EFA2C211B6D00FE5786 /* Launch */,
 				32800EEB2C1C231700FE5786 /* Login */,
 				3204218B2C19302A00D72203 /* Chat */,
 				32800EEE2C1C239300FE5786 /* ControllerView.swift */,
 				32800EF42C20220500FE5786 /* BaseUIViewController.swift */,
+				323E88A72C353D2200401F50 /* MainTabBarController.swift */,
+				323E88AF2C353FE000401F50 /* ScreenLoader.swift */,
+				32C77FC62C18504E00F335FE /* AppDelegate.swift */,
+				32800EFD2C21316D00FE5786 /* LaunchScreen.storyboard */,
+				32C77FC82C18504E00F335FE /* SceneDelegate.swift */,
 			);
 			path = Screen;
 			sourceTree = "<group>";
@@ -242,9 +276,6 @@
 				32E264302C1BDA200083EC63 /* Service */,
 				32E2642D2C1AA9B50083EC63 /* CustomView */,
 				322A2CFD2C1949ED007A8075 /* Extensions */,
-				32C77FC62C18504E00F335FE /* AppDelegate.swift */,
-				32800EFD2C21316D00FE5786 /* LaunchScreen.storyboard */,
-				32C77FC82C18504E00F335FE /* SceneDelegate.swift */,
 				32C77FCF2C18504F00F335FE /* Assets.xcassets */,
 				32C77FD42C18504F00F335FE /* Info.plist */,
 			);
@@ -435,6 +466,7 @@
 				32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */,
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
 				32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */,
+				323E88B22C354BA200401F50 /* HomeViews.swift in Sources */,
 				326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
@@ -448,12 +480,15 @@
 				32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */,
 				32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */,
 				326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */,
+				323E88A82C353D2200401F50 /* MainTabBarController.swift in Sources */,
 				32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */,
 				322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */,
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */,
+				323E88AE2C353DFA00401F50 /* HomeViewController.swift in Sources */,
+				323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */,
 				322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */,
 				326F72942C2EB11A00B06DF8 /* WebImageAttachment.swift in Sources */,
 				320421992C19343E00D72203 /* ChatViewModel.swift in Sources */,
@@ -464,6 +499,7 @@
 				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
+				323E88AC2C353DE800401F50 /* HistoryViewController.swift in Sources */,
 				32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
