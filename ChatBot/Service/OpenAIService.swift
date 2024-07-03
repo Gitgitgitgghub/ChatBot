@@ -5,7 +5,7 @@
 //  Created by 吳俊諺 on 2024/6/14.
 //
 
-import Foundation
+import Foundation 
 import OpenAI
 import Combine
 import UIKit
@@ -18,7 +18,7 @@ class OpenAIService: OpenAIProtocol {
         case error(message: String)
     }
     
-    let openai = OpenAI(apiToken: apiKey)
+    let openai = OpenAI(apiToken: SystemDefine.share.apiToken)
     let loadingStatusSubject = PassthroughSubject<LoadingStatus, Never>()
     var histroy: [ChatQuery.ChatCompletionMessageParam] = []
     

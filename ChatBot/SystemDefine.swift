@@ -10,6 +10,7 @@ import UIKit
 
 
 
+let reallyVeryConfidential = "c2stcHJvai1hTDhJU1diMk1aS0dMWUxyTjZkUlQzQmxia0ZKQmRyRnZhNnMyY3pYTXloUEZMUDY="
 
 let godzilla = "https://cdn.wowscreen.com.tw/uploadfile/202309/goods_030567_395649.jpg"
 
@@ -31,7 +32,16 @@ let mockString: String = """
 
 let mockString2: String = kanahei
 
-struct SystemDefine {
+class SystemDefine {
+    
+    
+    static let share: SystemDefine = .init()
+    var apiToken: String = ""
+    
+    private init() {
+        
+    }
+    
     
 }
 

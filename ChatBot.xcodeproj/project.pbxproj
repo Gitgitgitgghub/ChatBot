@@ -16,7 +16,7 @@
 		322A2D012C194C88007A8075 /* UITableView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D002C194C88007A8075 /* UITableView+.swift */; };
 		322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */; };
 		322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D052C198BA8007A8075 /* MessageModel.swift */; };
-		323E88A32C34DE2200401F50 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88A22C34DE2200401F50 /* Environment.swift */; };
+		323E88A62C35251000401F50 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 323E88A52C35251000401F50 /* NVActivityIndicatorView */; };
 		326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728A2C29554B00B06DF8 /* UITextView+.swift */; };
 		326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 326F728D2C2A5CDE00B06DF8 /* SDWebImage */; };
 		326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728F2C2E4C4F00B06DF8 /* Array+.swift */; };
@@ -77,7 +77,6 @@
 		322A2D002C194C88007A8075 /* UITableView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+.swift"; sourceTree = "<group>"; };
 		322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIProtocol.swift; sourceTree = "<group>"; };
 		322A2D052C198BA8007A8075 /* MessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
-		323E88A22C34DE2200401F50 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		326F728A2C29554B00B06DF8 /* UITextView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+.swift"; sourceTree = "<group>"; };
 		326F728F2C2E4C4F00B06DF8 /* Array+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+.swift"; sourceTree = "<group>"; };
 		326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
@@ -121,6 +120,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				32800F072C22A45900FE5786 /* Kingfisher in Frameworks */,
+				323E88A62C35251000401F50 /* NVActivityIndicatorView in Frameworks */,
 				320421952C19331500D72203 /* OpenAI in Frameworks */,
 				326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */,
 				3204219E2C19405500D72203 /* SnapKit in Frameworks */,
@@ -237,7 +237,6 @@
 			isa = PBXGroup;
 			children = (
 				320421962C1933EC00D72203 /* SystemDefine.swift */,
-				323E88A22C34DE2200401F50 /* Environment.swift */,
 				32800F102C251DAF00FE5786 /* protocol */,
 				32800EE82C1C225500FE5786 /* Screen */,
 				32E264302C1BDA200083EC63 /* Service */,
@@ -310,6 +309,7 @@
 				3204219D2C19405500D72203 /* SnapKit */,
 				32800F062C22A45900FE5786 /* Kingfisher */,
 				326F728D2C2A5CDE00B06DF8 /* SDWebImage */,
+				323E88A52C35251000401F50 /* NVActivityIndicatorView */,
 			);
 			productName = ChatBot;
 			productReference = 32C77FC32C18504E00F335FE /* ChatBot.app */;
@@ -388,6 +388,7 @@
 				3204219C2C19405500D72203 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				32800F052C22A45900FE5786 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				323E88A42C35251000401F50 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 			);
 			productRefGroup = 32C77FC42C18504E00F335FE /* Products */;
 			projectDirPath = "";
@@ -464,7 +465,6 @@
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
 				32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */,
-				323E88A32C34DE2200401F50 /* Environment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -806,6 +806,14 @@
 				minimumVersion = 5.7.1;
 			};
 		};
+		323E88A42C35251000401F50 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ninjaprox/NVActivityIndicatorView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.2.0;
+			};
+		};
 		326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
@@ -834,6 +842,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3204219C2C19405500D72203 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		323E88A52C35251000401F50 /* NVActivityIndicatorView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 323E88A42C35251000401F50 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
+			productName = NVActivityIndicatorView;
 		};
 		326F728D2C2A5CDE00B06DF8 /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;

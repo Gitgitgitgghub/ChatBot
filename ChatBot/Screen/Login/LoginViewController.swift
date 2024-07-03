@@ -13,6 +13,12 @@ class LoginViewController: BaseUIViewController {
     
     private lazy var views = LogingViews(view: self.view)
     private lazy var viewModel = LoginViewModel(validation: UserValidation())
+    var loginMethod: LogingMethod = .account
+    /// 登入方式
+    enum LogingMethod {
+        case account
+        case key
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +35,7 @@ class LoginViewController: BaseUIViewController {
         views.pwTextField.delegate = self
         views.confirmPwTextField.delegate = self
         views.loginButton.addTarget(self, action: #selector(loginButtonClicked), for: .touchUpInside)
-        views.calcelAllButton.addTarget(self, action: #selector(boom), for: .touchUpInside)
+        views.switchLoginMethodButton.addTarget(self, action: #selector(switchMethodButtonClick), for: .touchUpInside)
     }
     
     private func bind() {
@@ -44,21 +50,42 @@ class LoginViewController: BaseUIViewController {
             }
             .store(in: &subscriptions)
         viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
                 switch status {
                 case .none:
                     self?.views.loadingView.isVisible = false
+                    self?.views.loadingView.stopAnimating()
                 case .loading:
                     self?.views.loadingView.isVisible = true
-                case .failure(error: _):
+                    self?.views.loadingView.startAnimating()
+                case .failure(error: let error):
                     self?.views.loadingView.isVisible = false
+                    self?.views.loadingView.stopAnimating()
+                    self?.loginFailed(errorMessage: error.localizedDescription)
                 case .success:
                     self?.views.loadingView.isVisible = false
+                    self?.views.loadingView.stopAnimating()
                     let vc = ChatViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             }
             .store(in: &subscriptions)
+        viewModel.validation.$loginMethod
+            .sink { [unowned self] method in
+                self.views.switchLoginMethod(method: method)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func loginFailed(errorMessage: String) {
+        let alert = UIAlertController(title: "登入失敗", message: errorMessage, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "確定", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    @objc private func switchMethodButtonClick() {
+        viewModel.trasformInput(input: .switchLoginMethod)
     }
     
     @objc private func loginButtonClicked() {

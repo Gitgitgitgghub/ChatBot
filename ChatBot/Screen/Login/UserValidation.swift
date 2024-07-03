@@ -15,8 +15,7 @@ class UserValidation {
     @Published var confirmPassword = ""
     @Published var errorMessage = ""
     @Published var isLoginButtonEnabled = false
-    var aa = CurrentValueSubject<String, Never>("")
-    var ab = PassthroughSubject<String, Never>()
+    @Published var loginMethod: LoginViewController.LogingMethod = .account
     private var subscriptions = Set<AnyCancellable>()
     
     init() {
@@ -32,6 +31,7 @@ class UserValidation {
         case accountLength
         case passwordLength
         case confirmPasswordError
+        case keyLength
         
         var localizedDescription: String {
             switch self {
@@ -41,6 +41,8 @@ class UserValidation {
                 return "密碼長度錯誤"
             case .confirmPasswordError:
                 return "請確認密碼"
+            case .keyLength:
+                return "Key長度錯誤"
             }
         }
     }
@@ -51,23 +53,62 @@ class UserValidation {
     }
     
     func setupBindings() {
+        bindErrorMessage()
+        bindLoginEnable()
+    }
+    
+    /// 處理可否點選登入
+    private func bindLoginEnable() {
+        $errorMessage
+            .map { $0.isEmpty }
+            .map({ [weak self] isAllPass in
+                guard let `self` = self else { return false }
+                switch loginMethod {
+                case .account:
+                    return isAllPass && !self.account.isEmpty && !self.password.isEmpty
+                case .key:
+                    return isAllPass
+                }
+            })
+            .sink(receiveValue: { [unowned self] isEnable in
+                self.isLoginButtonEnabled = isEnable
+            })
+            .store(in: &subscriptions)
+    }
+    
+    /// 綁定關於錯誤訊息的處理
+    private func bindErrorMessage() {
         let validAccount = $account
             .map { $0.isEmpty || $0.count > 3 }
             .eraseToAnyPublisher()
         
         let validPassword = $password
-            .map { $0.isEmpty || $0.count > 3}
+            .map {
+                if self.loginMethod == .account {
+                    return $0.isEmpty || $0.count > 3
+                }
+                return true
+            }
             .eraseToAnyPublisher()
         
         let isPasswordMatch = $password
             .combineLatest($confirmPassword)
-            .map { $0.isEmpty || $0 == $1 }
+            .map {
+                if self.loginMethod == .account {
+                    return $0.isEmpty || $0 == $1
+                }
+                return true
+            }
             .eraseToAnyPublisher()
-        
         Publishers.CombineLatest3(validAccount, validPassword, isPasswordMatch)
             .map { validAccount, validPassword, isPasswordMatch in
                 if !validAccount {
-                    return ValidationError.accountLength.localizedDescription
+                    switch self.loginMethod {
+                    case .account:
+                        return ValidationError.accountLength.localizedDescription
+                    case .key:
+                        return ValidationError.keyLength.localizedDescription
+                    }
                 }
                 if !validPassword {
                     return ValidationError.passwordLength.localizedDescription
@@ -80,16 +121,6 @@ class UserValidation {
             .sink { [unowned self] errorMessage in
                 self.errorMessage = errorMessage
             }
-            .store(in: &subscriptions)
-        $errorMessage
-            .map { $0.isEmpty }
-            .map({ [weak self] isAllPass in
-                guard let `self` = self else { return false }
-                return isAllPass && !self.account.isEmpty && !self.password.isEmpty
-            })
-            .sink(receiveValue: { [unowned self] isEnable in
-                self.isLoginButtonEnabled = isEnable
-            })
             .store(in: &subscriptions)
     }
     

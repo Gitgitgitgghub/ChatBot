@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
 
 class LogingViews: ControllerView {
@@ -88,9 +89,9 @@ class LogingViews: ControllerView {
         button.layer.masksToBounds = true
         return button
     }()
-    lazy var calcelAllButton: UIButton = {
+    lazy var switchLoginMethodButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("boom", for: .normal)
+        button.setTitle("切換登入方式", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.setTitleColor(.gray, for: .disabled)
         button.backgroundColor = .blue.withAlphaComponent(0.8)
@@ -98,10 +99,13 @@ class LogingViews: ControllerView {
         button.layer.masksToBounds = true
         return button
     }()
-    lazy var loadingView: LoadingView = {
-        let view = LoadingView()
+    lazy var loadingView: NVActivityIndicatorView = {
+        let view = NVActivityIndicatorView(frame: .zero)
+        view.type = .ballClipRotatePulse
+        view.padding = 30
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .black.withAlphaComponent(0.8)
+        view.cornerRadius = 15
         return view
     }()
     
@@ -115,8 +119,8 @@ class LogingViews: ControllerView {
         view.addSubview(confirmPwTextField)
         view.addSubview(loginButton)
         view.addSubview(errorLabel)
+        view.addSubview(switchLoginMethodButton)
         view.addSubview(loadingView)
-        view.addSubview(calcelAllButton)
         accountTextField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(50)
             make.top.equalToSuperview().inset(250)
@@ -149,8 +153,8 @@ class LogingViews: ControllerView {
             make.centerX.equalToSuperview()
             make.top.equalTo(confirmPwTextField.snp.bottom).offset(20)
         }
-        calcelAllButton.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 100, height: 40))
+        switchLoginMethodButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 150, height: 40))
             make.centerX.equalToSuperview()
             make.top.equalTo(loginButton.snp.bottom).offset(20)
         }
@@ -162,6 +166,18 @@ class LogingViews: ControllerView {
             make.size.equalTo(CGSize(width: 200, height: 200))
             make.center.equalToSuperview()
         }
+    }
+    
+    func switchLoginMethod(method: LoginViewController.LogingMethod) {
+        pwTextField.isVisible = method == .account
+        pwLabel.isVisible = method == .account
+        confirmPwLabel.isVisible = method == .account
+        confirmPwTextField.isVisible = method == .account
+        accountLabel.text = method == .account ? "Account" : "Key"
+        accountTextField.placeholder = method == .account ? "input your account" : "input your key"
+        accountTextField.text = ""
+        confirmPwTextField.text = ""
+        confirmPwTextField.text = ""
     }
     
 }
