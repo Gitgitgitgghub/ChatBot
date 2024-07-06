@@ -84,7 +84,8 @@ extension ChatViews {
                 view.translatesAutoresizingMaskIntoConstraints = false
                 view.cornerRadius = 10
             }
-        var messageModel: MessageModel?
+        var chatMessage: ChatMessage?
+        var attr: NSAttributedString?
         var indexPath: IndexPath?
         var defaultAttr: NSAttributedString {
             return getDefaultAttr()
@@ -121,10 +122,13 @@ extension ChatViews {
             messageTextView.cancelDownloadTask()
             messageTextView.attributedText = defaultAttr
             messageTextView.updateHeight()
+            attr = nil
+            chatMessage = nil
         }
         
-        func bindMessage(messageModel: MessageModel, indexPath: IndexPath) {
-            self.messageModel = messageModel
+        func bindChatMessage(chatMessage: ChatMessage, attr: NSAttributedString?, indexPath: IndexPath) {
+            self.chatMessage = chatMessage
+            self.attr = attr
             self.indexPath = indexPath
             blurView.isVisible = false
             setupUI()
@@ -137,13 +141,12 @@ extension ChatViews {
         }
         
         func setupUI() {
-            guard let messageModel = self.messageModel else { return }
+            guard let messageModel = self.chatMessage else { return }
             guard let indexPath = self.indexPath else { return }
-            switch messageModel.messageType {
-            case .message:
-                messageTextView.attributedText = messageModel.attributedString ?? defaultAttr
-            case .mock:
-                messageTextView.attributedText = messageModel.attributedString ?? defaultAttr
+            if let attr = self.attr {
+                messageTextView.attributedText = attr
+            }else {
+                messageTextView.text = messageModel.message ?? ""
             }
             messageTextView.asyncLoadWebAttachmentImage()
             //blurView.isVisible = messageTextView.attributedText == defaultAttr

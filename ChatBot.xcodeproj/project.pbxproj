@@ -55,6 +55,12 @@
 		32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */; };
 		32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264312C1BDA8D0083EC63 /* OpenAIService.swift */; };
 		32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264332C1BE75C0083EC63 /* Extensions.swift */; };
+		94A6CF902C38654300B1E4E3 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CF8E2C38654300B1E4E3 /* DataModel.xcdatamodeld */; };
+		94A6CF972C3866B500B1E4E3 /* MyChatRoom+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CF952C3866B500B1E4E3 /* MyChatRoom+CoreData.swift */; };
+		94A6CF9A2C387A2600B1E4E3 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CF992C387A2600B1E4E3 /* CoreDataStack.swift */; };
+		94A6CF9C2C387A5E00B1E4E3 /* MyChatRoomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CF9B2C387A5E00B1E4E3 /* MyChatRoomManager.swift */; };
+		94A6CFA32C3881F000B1E4E3 /* ChatMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CFA12C3881F000B1E4E3 /* ChatMessage+CoreDataClass.swift */; };
+		94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,6 +128,12 @@
 		32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
 		32E264312C1BDA8D0083EC63 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		32E264332C1BE75C0083EC63 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		94A6CF8F2C38654300B1E4E3 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
+		94A6CF952C3866B500B1E4E3 /* MyChatRoom+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MyChatRoom+CoreData.swift"; sourceTree = "<group>"; };
+		94A6CF992C387A2600B1E4E3 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		94A6CF9B2C387A5E00B1E4E3 /* MyChatRoomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyChatRoomManager.swift; sourceTree = "<group>"; };
+		94A6CFA12C3881F000B1E4E3 /* ChatMessage+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,6 +228,7 @@
 				32C77FC62C18504E00F335FE /* AppDelegate.swift */,
 				32800EFD2C21316D00FE5786 /* LaunchScreen.storyboard */,
 				32C77FC82C18504E00F335FE /* SceneDelegate.swift */,
+				94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */,
 			);
 			path = Screen;
 			sourceTree = "<group>";
@@ -271,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				320421962C1933EC00D72203 /* SystemDefine.swift */,
+				94A6CF8D2C38652B00B1E4E3 /* CoreData */,
 				32800F102C251DAF00FE5786 /* protocol */,
 				32800EE82C1C225500FE5786 /* Screen */,
 				32E264302C1BDA200083EC63 /* Service */,
@@ -317,6 +331,18 @@
 				32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */,
 			);
 			path = Service;
+			sourceTree = "<group>";
+		};
+		94A6CF8D2C38652B00B1E4E3 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				94A6CFA12C3881F000B1E4E3 /* ChatMessage+CoreDataClass.swift */,
+				94A6CF8E2C38654300B1E4E3 /* DataModel.xcdatamodeld */,
+				94A6CF952C3866B500B1E4E3 /* MyChatRoom+CoreData.swift */,
+				94A6CF992C387A2600B1E4E3 /* CoreDataStack.swift */,
+				94A6CF9B2C387A5E00B1E4E3 /* MyChatRoomManager.swift */,
+			);
+			path = CoreData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -464,6 +490,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */,
+				94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */,
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
 				32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */,
 				323E88B22C354BA200401F50 /* HomeViews.swift in Sources */,
@@ -484,6 +511,8 @@
 				32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */,
 				322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */,
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
+				94A6CF9A2C387A2600B1E4E3 /* CoreDataStack.swift in Sources */,
+				94A6CFA32C3881F000B1E4E3 /* ChatMessage+CoreDataClass.swift in Sources */,
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */,
@@ -491,14 +520,17 @@
 				323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */,
 				322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */,
 				326F72942C2EB11A00B06DF8 /* WebImageAttachment.swift in Sources */,
+				94A6CF972C3866B500B1E4E3 /* MyChatRoom+CoreData.swift in Sources */,
 				320421992C19343E00D72203 /* ChatViewModel.swift in Sources */,
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,
 				32800F042C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift in Sources */,
+				94A6CF9C2C387A5E00B1E4E3 /* MyChatRoomManager.swift in Sources */,
 				326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */,
 				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
+				94A6CF902C38654300B1E4E3 /* DataModel.xcdatamodeld in Sources */,
 				323E88AC2C353DE800401F50 /* HistoryViewController.swift in Sources */,
 				32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */,
 			);
@@ -895,6 +927,20 @@
 			productName = Kingfisher;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		94A6CF8E2C38654300B1E4E3 /* DataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				94A6CF8F2C38654300B1E4E3 /* DataModel.xcdatamodel */,
+			);
+			currentVersion = 94A6CF8F2C38654300B1E4E3 /* DataModel.xcdatamodel */;
+			name = DataModel.xcdatamodeld;
+			path = /Users/brant/ChatBot/DataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 32C77FBB2C18504E00F335FE /* Project object */;
 }

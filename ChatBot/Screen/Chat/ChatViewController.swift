@@ -42,6 +42,8 @@ class ChatViewController: BaseUIViewController {
             })
         views.chatInputView.functionButton.addTarget(self, action: #selector(openUploadImageSelectorVc), for: .touchUpInside)
         views.chatInputView.sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
+        let dotItem = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(rightItemButtonClick))
+        navigationItem.rightBarButtonItem = dotItem
     }
     
     /// 目前沒用到
@@ -87,18 +89,28 @@ class ChatViewController: BaseUIViewController {
                 guard let `self` = self else { return }
                 switch event {
                 case .parseComplete(indexs: let indexs):
-                    self.parseComplete(indexs: indexs)
+                    self.parseCompletiom(indexs: indexs)
+                case .saveChatMessageSuccess:
+                    self.saveChatMessageComplettion()
+                case .saveChatMessageError(error: let error):
+                    self.saveChatMessageComplettion(error: error)
                 }
             }
             .store(in: &subscriptions)
         //viewModel.mock()
     }
     
+    /// 處理保存訊息後的顯示事件
+    private func saveChatMessageComplettion(error: Error? = nil) {
+        let message: String = error == nil ? "保存成功" : "保存失敗\n\(error!.localizedDescription)"
+        showToast(message: message, autoDismiss: 1.5, completion: nil)
+    }
+    
     /// 處理預載完成事件
-    private func parseComplete(indexs: [IndexPath]) {
+    private func parseCompletiom(indexs: [IndexPath]) {
         let visibleRows = views.messageTableView.indexPathsForVisibleRows
         guard !(visibleRows?.isEmpty ?? true) && !indexs.isEmpty else { return }
-        let needUpdateIndex = visibleRows!.commonElements(with: indexs)
+        //let needUpdateIndex = visibleRows!.commonElements(with: indexs)
         UIView.performWithoutAnimation {
             /// 先用全部刷新 用visibleRow時好像容易漏更新
             views.messageTableView.reloadData()
@@ -139,6 +151,16 @@ class ChatViewController: BaseUIViewController {
         dismissKeyboard()
         //viewModel.transform(inputEvent: .editImage)
         viewModel.transform(inputEvent: .sendMessage)
+    }
+    
+    /// 點navigationBar右上方的點點
+    @objc private func rightItemButtonClick() {
+        let vc = UIAlertController(title: "你想要？", message: nil, preferredStyle: .actionSheet)
+        vc.addAction(.init(title: "保存聊天記錄", style: .default, handler: { action in
+            self.viewModel.transform(inputEvent: .saveMessages)
+        }))
+        vc.addAction(.init(title: "取消", style: .cancel))
+        present(vc, animated: true)
     }
     
 }
@@ -192,7 +214,7 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        var height = viewModel.displayMessages.getOrNil(index: indexPath.row)?.estimatedHeightForAttributedString ?? 0
+        var height = viewModel.estimatedHeightCatches[indexPath.row] ?? 0
         if height == 0 {
             return UITableView.automaticDimension
         }
@@ -212,15 +234,17 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
         switch message?.messageType {
         case .message, .mock:
             let message = message!
-            switch message.sender {
+            switch message.role {
             case .user:
                 let cell = tableView.dequeueReusableCell(with: ChatViews.UserMessageCell.self, for: indexPath)
-                cell.bindMessage(messageModel: message, indexPath: indexPath)
+                cell.bindChatMessage(chatMessage: message, attr: viewModel.attributedStringCatches[indexPath.row], indexPath: indexPath)
                 return cell
-            case .ai, .system:
+            case .assistant, .system:
                 let cell = tableView.dequeueReusableCell(with: ChatViews.AIMessageCell.self, for: indexPath)
-                cell.bindMessage(messageModel: message, indexPath: indexPath)
+                cell.bindChatMessage(chatMessage: message, attr: viewModel.attributedStringCatches[indexPath.row], indexPath: indexPath)
                 return cell
+            case .tool:
+                return UITableViewCell()
             }
         case .none:
             let cell = tableView.dequeueReusableCell(with: ChatViews.AIMessageCell.self, for: indexPath)

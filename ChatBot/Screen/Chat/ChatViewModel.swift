@@ -15,15 +15,17 @@ class ChatViewModel: NSObject {
     let openai: OpenAIProtocol
     private var subscriptions = Set<AnyCancellable>()
     private var parserSubscription: AnyCancellable? = nil
-    @Published var inputMessage: String? = "mock"
+    @Published var inputMessage: String? = "hi"
     @Published var pickedImageInfo: [UIImagePickerController.InfoKey : Any]?
-    private let inputSubject = PassthroughSubject<InputEvent, Never>()
+    let inputSubject = PassthroughSubject<InputEvent, Never>()
     let outputSubject = PassthroughSubject<OutPutEvent, Never>()
     private let parser = AttributedStringParser()
     /// 一次要解析多少筆
     private let proloadBatchCount = 20
     /// 展示資料
-    @Published var displayMessages: [MessageModel] = []
+    @Published var displayMessages: [ChatMessage] = []
+    private(set) var attributedStringCatches: [Int : NSAttributedString] = [:]
+    private(set) var estimatedHeightCatches: [Int : CGFloat] = [:]
     
     /// 輸入事件
     enum InputEvent {
@@ -31,10 +33,13 @@ class ChatViewModel: NSObject {
         case createImage
         case editImage
         case preloadAttributedString(currentIndex: Int)
+        case saveMessages
     }
     
     enum OutPutEvent {
         case parseComplete(indexs: [IndexPath])
+        case saveChatMessageSuccess
+        case saveChatMessageError(error: Error)
     }
 
     
@@ -79,10 +84,12 @@ class ChatViewModel: NSObject {
 //                
 //            }
 //            .store(in: &subscriptions)
-        var mocks: [MessageModel] = []
+        var mocks: [ChatMessage] = []
         for _ in 0...100 {
             let message = Bool.random() ? mockString : mockString2
-            mocks.append(.init(message: message, sender: .ai))
+            if let chatMessage = ChatMessage.createNewMessage(content: message, role: .assistant, messageType: .mock) {
+                mocks.append(chatMessage)
+            }
         }
         displayMessages.append(contentsOf: mocks)
         delay(delay: 1) {
@@ -104,6 +111,8 @@ class ChatViewModel: NSObject {
                     self.editImageEvent()
                 case .preloadAttributedString(let startIndex):
                     self.preloadAttributedStringEvent(startIndex: startIndex)
+                case .saveMessages:
+                    self.saveMessages()
                 }
             }
             .store(in: &subscriptions)
@@ -145,8 +154,8 @@ class ChatViewModel: NSObject {
                 var preloadData: [(Int, String)] = []
                 let preloadIndexs = self.generateAlternatingNumbers(start: startIndex, count: self.proloadBatchCount)
                 for index in preloadIndexs {
-                    if let message = self.displayMessages.getOrNil(index: index), message.attributedString == nil {
-                        preloadData.append((index ,message.message))
+                    if let message = self.displayMessages.getOrNil(index: index), self.attributedStringCatches[index] == nil {
+                        preloadData.append((index ,message.message ?? ""))
                     }
                 }
                 if preloadData.isEmpty {
@@ -199,8 +208,8 @@ class ChatViewModel: NSObject {
         for result in results {
             let index = result.tag
             let attributedString = result.attr
-            displayMessages[index].attributedString = attributedString
-            displayMessages[index].estimatedHeightForAttributedString = attributedString.estimatedHeightForAttributedString()
+            attributedStringCatches[index] = attributedString
+            estimatedHeightCatches[index] = attributedString.estimatedHeightForAttributedString()
             indexPaths.append(IndexPath(row: index, section: 0))
         }
         outputSubject.send(.parseComplete(indexs: indexPaths))
@@ -210,33 +219,36 @@ class ChatViewModel: NSObject {
     /// 綁定送出文字訊息事件
     private func sendMessageEvent() {
         guard let inputMessage = inputMessage, !inputMessage.isEmpty else { return }
+        guard let chatMessage = ChatMessage.createNewMessage(content: inputMessage, role: .user, messageType: .message) else { return }
         if inputMessage == "mock" {
             mock()
             return
         }
-        let inputMessageModel: MessageModel = .init(message: inputMessage, sender: .user)
         self.inputMessage = ""
-        appendNewMessage(newMessage: inputMessageModel)
+        appendNewMessage(newMessage: chatMessage)
         openai.chatQuery(message: inputMessage)
             .sink { _ in
                 
-            } receiveValue: { [weak self] messagesModel in
-                print("回應訊息： \(messagesModel.message)")
-                self?.appendNewMessage(newMessage: messagesModel)
+            } receiveValue: { [weak self] chatMessage in
+                guard let chatMessage = chatMessage else { return }
+                print("回應訊息： \(String(describing: chatMessage.message))")
+                self?.appendNewMessage(newMessage: chatMessage)
             }
             .store(in: &subscriptions)
     }
     
     /// 添加新的訊息
-    private func appendNewMessage(newMessage: MessageModel) {
-        parser.convertStringToAttributedString(string: newMessage.message)
+    private func appendNewMessage(newMessage: ChatMessage) {
+        guard let message = newMessage.message else { return }
+        parser.convertStringToAttributedString(string: message)
             .receive(on: RunLoop.main)
             .sink { _ in
                 
             } receiveValue: { [weak self] attr in
                 guard let `self` = self else { return }
-                newMessage.attributedString = attr
-                newMessage.estimatedHeightForAttributedString = attr.estimatedHeightForAttributedString()
+                let index = self.displayMessages.count
+                self.attributedStringCatches[index] = attr
+                self.estimatedHeightCatches[index] = attr.estimatedHeightForAttributedString()
                 self.displayMessages.append(newMessage)
             }
             .store(in: &subscriptions)
@@ -244,6 +256,17 @@ class ChatViewModel: NSObject {
     
     func transform(inputEvent: InputEvent) {
         inputSubject.send(inputEvent)
+    }
+    
+    /// 儲存聊天訊息
+    private func saveMessages() {
+        do {
+            let manager = MyChatRoomManager()
+            try manager.createChatRoom(messages: displayMessages)
+            outputSubject.send(.saveChatMessageSuccess)
+        }catch {
+            outputSubject.send(.saveChatMessageError(error: error))
+        }
     }
     
     /// 綁定編輯圖片事件
