@@ -61,6 +61,7 @@
 		94A6CF9C2C387A5E00B1E4E3 /* MyChatRoomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CF9B2C387A5E00B1E4E3 /* MyChatRoomManager.swift */; };
 		94A6CFA32C3881F000B1E4E3 /* ChatMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CFA12C3881F000B1E4E3 /* ChatMessage+CoreDataClass.swift */; };
 		94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */; };
+		94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CFC32C39EBD500B1E4E3 /* HistoryViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,6 +135,7 @@
 		94A6CF9B2C387A5E00B1E4E3 /* MyChatRoomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyChatRoomManager.swift; sourceTree = "<group>"; };
 		94A6CFA12C3881F000B1E4E3 /* ChatMessage+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
+		94A6CFC32C39EBD500B1E4E3 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,6 +211,7 @@
 			isa = PBXGroup;
 			children = (
 				323E88AB2C353DE800401F50 /* HistoryViewController.swift */,
+				94A6CFC32C39EBD500B1E4E3 /* HistoryViewModel.swift */,
 			);
 			path = History;
 			sourceTree = "<group>";
@@ -499,6 +502,7 @@
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
 				320421972C1933EC00D72203 /* SystemDefine.swift in Sources */,
 				3204219B2C193B4100D72203 /* ChatViews.swift in Sources */,
+				94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */,
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
