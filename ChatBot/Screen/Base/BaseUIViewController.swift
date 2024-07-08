@@ -18,15 +18,11 @@ class BaseUIViewController: UIViewController {
         print("ViewController: \(className) had been deinited")
     }
     
-    func showToast(title: String = "", message: String, autoDismiss after: Double?, completion: (() -> ())?) {
+    func showToast(title: String = "", message: String, autoDismiss after: Double = 1.5, completion: (() -> ())? = nil) {
         let vc = UIAlertController(title: title, message: message, preferredStyle: .alert)
         present(vc, animated: true)
-        if let after = after {
-            delay(delay: after) {
-                vc.dismiss(animated: true)
-                completion?()
-            }
-        }else {
+        delay(delay: after) {
+            vc.dismiss(animated: true)
             completion?()
         }
     }

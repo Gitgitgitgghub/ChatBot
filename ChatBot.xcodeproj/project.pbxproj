@@ -219,17 +219,25 @@
 			path = History;
 			sourceTree = "<group>";
 		};
+		32690FC22C3BA06100700192 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				32800EF42C20220500FE5786 /* BaseUIViewController.swift */,
+				323E88A72C353D2200401F50 /* MainTabBarController.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
 		32800EE82C1C225500FE5786 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
+				32690FC22C3BA06100700192 /* Base */,
 				323E88AA2C353DCF00401F50 /* History */,
 				323E88A92C353DC000401F50 /* Home */,
 				32800EFA2C211B6D00FE5786 /* Launch */,
 				32800EEB2C1C231700FE5786 /* Login */,
 				3204218B2C19302A00D72203 /* Chat */,
 				32800EEE2C1C239300FE5786 /* ControllerView.swift */,
-				32800EF42C20220500FE5786 /* BaseUIViewController.swift */,
-				323E88A72C353D2200401F50 /* MainTabBarController.swift */,
 				323E88AF2C353FE000401F50 /* ScreenLoader.swift */,
 				32C77FC62C18504E00F335FE /* AppDelegate.swift */,
 				32800EFD2C21316D00FE5786 /* LaunchScreen.storyboard */,

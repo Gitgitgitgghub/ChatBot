@@ -48,8 +48,18 @@ extension ChatMessage {
                 newMessage.message = content
                 newMessage.role = role
                 newMessage.messageType = messageType
+                newMessage.timestamp = .now
                 return newMessage
             }
             return nil
         }
+}
+
+/// 簡易轉換
+extension Array where Element: ChatMessage {
+    
+    func toChatCompletionMessageParam() -> [ChatQuery.ChatCompletionMessageParam] {
+        return self.compactMap({ .init(role: $0.role, content: $0.message) })
+    }
+    
 }

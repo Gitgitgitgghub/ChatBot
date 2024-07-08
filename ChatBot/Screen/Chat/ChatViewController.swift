@@ -12,10 +12,27 @@ import Combine
 class ChatViewController: BaseUIViewController {
     
     
-    private let viewModel = ChatViewModel(openai: OpenAIService())
+    private lazy var viewModel = ChatViewModel(openai: OpenAIService(), chatLaunchMode: self.chatLaunchMode)
     private lazy var views = ChatViews(view: self.view)
     private let loadingView = LoadingView()
     private var updatePublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
+    private let chatLaunchMode: ChatLaunchMode
+    
+    init(chatLaunchMode: ChatLaunchMode) {
+        self.chatLaunchMode = chatLaunchMode
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    /// 啟動模式
+    enum ChatLaunchMode {
+        /// 普通
+        case normal
+        /// 聊天室
+        case chatRoom(chatRoom: MyChatRoom)
+    }
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)

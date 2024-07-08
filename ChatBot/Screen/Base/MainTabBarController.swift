@@ -23,8 +23,8 @@ class MainTabBarController: UITabBarController {
         // 這邊是讓tabvc的子vc的view從tabbar上方開始
         homeViewController.edgesForExtendedLayout = .init(rawValue: 0)
         historyViewController.edgesForExtendedLayout = .init(rawValue: 0)
-        homeViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 0)
-        historyViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .contacts, tag: 1)
+        homeViewController.tabBarItem = UITabBarItem(title: "首頁", image: .init(systemName: "house"), tag: 0)
+        historyViewController.tabBarItem = UITabBarItem(title: "聊天記錄", image: .init(systemName: "clock.fill"), tag: 1)
         let viewControllerList = [homeViewController, historyViewController]
         viewControllers = viewControllerList
     }

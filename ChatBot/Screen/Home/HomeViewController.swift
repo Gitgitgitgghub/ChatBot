@@ -25,7 +25,7 @@ class HomeViewController: BaseUIViewController {
     
     /// 至聊天Vc
     @objc private func toChatVc() {
-        let vc = ScreenLoader.loadScreen(screen: .chat)
+        let vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .normal))
         navigationController?.pushViewController(vc, animated: true)
     }
     

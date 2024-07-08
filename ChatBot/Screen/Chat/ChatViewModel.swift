@@ -10,15 +10,13 @@ import OpenAI
 import Combine
 import UIKit
 
-class ChatViewModel: NSObject {
-    
+class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPutEvent> {
+    /// 啟動模式
+    let chatLaunchMode: ChatViewController.ChatLaunchMode
     let openai: OpenAIProtocol
-    private var subscriptions = Set<AnyCancellable>()
     private var parserSubscription: AnyCancellable? = nil
     @Published var inputMessage: String? = "hi"
     @Published var pickedImageInfo: [UIImagePickerController.InfoKey : Any]?
-    let inputSubject = PassthroughSubject<InputEvent, Never>()
-    let outputSubject = PassthroughSubject<OutPutEvent, Never>()
     private let parser = AttributedStringParser()
     /// 一次要解析多少筆
     private let proloadBatchCount = 20
@@ -26,6 +24,8 @@ class ChatViewModel: NSObject {
     @Published var displayMessages: [ChatMessage] = []
     private(set) var attributedStringCatches: [Int : NSAttributedString] = [:]
     private(set) var estimatedHeightCatches: [Int : CGFloat] = [:]
+    /// 聊天室
+    private(set) var chatRoom: MyChatRoom!
     
     /// 輸入事件
     enum InputEvent {
@@ -43,8 +43,11 @@ class ChatViewModel: NSObject {
     }
 
     
-    init(openai: OpenAIProtocol) {
+    init(openai: OpenAIProtocol, chatLaunchMode: ChatViewController.ChatLaunchMode) {
         self.openai = openai
+        self.chatLaunchMode = chatLaunchMode
+        super.init()
+        self.handleLaunchMode()
     }
     
     deinit {
@@ -117,6 +120,19 @@ class ChatViewModel: NSObject {
             }
             .store(in: &subscriptions)
         return inputSubject.eraseToAnyPublisher()
+    }
+    
+    /// 主要處理launchMode 數據該怎麼初始化
+    private func handleLaunchMode() {
+        switch chatLaunchMode {
+        case .normal:
+            self.chatRoom = MyChatRoomManager.shared.createChatRoom()
+            break
+        case .chatRoom(let chatRoom):
+            self.chatRoom = chatRoom
+            displayMessages = chatRoom.sortedMessages
+            preloadAttributedStringEvent(startIndex: self.displayMessages.count - 1)
+        }
     }
     
     /// 當前是否需要執行預加載
@@ -226,32 +242,32 @@ class ChatViewModel: NSObject {
         }
         self.inputMessage = ""
         appendNewMessage(newMessage: chatMessage)
-        openai.chatQuery(message: inputMessage)
+            .flatMap({ [self] in openai.chatQuery(messages: self.displayMessages, model: .gpt3_5Turbo) })
+            .flatMap({ [self] chatMessage in
+                print("回應訊息： \(String(describing: chatMessage.message))")
+                return self.appendNewMessage(newMessage: chatMessage)
+            })
             .sink { _ in
                 
-            } receiveValue: { [weak self] chatMessage in
-                guard let chatMessage = chatMessage else { return }
-                print("回應訊息： \(String(describing: chatMessage.message))")
-                self?.appendNewMessage(newMessage: chatMessage)
+            } receiveValue: { _ in
+                
             }
             .store(in: &subscriptions)
     }
     
     /// 添加新的訊息
-    private func appendNewMessage(newMessage: ChatMessage) {
-        guard let message = newMessage.message else { return }
-        parser.convertStringToAttributedString(string: message)
+    private func appendNewMessage(newMessage: ChatMessage) -> AnyPublisher<Void, Error> {
+        return parser.convertStringToAttributedString(string: newMessage.message ?? "")
             .receive(on: RunLoop.main)
-            .sink { _ in
-                
-            } receiveValue: { [weak self] attr in
+            .map({  [weak self] attr in
                 guard let `self` = self else { return }
                 let index = self.displayMessages.count
                 self.attributedStringCatches[index] = attr
                 self.estimatedHeightCatches[index] = attr.estimatedHeightForAttributedString()
                 self.displayMessages.append(newMessage)
-            }
-            .store(in: &subscriptions)
+                return ()
+            })
+            .eraseToAnyPublisher()
     }
     
     func transform(inputEvent: InputEvent) {
@@ -260,13 +276,20 @@ class ChatViewModel: NSObject {
     
     /// 儲存聊天訊息
     private func saveMessages() {
-        do {
-            let manager = MyChatRoomManager()
-            try manager.createChatRoom(messages: displayMessages)
-            outputSubject.send(.saveChatMessageSuccess)
-        }catch {
-            outputSubject.send(.saveChatMessageError(error: error))
-        }
+        let manager = MyChatRoomManager.shared
+        manager.saveChatMessage(chatRoom: chatRoom, messages: displayMessages)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    self?.outputSubject.send(.saveChatMessageError(error: error))
+                case .finished: break
+                }
+                
+            } receiveValue: { [weak self] _ in
+                self?.outputSubject.send(.saveChatMessageSuccess)
+            }
+            .store(in: &subscriptions)
     }
     
     /// 綁定編輯圖片事件

@@ -16,7 +16,7 @@ class ScreenLoader {
         /// 登入畫面
         case login
         /// 聊天畫面
-        case chat
+        case chat(lauchModel: ChatViewController.ChatLaunchMode)
         /// tab
         case mainTab
         /// 首頁
@@ -28,7 +28,7 @@ class ScreenLoader {
     static func loadScreen(screen: Screen) -> UIViewController {
         switch screen {
         case .login: return LoginViewController()
-        case .chat: return ChatViewController()
+        case .chat(lauchModel: let lauchModel): return ChatViewController(chatLaunchMode: lauchModel)
         case .mainTab: return UINavigationController(rootViewController: MainTabBarController())
         case .home: return HomeViewController()
         case .history: return HistoryViewController()

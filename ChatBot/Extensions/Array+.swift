@@ -20,6 +20,12 @@ extension Array where Element: Hashable {
 
 extension Array {
     
+    var isNotEmpty: Bool {
+        get {
+            return !isEmpty
+        }
+    }
+    
     /// 陣列分割成Ｎ個一組的陣列
     func chunked(by chunkSize: Int) -> [[Element]] {
         guard count != 0 else { return [[]] }

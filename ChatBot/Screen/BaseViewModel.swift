@@ -15,9 +15,8 @@ protocol ViewModelProtocol {
     associatedtype Input
     /// 定義輸出事件
     associatedtype Output
-    var inputSubject: PassthroughSubject<Input, Error> { get }
-    var outputSubject: PassthroughSubject<Output, Error> { get }
-    var subscriptions: Set<AnyCancellable> { set get }
+    var inputSubject: PassthroughSubject<Input, Never> { get }
+    var outputSubject: PassthroughSubject<Output, Never> { get }
 }
 
 /// BaseViewModel
@@ -25,22 +24,14 @@ protocol ViewModelProtocol {
 /// 利用generic利用型別推導把associatedtype再抽象一次
 class BaseViewModel<I, O>: NSObject, ViewModelProtocol {
     
-    private let _inputSubject = PassthroughSubject<I, any Error>()
-    private let _outputSubject = PassthroughSubject<O, any Error>()
-    private let _subscriptions = Set<AnyCancellable>()
-    var inputSubject: PassthroughSubject<I, any Error> {
+    private let _inputSubject = PassthroughSubject<I, Never>()
+    private let _outputSubject = PassthroughSubject<O, Never>()
+    var subscriptions = Set<AnyCancellable>()
+    var inputSubject: PassthroughSubject<I, Never> {
         return _inputSubject
     }
-    var outputSubject: PassthroughSubject<O, any Error> {
+    var outputSubject: PassthroughSubject<O, Never> {
         return _outputSubject
-    }
-    var subscriptions: Set<AnyCancellable> {
-        set {
-            
-        }
-        get {
-            return _subscriptions
-        }
     }
     
     deinit {
