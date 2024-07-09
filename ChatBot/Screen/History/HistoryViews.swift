@@ -72,13 +72,14 @@ extension HistoryViews {
             roleLabel.snp.makeConstraints { make in
                 make.top.leading.equalToSuperview().inset(10)
             }
-            lastUpdateLabel.snp.makeConstraints { make in
-                make.bottom.trailing.equalToSuperview().inset(10)
-            }
             messageLabel.snp.makeConstraints { make in
                 make.leading.trailing.equalToSuperview().inset(10)
                 make.top.equalTo(roleLabel.snp.bottom).offset(3)
-                make.bottom.equalTo(lastUpdateLabel.snp.top).offset(3)
+                make.height.greaterThanOrEqualTo(20)
+            }
+            lastUpdateLabel.snp.makeConstraints { make in
+                make.top.equalTo(messageLabel.snp.bottom).offset(5)
+                make.bottom.trailing.equalToSuperview().inset(10)
             }
         }
         
@@ -98,7 +99,7 @@ extension HistoryViews {
                 roleLabel.text = "你："
                 roleLabel.textColor = .green.withAlphaComponent(0.8)
             case .assistant:
-                roleLabel.text = "ＡＩ："
+                roleLabel.text = "AI："
                 roleLabel.textColor = .blue.withAlphaComponent(0.8)
             }
             messageLabel.text = lastMessage.message

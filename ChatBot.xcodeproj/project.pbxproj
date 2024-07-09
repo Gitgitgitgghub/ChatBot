@@ -230,9 +230,25 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
+		32690FC72C3D0F6600700192 /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
+		32690FC82C3D0F7000700192 /* MyNote */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = MyNote;
+			sourceTree = "<group>";
+		};
 		32800EE82C1C225500FE5786 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
+				32690FC82C3D0F7000700192 /* MyNote */,
+				32690FC72C3D0F6600700192 /* Setting */,
 				32690FC22C3BA06100700192 /* Base */,
 				323E88AA2C353DCF00401F50 /* History */,
 				323E88A92C353DC000401F50 /* Home */,

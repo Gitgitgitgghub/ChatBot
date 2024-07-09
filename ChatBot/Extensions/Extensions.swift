@@ -36,4 +36,8 @@ extension String {
         }
         return nil
     }
+    
+    var isNotEmpty: Bool {
+        return !isEmpty
+    }
 }

@@ -163,7 +163,7 @@ class LogingViews: ControllerView {
             make.centerX.equalToSuperview()
         }
         loadingView.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 200, height: 200))
+            make.size.equalTo(CGSize(width: 150, height: 150))
             make.center.equalToSuperview()
         }
     }

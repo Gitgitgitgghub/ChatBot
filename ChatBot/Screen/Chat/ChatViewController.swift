@@ -8,15 +8,17 @@
 import UIKit
 import SnapKit
 import Combine
+import AVFAudio
+import NVActivityIndicatorView
 
 class ChatViewController: BaseUIViewController {
     
-    
-    private lazy var viewModel = ChatViewModel(openai: OpenAIService(), chatLaunchMode: self.chatLaunchMode)
+    private let openai = OpenAIService()
+    private lazy var viewModel = ChatViewModel(openai: openai, chatLaunchMode: self.chatLaunchMode)
     private lazy var views = ChatViews(view: self.view)
-    private let loadingView = LoadingView()
     private var updatePublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
     private let chatLaunchMode: ChatLaunchMode
+    private let synthesizer = AVSpeechSynthesizer()
     
     init(chatLaunchMode: ChatLaunchMode) {
         self.chatLaunchMode = chatLaunchMode
@@ -84,7 +86,9 @@ class ChatViewController: BaseUIViewController {
     
     /// 執行一些綁定動作
     private func bind() {
-        _ = viewModel.bindInput()
+        // 綁定viewModel的inputEvent
+        viewModel.bindInput()
+        // 綁定要顯示的訊息
         viewModel.$displayMessages
             .receive(on: RunLoop.main)
             .sink { [weak self] messages in
@@ -96,10 +100,12 @@ class ChatViewController: BaseUIViewController {
                 }
             }
             .store(in: &subscriptions)
+        // TextField 綁定
         viewModel.$inputMessage
             .eraseToAnyPublisher()
             .assign(to: \.text, on: views.chatInputView.messageInputTextField)
             .store(in: &subscriptions)
+        // 綁定outputEvent
         viewModel.outputSubject
             .receive(on: RunLoop.main)
             .sink { [weak self] event in
@@ -114,7 +120,23 @@ class ChatViewController: BaseUIViewController {
                 }
             }
             .store(in: &subscriptions)
-        //viewModel.mock()
+        // 綁定讀取狀態
+        viewModel.isLoading.merge(with: openai.loadingStatusSubject)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] status in
+                switch status {
+                case .none:
+                    self?.views.setLoadingViewVisible(false)
+                case .loading(message: let message):
+                    self?.views.setLoadingViewVisible(true, message: message)
+                case .success:
+                    self?.views.setLoadingViewVisible(false)
+                case .error(message: let message):
+                    self?.views.setLoadingViewVisible(false)
+                    self?.showToast(message: message)
+                }
+            }
+            .store(in: &subscriptions)
     }
     
     /// 處理保存訊息後的顯示事件
@@ -270,7 +292,53 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let message = viewModel.displayMessages[indexPath.row]
+        print("contextMenuConfigurationForRowAt \(message.role)")
+        switch message.role {
+        case .assistant:
+            return .init(actionProvider:  { menuElements in
+                let action1 = UIAction(title: "朗讀", image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off) { (action) in
+                    self.speakMessage(message: message.message)
+                }
+                let action2 = UIAction(title: "儲存到筆記", image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off) { (action) in
+                    //Do something when clicked
+                }
+                return UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: [action1, action2])
+            })
+        default: return nil
+        }
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+}
+
+//MARK: - 長按menu的選項
+extension ChatViewController {
+    
+    func speakMessage(message: String?) {
+        guard let message = message, message.isNotEmpty else { return }
+        // 创建 AVSpeechSynthesizer 实例
+        
+
+        // 创建 AVSpeechUtterance 实例，并设置要朗读的文本
+        let utterance = AVSpeechUtterance(string: message)
+
+        // 设置声音，可以根据 identifier 或 language 来选择
+        if let voice = AVSpeechSynthesisVoice(identifier: "com.apple.ttsbundle.Daniel-compact") {
+            utterance.voice = voice
+        }
+
+        // 可选：设置语速、音调和音量
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate // 语速
+        utterance.pitchMultiplier = 1.0 // 音调
+        utterance.volume = 1.0 // 音量
+        synthesizer.speak(utterance)
+    }
+    
+    func saveToMyNote() {
         
     }
 }

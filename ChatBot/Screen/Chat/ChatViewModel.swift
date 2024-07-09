@@ -26,6 +26,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     private(set) var estimatedHeightCatches: [Int : CGFloat] = [:]
     /// 聊天室
     private(set) var chatRoom: MyChatRoom!
+    /// 載入狀態
+    private(set) var isLoading = CurrentValueSubject<LoadingStatus, Never>(.none)
     
     /// 輸入事件
     enum InputEvent {
@@ -101,7 +103,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         }
     }
     
-    func bindInput() -> AnyPublisher<InputEvent, Never> {
+    func bindInput() {
         inputSubject
             .sink { [weak self] inputEvent in
                 guard let `self` = self else { return }
@@ -119,7 +121,6 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                 }
             }
             .store(in: &subscriptions)
-        return inputSubject.eraseToAnyPublisher()
     }
     
     /// 主要處理launchMode 數據該怎麼初始化
@@ -240,7 +241,9 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             mock()
             return
         }
-        self.inputMessage = ""
+        defer {
+            self.inputMessage = ""
+        }
         appendNewMessage(newMessage: chatMessage)
             .flatMap({ [self] in openai.chatQuery(messages: self.displayMessages, model: .gpt3_5Turbo) })
             .flatMap({ [self] chatMessage in
@@ -276,6 +279,10 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     
     /// 儲存聊天訊息
     private func saveMessages() {
+        guard displayMessages.isNotEmpty else {
+            outputSubject.send(.saveChatMessageError(error: NSError(domain: "沒有聊天訊息", code: 1)))
+            return
+        }
         let manager = MyChatRoomManager.shared
         manager.saveChatMessage(chatRoom: chatRoom, messages: displayMessages)
             .receive(on: RunLoop.main)

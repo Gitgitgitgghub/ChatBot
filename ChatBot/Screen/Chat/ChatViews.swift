@@ -10,6 +10,7 @@ import UIKit
 import Kingfisher
 import Combine
 import SnapKit
+import NVActivityIndicatorView
 
 class ChatViews: ControllerView {
     
@@ -26,11 +27,21 @@ class ChatViews: ControllerView {
     let chatInputView = ChatInputView().apply { view in
         view.translatesAutoresizingMaskIntoConstraints = false
     }
+    private let loadingView = NVActivityIndicatorView(frame: .init(origin: .zero, size: .init(width: 100, height: 100)))
+        .apply { view in
+            view.type = .ballScale
+            view.padding = 30
+            view.translatesAutoresizingMaskIntoConstraints = false
+            view.backgroundColor = .black.withAlphaComponent(0.8)
+            view.cornerRadius = 15
+            view.isVisible = false
+        }
     
     override func initUI() {
         view.backgroundColor = .white
         view.addSubview(messageTableView)
         view.addSubview(chatInputView)
+        view.addSubview(loadingView)
         chatInputView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.height.equalTo(50)
@@ -40,6 +51,13 @@ class ChatViews: ControllerView {
             make.top.equalToSuperview()
             make.bottom.equalTo(chatInputView.snp.top)
         }
+    }
+    
+    /// 設定loadingView的顯示或隱藏
+    func setLoadingViewVisible(_ visible: Bool, message: String = "") {
+        loadingView.center = view.center
+        loadingView.isVisible = visible
+        visible ? loadingView.startAnimating() : loadingView.stopAnimating()
     }
     
     func textFieldDidBeginEditing(keyboardHeight: CGFloat) {

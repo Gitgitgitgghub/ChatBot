@@ -13,19 +13,13 @@ import UIKit
 class OpenAIService: OpenAIProtocol {
     
     
-    enum LoadingStatus {
-        case loading
-        case success
-        case error(message: String)
-    }
-    
     let openai = OpenAI(apiToken: SystemDefine.share.apiToken)
-    let loadingStatusSubject = PassthroughSubject<LoadingStatus, Never>()
+    let loadingStatusSubject = CurrentValueSubject<LoadingStatus, Never>(.none)
     
     func chatQuery(messages: [ChatMessage], model: Model = .gpt3_5Turbo) -> AnyPublisher<ChatMessage, Error> {
         let queryMessages = messages.toChatCompletionMessageParam()
         let query = ChatQuery(messages: queryMessages, model: model)
-        return openai.chats(query: query)
+        return performAPICall(openai.chats(query: query))
             .compactMap({ result in
                 return ChatMessage.createNewMessage(content: result.choices.first?.message.content?.string ?? "", role: .assistant, messageType: .message)
             })

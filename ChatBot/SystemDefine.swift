@@ -45,6 +45,8 @@ class SystemDefine {
     
 }
 
+typealias LoadingStatus = SystemDefine.LoadingStatus
+
 extension SystemDefine {
     
     /// 訊息類相關變數
@@ -59,5 +61,14 @@ extension SystemDefine {
         static let minimumWidth: CGFloat = 150
         /// 字體顏色
         static let textColor: UIColor = .white
+    }
+    
+    
+    /// 讀取狀態
+    enum LoadingStatus {
+        case none
+        case loading(message: String = "")
+        case success
+        case error(message: String)
     }
 }
