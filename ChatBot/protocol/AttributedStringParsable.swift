@@ -80,13 +80,14 @@ class AttributedStringParser: AttributedStringParsable {
             let matches = try getImageUrlMatches(string: string)
             for (i, match) in matches.enumerated() {
                 let urlRange = Range(match.range, in: string)!
-                let url = URL(string: String(string[urlRange]))
-                let attachment = WebImageAttachment()
-                attachment.bounds = CGRect(x: 0, y: 0, width: 300, height: 210)
-                attachment.imageUrl = url
-                let imageAttributedString = NSAttributedString(attachment: attachment)
-                attributedString.insert(imageAttributedString, at: match.range.location + i)
-                attributedString.insert(NSAttributedString(string: "\n"), at: match.range.location + 1 + i)
+                if let url = URL(string: String(string[urlRange])) {
+                    let attachment = RemoteImageTextAttachment(imageURL: url, displaySize: .init(width: 300, height: 210))
+                    attachment.bounds = CGRect(x: 0, y: 0, width: 300, height: 210)
+//                    attachment.imageUrl = url
+                    let imageAttributedString = NSAttributedString(attachment: attachment)
+                    attributedString.insert(imageAttributedString, at: match.range.location + i)
+                    attributedString.insert(NSAttributedString(string: "\n"), at: match.range.location + 1 + i)
+                }
             }
         } catch {
             throw error

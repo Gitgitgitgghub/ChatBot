@@ -19,31 +19,6 @@ extension UITextView {
         }
     }
     
-    /// 取消載入WebAttachmentImage 圖片
-    /// 其實也可以asyncLoadWebAttachmentImage 把task存起來這邊就不用再做一次回圈
-    func cancelDownloadTask() {
-        guard let attributedText = self.attributedText else { return }
-        attributedText.enumerateAttribute(.attachment, in: NSRange(location: 0, length: attributedText.length), options: []) { (value, range, _) in
-            if let attachment = value as? WebImageAttachment {
-                attachment.cancelDownloadTask()
-            }
-        }
-    }
-    
-    /// 載入WebAttachmentImage 圖片
-    func asyncLoadWebAttachmentImage() {
-        guard let attributedText = self.attributedText else { return }
-        attributedText.enumerateAttribute(.attachment, in: NSRange(location: 0, length: attributedText.length), options: []) { (value, range, _) in
-            if let attachment = value as? WebImageAttachment, !attachment.isDownloadSuccess {
-                attachment.cancelDownloadTask()
-                attachment.setImage(placeholder: nil) { [weak self] in
-                    self?.updateHeight()
-                    self?.layoutManager.invalidateDisplay(forGlyphRange: range)
-                }
-            }
-        }
-    }
-    
 }
 
 

@@ -119,7 +119,6 @@ extension ChatViews {
         
         override func prepareForReuse() {
             super.prepareForReuse()
-            messageTextView.cancelDownloadTask()
             messageTextView.attributedText = defaultAttr
             messageTextView.updateHeight()
             attr = nil
@@ -148,7 +147,6 @@ extension ChatViews {
             }else {
                 messageTextView.text = messageModel.message ?? ""
             }
-            messageTextView.asyncLoadWebAttachmentImage()
             //blurView.isVisible = messageTextView.attributedText == defaultAttr
         }
         

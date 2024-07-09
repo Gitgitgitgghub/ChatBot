@@ -28,11 +28,12 @@
 		32690FBF2C3B846600700192 /* MyChatRoom+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */; };
 		32690FC02C3B846600700192 /* MyChatRoomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FBD2C3B846600700192 /* MyChatRoomManager.swift */; };
 		32690FC12C3B846600700192 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FBE2C3B846600700192 /* CoreDataStack.swift */; };
+		32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */; };
+		32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FC52C3CE62A00700192 /* ImageFileHandler.swift */; };
 		326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728A2C29554B00B06DF8 /* UITextView+.swift */; };
 		326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 326F728D2C2A5CDE00B06DF8 /* SDWebImage */; };
 		326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728F2C2E4C4F00B06DF8 /* Array+.swift */; };
 		326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */; };
-		326F72942C2EB11A00B06DF8 /* WebImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F72932C2EB11A00B06DF8 /* WebImageAttachment.swift */; };
 		32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EE92C1C229500FE5786 /* LoginViewController.swift */; };
 		32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEC2C1C233D00FE5786 /* LogingViews.swift */; };
 		32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEE2C1C239300FE5786 /* ControllerView.swift */; };
@@ -101,10 +102,11 @@
 		32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MyChatRoom+CoreData.swift"; sourceTree = "<group>"; };
 		32690FBD2C3B846600700192 /* MyChatRoomManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyChatRoomManager.swift; sourceTree = "<group>"; };
 		32690FBE2C3B846600700192 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageAttachment.swift; sourceTree = "<group>"; };
+		32690FC52C3CE62A00700192 /* ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFileHandler.swift; sourceTree = "<group>"; };
 		326F728A2C29554B00B06DF8 /* UITextView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+.swift"; sourceTree = "<group>"; };
 		326F728F2C2E4C4F00B06DF8 /* Array+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+.swift"; sourceTree = "<group>"; };
 		326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
-		326F72932C2EB11A00B06DF8 /* WebImageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebImageAttachment.swift; sourceTree = "<group>"; };
 		32800EE92C1C229500FE5786 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		32800EEC2C1C233D00FE5786 /* LogingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogingViews.swift; sourceTree = "<group>"; };
 		32800EEE2C1C239300FE5786 /* ControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerView.swift; sourceTree = "<group>"; };
@@ -270,6 +272,7 @@
 			isa = PBXGroup;
 			children = (
 				32800F112C251E5400FE5786 /* AttributedStringParsable.swift */,
+				32690FC52C3CE62A00700192 /* ImageFileHandler.swift */,
 			);
 			path = protocol;
 			sourceTree = "<group>";
@@ -332,7 +335,7 @@
 			children = (
 				32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */,
 				32800EF62C2023B400FE5786 /* LoadingView.swift */,
-				326F72932C2EB11A00B06DF8 /* WebImageAttachment.swift */,
+				32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -518,6 +521,7 @@
 				3204219B2C193B4100D72203 /* ChatViews.swift in Sources */,
 				94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */,
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
+				32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,
@@ -536,8 +540,8 @@
 				323E88B42C3B761800401F50 /* HistoryViews.swift in Sources */,
 				323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */,
 				322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */,
-				326F72942C2EB11A00B06DF8 /* WebImageAttachment.swift in Sources */,
 				320421992C19343E00D72203 /* ChatViewModel.swift in Sources */,
+				32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */,
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,
 				32800F042C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift in Sources */,
