@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import Combine
+import AVFoundation
 
 class BaseUIViewController: UIViewController {
     
@@ -24,6 +25,30 @@ class BaseUIViewController: UIViewController {
         delay(delay: after) {
             vc.dismiss(animated: true)
             completion?()
+        }
+    }
+    
+}
+
+extension BaseUIViewController {
+    
+    func requestCameraPermission(completion: @escaping () -> ()) {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { result in
+                print(result)
+                if result {
+                    DispatchQueue.main.async {
+                        completion()
+                    }
+                }
+            }
+        case .restricted, .denied:
+            break
+        case .authorized:
+            completion()
+        @unknown default:
+            break
         }
     }
     

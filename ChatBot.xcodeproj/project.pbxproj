@@ -33,6 +33,8 @@
 		32690FCB2C3D2F0600700192 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FCA2C3D2F0600700192 /* SettingViewController.swift */; };
 		32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FCC2C3D2F2400700192 /* MyNoteViewController.swift */; };
 		32690FCF2C3E2D2500700192 /* Test.xib in Resources */ = {isa = PBXBuildFile; fileRef = 32690FCE2C3E2D2500700192 /* Test.xib */; };
+		32690FD12C3E679200700192 /* SpeechVoiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FD02C3E679200700192 /* SpeechVoiceManager.swift */; };
+		32690FD42C3E766300700192 /* VoicePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FD32C3E766300700192 /* VoicePickerViewController.swift */; };
 		326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728A2C29554B00B06DF8 /* UITextView+.swift */; };
 		326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 326F728D2C2A5CDE00B06DF8 /* SDWebImage */; };
 		326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728F2C2E4C4F00B06DF8 /* Array+.swift */; };
@@ -49,7 +51,6 @@
 		32800EFE2C21316D00FE5786 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32800EFD2C21316D00FE5786 /* LaunchScreen.storyboard */; };
 		32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EFF2C214E3000FE5786 /* ChatInputView.swift */; };
 		32800F022C21850A00FE5786 /* UploadImageSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F012C21850A00FE5786 /* UploadImageSelectorViewController.swift */; };
-		32800F042C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F032C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift */; };
 		32800F072C22A45900FE5786 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 32800F062C22A45900FE5786 /* Kingfisher */; };
 		32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F082C22AC5F00FE5786 /* UIImageView+KF.swift */; };
 		32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */; };
@@ -110,6 +111,8 @@
 		32690FCA2C3D2F0600700192 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		32690FCC2C3D2F2400700192 /* MyNoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViewController.swift; sourceTree = "<group>"; };
 		32690FCE2C3E2D2500700192 /* Test.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Test.xib; sourceTree = "<group>"; };
+		32690FD02C3E679200700192 /* SpeechVoiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechVoiceManager.swift; sourceTree = "<group>"; };
+		32690FD32C3E766300700192 /* VoicePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoicePickerViewController.swift; sourceTree = "<group>"; };
 		326F728A2C29554B00B06DF8 /* UITextView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+.swift"; sourceTree = "<group>"; };
 		326F728F2C2E4C4F00B06DF8 /* Array+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+.swift"; sourceTree = "<group>"; };
 		326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
@@ -125,7 +128,6 @@
 		32800EFD2C21316D00FE5786 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		32800EFF2C214E3000FE5786 /* ChatInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputView.swift; sourceTree = "<group>"; };
 		32800F012C21850A00FE5786 /* UploadImageSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImageSelectorViewController.swift; sourceTree = "<group>"; };
-		32800F032C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatViewController+CamraPermissionRequest.swift"; sourceTree = "<group>"; };
 		32800F082C22AC5F00FE5786 /* UIImageView+KF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+KF.swift"; sourceTree = "<group>"; };
 		32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenAIProtocol+ ImageFileHandler.swift"; sourceTree = "<group>"; };
 		32800F0C2C2405EC00FE5786 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
@@ -187,7 +189,6 @@
 				322A2D052C198BA8007A8075 /* MessageModel.swift */,
 				32800EFF2C214E3000FE5786 /* ChatInputView.swift */,
 				32800F012C21850A00FE5786 /* UploadImageSelectorViewController.swift */,
-				32800F032C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -256,13 +257,23 @@
 			isa = PBXGroup;
 			children = (
 				32690FBD2C3B846600700192 /* MyChatRoomManager.swift */,
+				32690FD02C3E679200700192 /* SpeechVoiceManager.swift */,
 			);
 			path = Manager;
+			sourceTree = "<group>";
+		};
+		32690FD22C3E763100700192 /* VoicePicker */ = {
+			isa = PBXGroup;
+			children = (
+				32690FD32C3E766300700192 /* VoicePickerViewController.swift */,
+			);
+			path = VoicePicker;
 			sourceTree = "<group>";
 		};
 		32800EE82C1C225500FE5786 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
+				32690FD22C3E763100700192 /* VoicePicker */,
 				32690FC82C3D0F7000700192 /* MyNote */,
 				32690FC72C3D0F6600700192 /* Setting */,
 				32690FC22C3BA06100700192 /* Base */,
@@ -549,6 +560,7 @@
 				32690FB22C3B837800700192 /* ChatMessage+CoreDataClass.swift in Sources */,
 				326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
+				32690FD42C3E766300700192 /* VoicePickerViewController.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
 				32690FB52C3B83A100700192 /* DataModel.xcdatamodeld in Sources */,
 				32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */,
@@ -561,6 +573,7 @@
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,
 				32800F022C21850A00FE5786 /* UploadImageSelectorViewController.swift in Sources */,
+				32690FD12C3E679200700192 /* SpeechVoiceManager.swift in Sources */,
 				32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */,
 				32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */,
 				326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */,
@@ -580,7 +593,6 @@
 				32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */,
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,
-				32800F042C2190D000FE5786 /* ChatViewController+CamraPermissionRequest.swift in Sources */,
 				32690FBF2C3B846600700192 /* MyChatRoom+CoreData.swift in Sources */,
 				326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */,
 				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,

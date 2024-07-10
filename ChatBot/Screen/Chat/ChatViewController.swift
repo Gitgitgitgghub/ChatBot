@@ -41,9 +41,9 @@ class ChatViewController: BaseUIViewController {
             switch self {
             case .normal:
                 return "聊天"
-            case .chatRoom(let chatRoom):
+            case .chatRoom(_):
                 return "聊天室"
-            case .prompt(let title, let prompt):
+            case .prompt(let title, _):
                 return title
             }
         }
@@ -75,7 +75,7 @@ class ChatViewController: BaseUIViewController {
             })
         views.chatInputView.functionButton.addTarget(self, action: #selector(openUploadImageSelectorVc), for: .touchUpInside)
         views.chatInputView.sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
-        let dotItem = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(rightItemButtonClick))
+        let dotItem = UIBarButtonItem(image: .init(systemName: "ellipsis"), style: .plain, target: self, action: #selector(rightItemButtonClick))
         navigationItem.rightBarButtonItem = dotItem
     }
     
@@ -227,6 +227,11 @@ class ChatViewController: BaseUIViewController {
         let vc = UIAlertController(title: "你想要？", message: nil, preferredStyle: .actionSheet)
         vc.addAction(.init(title: "保存聊天記錄", style: .default, handler: { action in
             self.viewModel.transform(inputEvent: .saveMessages)
+        }))
+        vc.addAction(.init(title: "語音設定", style: .default, handler: { action in
+            let vc = VoicePickerViewController()
+            vc.modalPresentationStyle = .fullScreen
+            self.present(vc, animated: true)
         }))
         vc.addAction(.init(title: "取消", style: .cancel))
         present(vc, animated: true)
