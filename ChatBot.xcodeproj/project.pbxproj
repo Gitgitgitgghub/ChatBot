@@ -30,6 +30,9 @@
 		32690FC12C3B846600700192 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FBE2C3B846600700192 /* CoreDataStack.swift */; };
 		32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */; };
 		32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FC52C3CE62A00700192 /* ImageFileHandler.swift */; };
+		32690FCB2C3D2F0600700192 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FCA2C3D2F0600700192 /* SettingViewController.swift */; };
+		32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FCC2C3D2F2400700192 /* MyNoteViewController.swift */; };
+		32690FCF2C3E2D2500700192 /* Test.xib in Resources */ = {isa = PBXBuildFile; fileRef = 32690FCE2C3E2D2500700192 /* Test.xib */; };
 		326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728A2C29554B00B06DF8 /* UITextView+.swift */; };
 		326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 326F728D2C2A5CDE00B06DF8 /* SDWebImage */; };
 		326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728F2C2E4C4F00B06DF8 /* Array+.swift */; };
@@ -104,6 +107,9 @@
 		32690FBE2C3B846600700192 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageAttachment.swift; sourceTree = "<group>"; };
 		32690FC52C3CE62A00700192 /* ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFileHandler.swift; sourceTree = "<group>"; };
+		32690FCA2C3D2F0600700192 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		32690FCC2C3D2F2400700192 /* MyNoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViewController.swift; sourceTree = "<group>"; };
+		32690FCE2C3E2D2500700192 /* Test.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Test.xib; sourceTree = "<group>"; };
 		326F728A2C29554B00B06DF8 /* UITextView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+.swift"; sourceTree = "<group>"; };
 		326F728F2C2E4C4F00B06DF8 /* Array+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+.swift"; sourceTree = "<group>"; };
 		326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
@@ -233,6 +239,7 @@
 		32690FC72C3D0F6600700192 /* Setting */ = {
 			isa = PBXGroup;
 			children = (
+				32690FCA2C3D2F0600700192 /* SettingViewController.swift */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -240,8 +247,17 @@
 		32690FC82C3D0F7000700192 /* MyNote */ = {
 			isa = PBXGroup;
 			children = (
+				32690FCC2C3D2F2400700192 /* MyNoteViewController.swift */,
 			);
 			path = MyNote;
+			sourceTree = "<group>";
+		};
+		32690FC92C3D2EC300700192 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				32690FBD2C3B846600700192 /* MyChatRoomManager.swift */,
+			);
+			path = Manager;
 			sourceTree = "<group>";
 		};
 		32800EE82C1C225500FE5786 /* Screen */ = {
@@ -261,6 +277,7 @@
 				32800EFD2C21316D00FE5786 /* LaunchScreen.storyboard */,
 				32C77FC82C18504E00F335FE /* SceneDelegate.swift */,
 				94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */,
+				32690FCE2C3E2D2500700192 /* Test.xib */,
 			);
 			path = Screen;
 			sourceTree = "<group>";
@@ -317,6 +334,7 @@
 			isa = PBXGroup;
 			children = (
 				320421962C1933EC00D72203 /* SystemDefine.swift */,
+				32690FC92C3D2EC300700192 /* Manager */,
 				94A6CF8D2C38652B00B1E4E3 /* CoreData */,
 				32800F102C251DAF00FE5786 /* protocol */,
 				32800EE82C1C225500FE5786 /* Screen */,
@@ -371,7 +389,6 @@
 			children = (
 				32690FBE2C3B846600700192 /* CoreDataStack.swift */,
 				32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */,
-				32690FBD2C3B846600700192 /* MyChatRoomManager.swift */,
 				32690FB32C3B83A100700192 /* DataModel.xcdatamodeld */,
 				32690FB12C3B837800700192 /* ChatMessage+CoreDataClass.swift */,
 			);
@@ -497,6 +514,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */,
+				32690FCF2C3E2D2500700192 /* Test.xib in Resources */,
 				32800EFE2C21316D00FE5786 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -533,6 +551,7 @@
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
 				32690FB52C3B83A100700192 /* DataModel.xcdatamodeld in Sources */,
+				32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */,
 				320421972C1933EC00D72203 /* SystemDefine.swift in Sources */,
 				3204219B2C193B4100D72203 /* ChatViews.swift in Sources */,
 				94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */,
@@ -557,6 +576,7 @@
 				323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */,
 				322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */,
 				320421992C19343E00D72203 /* ChatViewModel.swift in Sources */,
+				32690FCB2C3D2F0600700192 /* SettingViewController.swift in Sources */,
 				32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */,
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,

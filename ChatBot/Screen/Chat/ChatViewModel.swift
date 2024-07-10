@@ -12,10 +12,10 @@ import UIKit
 
 class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPutEvent> {
     /// 啟動模式
-    let chatLaunchMode: ChatViewController.ChatLaunchMode
+    @Published var chatLaunchMode: ChatViewController.ChatLaunchMode
     let openai: OpenAIProtocol
     private var parserSubscription: AnyCancellable? = nil
-    @Published var inputMessage: String? = "hi"
+    @Published var inputMessage: String? = "I go school every days"
     @Published var pickedImageInfo: [UIImagePickerController.InfoKey : Any]?
     private let parser = AttributedStringParser()
     /// 一次要解析多少筆
@@ -36,6 +36,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         case editImage
         case preloadAttributedString(currentIndex: Int)
         case saveMessages
+        case retrySendMessage
     }
     
     enum OutPutEvent {
@@ -118,6 +119,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                     self.preloadAttributedStringEvent(startIndex: startIndex)
                 case .saveMessages:
                     self.saveMessages()
+                case .retrySendMessage:
+                    self.retrySendMessage()
                 }
             }
             .store(in: &subscriptions)
@@ -132,6 +135,10 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         case .chatRoom(let chatRoom):
             self.chatRoom = chatRoom
             displayMessages = chatRoom.sortedMessages
+            preloadAttributedStringEvent(startIndex: self.displayMessages.count - 1)
+        case .prompt(_, prompt: let prompt):
+            guard let message = ChatMessage.createNewMessage(content: prompt, role: .system, messageType: .message) else { return }
+            displayMessages.append(message)
             preloadAttributedStringEvent(startIndex: self.displayMessages.count - 1)
         }
     }
@@ -232,9 +239,15 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         outputSubject.send(.parseComplete(indexs: indexPaths))
     }
 
+    /// 綁定重新發送訊息事件
+    private func retrySendMessage() {
+        guard let lastMessage = displayMessages.last?.message else { return }
+        inputMessage = lastMessage
+        sendMessageEvent(appendInputMessage: false)
+    }
     
     /// 綁定送出文字訊息事件
-    private func sendMessageEvent() {
+    private func sendMessageEvent(appendInputMessage: Bool = true) {
         guard let inputMessage = inputMessage, !inputMessage.isEmpty else { return }
         guard let chatMessage = ChatMessage.createNewMessage(content: inputMessage, role: .user, messageType: .message) else { return }
         if inputMessage == "mock" {
@@ -244,8 +257,12 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         defer {
             self.inputMessage = ""
         }
-        appendNewMessage(newMessage: chatMessage)
-            .flatMap({ [self] in openai.chatQuery(messages: self.displayMessages, model: .gpt3_5Turbo) })
+        let publisher = appendInputMessage ? appendNewMessage(newMessage: chatMessage) : 
+        Just<Void>(())
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
+        publisher
+            .flatMap({ [self] in openai.chatQuery(messages: self.displayMessages, model: .gpt4_o) })
             .flatMap({ [self] chatMessage in
                 print("回應訊息： \(String(describing: chatMessage.message))")
                 return self.appendNewMessage(newMessage: chatMessage)
@@ -258,7 +275,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             .store(in: &subscriptions)
     }
     
-    /// 添加新的訊息
+    /// 把訊息轉attr後加入displayMessage
     private func appendNewMessage(newMessage: ChatMessage) -> AnyPublisher<Void, Error> {
         return parser.convertStringToAttributedString(string: newMessage.message ?? "")
             .receive(on: RunLoop.main)

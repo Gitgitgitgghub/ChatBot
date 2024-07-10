@@ -29,15 +29,16 @@ extension OpenAIProtocol {
     
     func performAPICall<T: Decodable>(_ publisher: AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
         loadingStatusSubject.send(.loading())
-            return publisher
-                .handleEvents(receiveCompletion: { [weak self] completion in
-                    switch completion {
-                    case .finished:
-                        self?.loadingStatusSubject.send(.success)
-                    case .failure(let error):
-                        self?.loadingStatusSubject.send(.error(message: error.localizedDescription))
-                    }
-                })
-                .eraseToAnyPublisher()
-        }
+        return publisher
+            .timeout(.seconds(10), scheduler: RunLoop.main, customError: { URLError(.timedOut) })
+            .handleEvents(receiveCompletion: { [weak self] completion in
+                switch completion {
+                case .finished:
+                    self?.loadingStatusSubject.send(.success)
+                case .failure(let error):
+                    self?.loadingStatusSubject.send(.error(error: error))
+                }
+            })
+            .eraseToAnyPublisher()
+    }
 }

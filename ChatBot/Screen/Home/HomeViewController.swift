@@ -20,12 +20,25 @@ class HomeViewController: BaseUIViewController {
     }
     
     private func initUI() {
-        views.chatButton.addTarget(self, action: #selector(toChatVc), for: .touchUpInside)
+        views.functionClickListener = { function in
+            switch function {
+            case .Chat:
+                self.toChatVc(function: .Chat)
+            case .GrammarCorrection:
+                self.toChatVc(function: .GrammarCorrection)
+            }
+        }
     }
     
     /// 至聊天Vc
-    @objc private func toChatVc() {
-        let vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .normal))
+    private func toChatVc(function: SystemDefine.HomeEnableFunction) {
+        var vc: UIViewController
+        switch function {
+        case .Chat:
+            vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .normal))
+        case .GrammarCorrection:
+            vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .prompt(title: function.title, prompt: function.prompt)))
+        }
         navigationController?.pushViewController(vc, animated: true)
     }
     

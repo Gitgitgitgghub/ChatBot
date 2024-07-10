@@ -49,7 +49,7 @@ typealias LoadingStatus = SystemDefine.LoadingStatus
 
 extension SystemDefine {
     
-    /// 訊息類相關變數
+    //MARK: - 訊息類相關變數
     struct Message {
         /// 預設訊息
         static let defaultMessage = "        \n\n\n\n\n\n\n"
@@ -64,11 +64,59 @@ extension SystemDefine {
     }
     
     
-    /// 讀取狀態
+    //MARK: - 讀取狀態
     enum LoadingStatus {
         case none
         case loading(message: String = "")
         case success
-        case error(message: String)
+        case error(error: Error)
     }
+    
+    //MARK: - 首頁按鈕功能
+    enum HomeEnableFunction: RawRepresentable, CaseIterable {
+        
+        /// 聊天
+        case Chat
+        /// 語法糾正
+        case GrammarCorrection
+        
+        var rawValue: Int {
+            switch self {
+            case .Chat: return 0
+            case .GrammarCorrection: return 1
+            }
+        }
+        var title: String {
+            switch self {
+            case .Chat: return "聊天"
+            case .GrammarCorrection: return "語法糾正"
+            }
+        }
+        var enable: Bool {
+            switch self {
+            case .Chat: return true
+            case .GrammarCorrection: return true
+            }
+        }
+        var prompt: String {
+            switch self {
+            case .GrammarCorrection: return "Help me correct the grammar mistakes in the following English sentence. List the corrected sentence directly, then list each mistake in Traditional Chinese, including why it's wrong and how to fix it."
+            default: return ""
+            }
+        }
+        
+        typealias RawValue = Int
+        
+        init?(rawValue: Int) {
+            switch rawValue {
+            case 0: self = .Chat
+            case 1: self = .GrammarCorrection
+            default: return nil
+            }
+        }
+        
+    }
+    
 }
+
+

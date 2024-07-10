@@ -180,6 +180,21 @@ extension ChatViews {
         }
     }
     
+    //MARK: - 用戶文字訊息Cell
+    class SystemMessageCell: AIMessageCell {
+        
+        override func initUI() {
+            super.initUI()
+            messageTextView.snp.remakeConstraints { make in
+                make.top.bottom.equalToSuperview().inset(10)
+                make.width.lessThanOrEqualTo(SystemDefine.Message.maxWidth)
+                make.centerX.equalToSuperview()
+            }
+            messageTextView.backgroundColor = .darkGray.withAlphaComponent(0.8)
+        }
+        
+    }
+    
     
     //MARK: - 用戶文字訊息Cell
     class UserMessageCell: AIMessageCell {

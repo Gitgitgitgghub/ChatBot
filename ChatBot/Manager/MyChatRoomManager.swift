@@ -102,6 +102,8 @@ class MyChatRoomManager {
             DispatchQueue.global().async {
                 let context = CoreDataStack.shared.viewContext
                 let fetchRequest: NSFetchRequest<MyChatRoom> = MyChatRoom.fetchRequest()
+                /// 對lastUpdate做降冪排序
+                fetchRequest.sortDescriptors = [.init(key: "lastUpdate", ascending: false)]
                 do {
                     let chatRooms = try context.fetch(fetchRequest)
                     promise(.success(chatRooms))

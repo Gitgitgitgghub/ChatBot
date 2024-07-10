@@ -19,7 +19,10 @@ class OpenAIService: OpenAIProtocol {
     func chatQuery(messages: [ChatMessage], model: Model = .gpt3_5Turbo) -> AnyPublisher<ChatMessage, Error> {
         let queryMessages = messages.toChatCompletionMessageParam()
         let query = ChatQuery(messages: queryMessages, model: model)
-        return performAPICall(openai.chats(query: query))
+        let publisher = openai.chats(query: query)
+            .eraseToAnyPublisher()
+        return performAPICall(publisher)
+            .print("chatQuery")
             .compactMap({ result in
                 return ChatMessage.createNewMessage(content: result.choices.first?.message.content?.string ?? "", role: .assistant, messageType: .message)
             })

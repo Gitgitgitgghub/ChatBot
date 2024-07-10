@@ -23,6 +23,10 @@ class ScreenLoader {
         case home
         /// 聊天歷史
         case history
+        /// 設定畫面
+        case setting
+        /// 我的筆記
+        case myNote
     }
     
     static func loadScreen(screen: Screen) -> UIViewController {
@@ -32,6 +36,8 @@ class ScreenLoader {
         case .mainTab: return UINavigationController(rootViewController: MainTabBarController())
         case .home: return HomeViewController()
         case .history: return HistoryViewController()
+        case .setting: return SettingViewController()
+        case .myNote: return MyNoteViewController()
         }
     }
 }

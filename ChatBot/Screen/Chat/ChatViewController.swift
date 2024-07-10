@@ -34,6 +34,19 @@ class ChatViewController: BaseUIViewController {
         case normal
         /// 聊天室
         case chatRoom(chatRoom: MyChatRoom)
+        /// 附帶prompt
+        case prompt(title: String, prompt: String)
+        
+        var title: String {
+            switch self {
+            case .normal:
+                return "聊天"
+            case .chatRoom(let chatRoom):
+                return "聊天室"
+            case .prompt(let title, let prompt):
+                return title
+            }
+        }
     }
     
     deinit {
@@ -54,6 +67,7 @@ class ChatViewController: BaseUIViewController {
         views.messageTableView.dataSource = self
         views.messageTableView.register(cellType: ChatViews.UserMessageCell.self)
         views.messageTableView.register(cellType: ChatViews.AIMessageCell.self)
+        views.messageTableView.register(cellType: ChatViews.SystemMessageCell.self)
         views.chatInputView.messageInputTextField.delegate = self
         views.messageTableView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
             .apply { obj in
@@ -131,12 +145,28 @@ class ChatViewController: BaseUIViewController {
                     self?.views.setLoadingViewVisible(true, message: message)
                 case .success:
                     self?.views.setLoadingViewVisible(false)
-                case .error(message: let message):
+                case .error(error: let error):
                     self?.views.setLoadingViewVisible(false)
-                    self?.showToast(message: message)
+                    self?.handleError(error: error)
                 }
             }
             .store(in: &subscriptions)
+        /// 綁定launchMode變化
+        viewModel.$chatLaunchMode
+            .receive(on: RunLoop.main)
+            .sink { [weak self] mode in
+                self?.title = mode.title
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func handleError(error: Error) {
+        let vc = UIAlertController(title: "發生錯誤", message: error.localizedDescription, preferredStyle: .alert)
+        vc.addAction(.init(title: "重新發送", style: .default, handler: { action in
+            self.viewModel.transform(inputEvent: .retrySendMessage)
+        }))
+        vc.addAction(.init(title: "取消", style: .cancel))
+        present(vc, animated: true)
     }
     
     /// 處理保存訊息後的顯示事件
@@ -278,12 +308,14 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
                 let cell = tableView.dequeueReusableCell(with: ChatViews.UserMessageCell.self, for: indexPath)
                 cell.bindChatMessage(chatMessage: message, attr: viewModel.attributedStringCatches[indexPath.row], indexPath: indexPath)
                 return cell
-            case .assistant, .system:
+            case .assistant:
                 let cell = tableView.dequeueReusableCell(with: ChatViews.AIMessageCell.self, for: indexPath)
                 cell.bindChatMessage(chatMessage: message, attr: viewModel.attributedStringCatches[indexPath.row], indexPath: indexPath)
                 return cell
-            case .tool:
-                return UITableViewCell()
+            case .system, .tool:
+                let cell = tableView.dequeueReusableCell(with: ChatViews.SystemMessageCell.self, for: indexPath)
+                cell.bindChatMessage(chatMessage: message, attr: viewModel.attributedStringCatches[indexPath.row], indexPath: indexPath)
+                return cell
             }
         case .none:
             let cell = tableView.dequeueReusableCell(with: ChatViews.AIMessageCell.self, for: indexPath)
