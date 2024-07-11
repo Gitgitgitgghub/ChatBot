@@ -33,5 +33,6 @@ class AccountManager {
     
     func logout() {
         apiKey = ""
+        SpeechVoiceManager.shared.resetAll()
     }
 }

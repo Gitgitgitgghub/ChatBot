@@ -21,13 +21,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = windowScene
         window?.makeKeyAndVisible()
         window?.rootViewController = ScreenLoader.loadScreen(screen: .login)
-        prepare()
     }
     
-    /// 這裡做一些準備工作
-    private func prepare() {
-        SpeechVoiceManager.shared.prepareSpeechSynthesizer()
-    }
     
     func switchRootToHomeViewController() {
         let vc = ScreenLoader.loadScreen(screen: .mainTab)

@@ -243,6 +243,16 @@ extension UserDefaults {
         set { set(key, newValue) }
     }
     
+    public subscript(key: DefaultsKey<Float?>) -> Float? {
+        get { return numberForKey(key._key)?.floatValue }
+        set { set(key, newValue) }
+    }
+    
+    public subscript(key: DefaultsKey<Float>) -> Float {
+        get { return unwrap(numberForKey(key._key)?.floatValue, 0.0) }
+        set { set(key, newValue) }
+    }
+    
     public subscript(key: DefaultsKey<Bool?>) -> Bool? {
         get { return numberForKey(key._key)?.boolValue }
         set { set(key, newValue) }
@@ -353,6 +363,16 @@ extension UserDefaults {
     }
     
     public subscript(key: DefaultsKey<[Double]>) -> [Double] {
+        get { return getArray(key) }
+        set { set(key, newValue) }
+    }
+    
+    public subscript(key: DefaultsKey<[Float]?>) -> [Float]? {
+        get { return getArray(key) }
+        set { set(key, newValue) }
+    }
+    
+    public subscript(key: DefaultsKey<[Float]>) -> [Float] {
         get { return getArray(key) }
         set { set(key, newValue) }
     }

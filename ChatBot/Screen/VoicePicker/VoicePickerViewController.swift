@@ -23,6 +23,16 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         view.translatesAutoresizingMaskIntoConstraints = false
         view.cornerRadius = 20
     }
+    var currentChineseVoiceLabel = UILabel().apply { label in
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .systemBlue
+        label.textAlignment = .center
+    }
+    var currentEnglishVoiceLabel = UILabel().apply { label in
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .systemBlue
+        label.textAlignment = .center
+    }
     var chineseVoiceLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "中文語音"
@@ -35,10 +45,46 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         label.textAlignment = .center
         label.textColor = .darkGray
     }
+    var rateSlider = UISlider().apply { rateSlider in
+        rateSlider.minimumValue = AVSpeechUtteranceMinimumSpeechRate
+        rateSlider.maximumValue = AVSpeechUtteranceMaximumSpeechRate
+        rateSlider.translatesAutoresizingMaskIntoConstraints = false
+    }
+    var pitchSlider = UISlider().apply { pitchSlider in
+        pitchSlider.minimumValue = 0.5
+        pitchSlider.maximumValue = 2.0
+        pitchSlider.translatesAutoresizingMaskIntoConstraints = false
+    }
+    var rateLabel = UILabel().apply { label in
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .systemBlue
+        label.textAlignment = .center
+    }
+    var pitchLabel = UILabel().apply { label in
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .systemBlue
+        label.textAlignment = .center
+    }
+    var speakChineseButton = UIButton(type: .custom).apply { button in
+        button.setImage(.init(systemName: "speaker"), for: .normal)
+        button.setImage(.init(systemName: "speaker.wave.2"), for: .selected)
+        button.tintColor = .white
+        button.cornerRadius = 5
+        button.backgroundColor = .systemBlue
+    }
+    var speakEnglishButton = UIButton(type: .custom).apply { button in
+        button.setImage(.init(systemName: "speaker"), for: .normal)
+        button.setImage(.init(systemName: "speaker.wave.2"), for: .selected)
+        button.tintColor = .white
+        button.cornerRadius = 5
+        button.backgroundColor = .systemBlue
+    }
+    var playingVoiceComponent = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        setDefaultValue()
     }
     
     private func initUI() {
@@ -46,45 +92,145 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         view.addSubview(contentView)
         contentView.addSubview(chineseVoiceLabel)
         contentView.addSubview(englishVoiceLabel)
+        contentView.addSubview(currentChineseVoiceLabel)
+        contentView.addSubview(currentEnglishVoiceLabel)
         contentView.addSubview(pickerView)
+        contentView.addSubview(rateLabel)
+        contentView.addSubview(rateSlider)
+        contentView.addSubview(pitchLabel)
+        contentView.addSubview(pitchSlider)
+        contentView.addSubview(speakChineseButton)
+        contentView.addSubview(speakEnglishButton)
         contentView.addSubview(saveButton)
         pickerView.delegate = self
         pickerView.dataSource = self
         contentView.snp.makeConstraints { make in
             make.bottom.leading.trailing.equalToSuperview()
-            make.height.equalTo(350)
+            make.height.equalTo(550)
         }
         chineseVoiceLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview().multipliedBy(0.5)
-            make.top.equalToSuperview().inset(50)
+            make.top.equalToSuperview().inset(10)
+            make.height.equalTo(20)
         }
         englishVoiceLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview().multipliedBy(1.5)
-            make.top.equalToSuperview().inset(50)
+            make.top.equalToSuperview().inset(10)
+            make.height.equalTo(20)
+        }
+        currentChineseVoiceLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview().multipliedBy(0.5)
+            make.top.equalTo(chineseVoiceLabel.snp.bottom).offset(10)
+            make.height.equalTo(20)
+        }
+        currentEnglishVoiceLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview().multipliedBy(1.5)
+            make.top.equalTo(englishVoiceLabel.snp.bottom).offset(10)
+            make.height.equalTo(20)
         }
         pickerView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(50)
-            make.bottom.equalToSuperview().inset(100)
+            make.top.equalTo(currentEnglishVoiceLabel.snp.bottom).offset(15)
+            make.height.equalTo(150)
             make.leading.trailing.equalToSuperview()
+        }
+        speakChineseButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 50, height: 50))
+            make.centerX.equalTo(chineseVoiceLabel)
+            make.top.equalTo(pickerView.snp.bottom).offset(15)
+        }
+        speakEnglishButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 50, height: 50))
+            make.centerX.equalTo(englishVoiceLabel)
+            make.top.equalTo(pickerView.snp.bottom).offset(15)
+        }
+        rateLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(speakEnglishButton.snp.bottom).offset(10)
+            make.height.equalTo(20)
+        }
+        rateSlider.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(rateLabel.snp.bottom).offset(10)
+            make.height.equalTo(20)
+            make.leading.trailing.equalToSuperview().inset(50)
+        }
+        pitchLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(rateSlider.snp.bottom).offset(10)
+            make.height.equalTo(20)
+        }
+        pitchSlider.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(pitchLabel.snp.bottom).offset(10)
+            make.height.equalTo(20)
+            make.leading.trailing.equalToSuperview().inset(50)
         }
         saveButton.snp.makeConstraints { make in
             make.size.equalTo(CGSize(width: 100, height: 50))
-            make.top.equalTo(pickerView.snp.bottom).offset(10)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.centerX.equalToSuperview()
         }
-        saveButton.addTarget(self, action: #selector(save), for: .touchUpInside)
+        saveButton.addTarget(self, action: #selector(saveVoice), for: .touchUpInside)
+        rateSlider.addTarget(self, action: #selector(rateSliderChanged(_:)), for: .valueChanged)
+        pitchSlider.addTarget(self, action: #selector(pitchSliderChanged(_:)), for: .valueChanged)
+        speakChineseButton.addTarget(self, action: #selector(onSpeakButtonClicked(sender:)), for: .touchUpInside)
+        speakEnglishButton.addTarget(self, action: #selector(onSpeakButtonClicked(sender:)), for: .touchUpInside)
+        voiceManager.delegate = self
     }
     
-    //TODO: - 保存聲音檔
-    @objc private func save() {
+    /// 設定ＵＩ預設值
+    private func setDefaultValue() {
+        if let index = indexOfVoice(voiceId: voiceManager.selectedChineseVoiceId, voices: voiceManager.chineseVoices) {
+            currentChineseVoiceLabel.text = "當前: \(voiceManager.chineseVoices[index].displayName(number: index + 1))"
+            pickerView.selectRow(index, inComponent: 0, animated: false)
+        }
+        if let index = indexOfVoice(voiceId: voiceManager.selectedEnglishVoiceId, voices: voiceManager.englishVoices) {
+            currentEnglishVoiceLabel.text = "當前: \(voiceManager.englishVoices[index].displayName(number: index + 1))"
+            pickerView.selectRow(index, inComponent: 1, animated: false)
+        }
+        rateSlider.value = voiceManager.voiceRate
+        pitchSlider.value = voiceManager.voicePitch
+        rateSliderChanged(rateSlider)
+        pitchSliderChanged(pitchSlider)
+    }
+    
+    private func indexOfVoice(voiceId: String, voices :[AVSpeechSynthesisVoice]) -> Int? {
+        return voices.firstIndex(where: { $0.identifier == voiceId })
+    }
+    
+    /// 保存聲音檔
+    @objc private func saveVoice() {
+        voiceManager.saveVoice(chIndex: pickerView.selectedRow(inComponent: 0), engIndex: pickerView.selectedRow(inComponent: 1), rate: rateSlider.value, pitch: pitchSlider.value)
         dismiss(animated: true)
     }
     
-    /// 播放選中的聲音
-    private func speakVoice(row: Int, component: Int) {
-        let voice = (component == 0) ? voiceManager.chineseVoices[row] : voiceManager.englishVoices[row]
-        let utterance = (component == 0) ? AVSpeechUtterance(string: "賣苦棄養") : AVSpeechUtterance(string: "hello, how are you?")
-        voiceManager.speak(utterance: utterance, voice: voice)
+    @objc private func rateSliderChanged(_ sender: UISlider) {
+        rateLabel.text = String(format: "語速: %.1f", sender.value)
+    }
+    
+    @objc private func pitchSliderChanged(_ sender: UISlider) {
+        pitchLabel.text = String(format: "語調: %.1f", sender.value)
+    }
+    
+    /// 點選播放按鈕
+    @objc private func onSpeakButtonClicked(sender: UIButton) {
+        switch sender {
+        case speakChineseButton:
+            let voice = voiceManager.chineseVoices[pickerView.selectedRow(inComponent: 0)]
+            let utterance = AVSpeechUtterance(string: "賣苦棄養 test test")
+            utterance.rate = rateSlider.value
+            utterance.pitchMultiplier = pitchSlider.value
+            voiceManager.speak(utterance: utterance, voice: voice)
+            playingVoiceComponent = 0
+        case speakEnglishButton:
+            let voice = voiceManager.englishVoices[pickerView.selectedRow(inComponent: 1)]
+            let utterance = AVSpeechUtterance(string: "hello, how are you?")
+            utterance.rate = rateSlider.value
+            utterance.pitchMultiplier = pitchSlider.value
+            voiceManager.speak(utterance: utterance, voice: voice)
+            playingVoiceComponent = 1
+        default: break
+        }
     }
     
     // MARK: - UIPickerViewDataSource, UIPickerViewDelegate
@@ -101,16 +247,33 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
     }
     
-//    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-//        <#code#>
-//    }
-    
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         let voice = (component == 0) ? voiceManager.chineseVoices[row] : voiceManager.englishVoices[row]
-        return voice.countryName + voice.displayGender + " \(row + 1)"
+        return voice.displayName(number: row + 1)
+    }
+}
+
+
+//MARK: - AVSpeechSynthesizerDelegate
+extension VoicePickerViewController: AVSpeechSynthesizerDelegate {
+    
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
+        //改變按鈕狀態
+        switch playingVoiceComponent {
+        case 0:
+            speakChineseButton.isSelected = true
+            speakEnglishButton.isSelected = false
+        case 1:
+            speakChineseButton.isSelected = false
+            speakEnglishButton.isSelected = true
+        default: break
+        }
     }
     
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        speakVoice(row: row, component: component)
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        //改變按鈕狀態
+        speakChineseButton.isSelected = false
+        speakEnglishButton.isSelected = false
     }
+    
 }

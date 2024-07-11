@@ -12,6 +12,12 @@ class MainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+        prepare()
+    }
+    
+    /// 這裡做一些準備工作
+    private func prepare() {
+        SpeechVoiceManager.shared.prepareSpeechSynthesizer()
     }
     
     /// 創建子視圖控制器

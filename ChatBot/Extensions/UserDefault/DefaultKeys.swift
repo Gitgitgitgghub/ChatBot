@@ -19,8 +19,12 @@ extension DefaultsKeys {
 /// 聲音相關
 extension DefaultsKeys {
     
-    static var chineseVoice = DefaultsKey<AVSpeechSynthesisVoice>("chineseVoice")
-    static var englishVoice = DefaultsKey<AVSpeechSynthesisVoice>("englishVoice")
+    static var chineseVoiceId = DefaultsKey<String>("chineseVoice")
+    static var englishVoiceId = DefaultsKey<String>("englishVoice")
+    /// 語調
+    static var voicePitch = DefaultsKey<Float>("voicePitch")
+    /// 語速
+    static var voiceRate = DefaultsKey<Float>("voiceRate")
     
 }
 

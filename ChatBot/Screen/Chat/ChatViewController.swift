@@ -357,22 +357,7 @@ extension ChatViewController {
     
     func speakMessage(message: String?) {
         guard let message = message, message.isNotEmpty else { return }
-        // 创建 AVSpeechSynthesizer 实例
-        
-
-        // 创建 AVSpeechUtterance 实例，并设置要朗读的文本
-        let utterance = AVSpeechUtterance(string: message)
-
-        // 设置声音，可以根据 identifier 或 language 来选择
-        if let voice = AVSpeechSynthesisVoice(identifier: "com.apple.ttsbundle.Daniel-compact") {
-            utterance.voice = voice
-        }
-
-        // 可选：设置语速、音调和音量
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate // 语速
-        utterance.pitchMultiplier = 1.0 // 音调
-        utterance.volume = 1.0 // 音量
-        synthesizer.speak(utterance)
+        SpeechVoiceManager.shared.speak(text: message)
     }
     
     func saveToMyNote() {

@@ -40,4 +40,13 @@ extension String {
     var isNotEmpty: Bool {
         return !isEmpty
     }
+    
+    func containsChinese() -> Bool {
+        for scalar in unicodeScalars {
+            if scalar.value >= 0x4E00 && scalar.value <= 0x9FFF {
+                return true
+            }
+        }
+        return false
+    }
 }
