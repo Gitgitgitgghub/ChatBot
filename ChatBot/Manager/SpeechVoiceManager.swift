@@ -27,6 +27,12 @@ class SpeechVoiceManager {
     var selectedChineseVoice: AVSpeechSynthesisVoice?
     /// 想要的語言 英文： 英國 美國 澳洲 加拿大 印度
     let targetLanguages = ["en-GB", "en-US", "en-AU", "en-CA", "en-IN"]
+    /// synthesizer的代理
+    weak var delegate: AVSpeechSynthesizerDelegate? {
+        didSet {
+            synthesizer.delegate = delegate
+        }
+    }
     
     
     private func setupVoices() {

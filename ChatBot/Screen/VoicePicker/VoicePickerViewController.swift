@@ -101,6 +101,10 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
     }
     
+//    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+//        <#code#>
+//    }
+    
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         let voice = (component == 0) ? voiceManager.chineseVoices[row] : voiceManager.englishVoices[row]
         return voice.countryName + voice.displayGender + " \(row + 1)"

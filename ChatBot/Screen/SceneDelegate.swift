@@ -29,9 +29,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         SpeechVoiceManager.shared.prepareSpeechSynthesizer()
     }
     
-    func switchToHomeViewController() {
+    func switchRootToHomeViewController() {
         let vc = ScreenLoader.loadScreen(screen: .mainTab)
         UIView.transition(with: window!, duration: 0.5, options: .transitionFlipFromRight, animations: {
+            self.window?.rootViewController = vc
+        }, completion: nil)
+    }
+    
+    func switchRootToLoginViewController() {
+        let vc = ScreenLoader.loadScreen(screen: .login)
+        UIView.transition(with: window!, duration: 0.5, options: .curveEaseOut, animations: {
             self.window?.rootViewController = vc
         }, completion: nil)
     }

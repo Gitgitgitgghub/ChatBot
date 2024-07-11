@@ -23,6 +23,7 @@
 		323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88AF2C353FE000401F50 /* ScreenLoader.swift */; };
 		323E88B22C354BA200401F50 /* HomeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88B12C354BA200401F50 /* HomeViews.swift */; };
 		323E88B42C3B761800401F50 /* HistoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88B32C3B761800401F50 /* HistoryViews.swift */; };
+		3241BE412C3F7A720047BB71 /* SettingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE402C3F7A720047BB71 /* SettingViews.swift */; };
 		32690FB22C3B837800700192 /* ChatMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FB12C3B837800700192 /* ChatMessage+CoreDataClass.swift */; };
 		32690FB52C3B83A100700192 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 32690FB32C3B83A100700192 /* DataModel.xcdatamodeld */; };
 		32690FBF2C3B846600700192 /* MyChatRoom+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */; };
@@ -101,6 +102,7 @@
 		323E88AF2C353FE000401F50 /* ScreenLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLoader.swift; sourceTree = "<group>"; };
 		323E88B12C354BA200401F50 /* HomeViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViews.swift; sourceTree = "<group>"; };
 		323E88B32C3B761800401F50 /* HistoryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViews.swift; sourceTree = "<group>"; };
+		3241BE402C3F7A720047BB71 /* SettingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViews.swift; sourceTree = "<group>"; };
 		32690FB12C3B837800700192 /* ChatMessage+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataClass.swift"; sourceTree = "<group>"; };
 		32690FB42C3B83A100700192 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MyChatRoom+CoreData.swift"; sourceTree = "<group>"; };
@@ -241,6 +243,7 @@
 			isa = PBXGroup;
 			children = (
 				32690FCA2C3D2F0600700192 /* SettingViewController.swift */,
+				3241BE402C3F7A720047BB71 /* SettingViews.swift */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -583,6 +586,7 @@
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
+				3241BE412C3F7A720047BB71 /* SettingViews.swift in Sources */,
 				32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */,
 				323E88AE2C353DFA00401F50 /* HomeViewController.swift in Sources */,
 				323E88B42C3B761800401F50 /* HistoryViews.swift in Sources */,

@@ -80,7 +80,7 @@ class LoginViewController: BaseUIViewController {
     /// 登入成功替換掉畫面
     private func loginSuccess() {
         if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
-            sceneDelegate.switchToHomeViewController()
+            sceneDelegate.switchRootToHomeViewController()
         }
     }
     
