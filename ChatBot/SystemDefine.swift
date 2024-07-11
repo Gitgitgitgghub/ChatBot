@@ -35,8 +35,8 @@ let mockString2: String = kanahei
 class SystemDefine {
     
     
-    static let share: SystemDefine = .init()
-    var apiToken: String = ""
+    static let shared: SystemDefine = .init()
+    //var apiToken: String = ""
     
     private init() {
         

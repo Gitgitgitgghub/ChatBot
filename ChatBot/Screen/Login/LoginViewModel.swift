@@ -44,6 +44,8 @@ class LoginViewModel {
         case login
         /// 點選切換登入方式
         case switchLoginMethod
+        /// 呼叫自動登入
+        case autoLogin
     }
     
     func unbindings() {
@@ -66,9 +68,16 @@ class LoginViewModel {
                     self.loging()
                 case .switchLoginMethod:
                     self.switchLoginMethod()
+                case .autoLogin:
+                    self.autoLogin()
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    private func autoLogin() {
+        guard !AccountManager.shared.needLogin() else { return }
+        keyLogin(key: AccountManager.shared.apiKey)
     }
     
     /// 切換登入方式
@@ -84,7 +93,6 @@ class LoginViewModel {
         case .key:
             keyLogin()
         }
-        
     }
     
     private func accountLogin() {
@@ -94,8 +102,16 @@ class LoginViewModel {
         }
     }
     
-    private func keyLogin() {
-        let token: String? = validation.account == "1234" ? reallyVeryConfidential.decodeFromBase64() : validation.account
+    /// 使用金鑰登入
+    /// 如果有帶key近來則直接使用
+    /// 沒有帶則走輸入流程
+    private func keyLogin(key: String = "") {
+        let token: String?
+        if key.isNotEmpty {
+            token = key
+        }else {
+            token = validation.account == "1234" ? reallyVeryConfidential.decodeFromBase64() : validation.account
+        }
         guard let token = token else { return }
         let openAI = OpenAI(apiToken: token)
         openAI.chats(query: .init(messages: [.init(role: .user, content: "hello")!], model: .gpt3_5Turbo))
@@ -111,7 +127,7 @@ class LoginViewModel {
                     self?.isLoading = .failure(error: error)
                 }
             } receiveValue: { [weak self] _ in
-                SystemDefine.share.apiToken = token
+                AccountManager.shared.saveAPIKey(key: token)
                 self?.isLoading = .success
             }
             .store(in: &subscriptions)

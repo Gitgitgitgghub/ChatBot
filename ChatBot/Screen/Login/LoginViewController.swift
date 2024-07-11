@@ -24,6 +24,7 @@ class LoginViewController: BaseUIViewController {
         super.viewDidLoad()
         initUI()
         bind()
+        viewModel.trasformInput(input: .autoLogin)
     }
     
     private func initUI() {

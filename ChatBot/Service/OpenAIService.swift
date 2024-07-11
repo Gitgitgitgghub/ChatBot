@@ -13,7 +13,7 @@ import UIKit
 class OpenAIService: OpenAIProtocol {
     
     
-    let openai = OpenAI(apiToken: SystemDefine.share.apiToken)
+    let openai = OpenAI(apiToken: AccountManager.shared.apiKey)
     let loadingStatusSubject = CurrentValueSubject<LoadingStatus, Never>(.none)
     
     func chatQuery(messages: [ChatMessage], model: Model = .gpt3_5Turbo) -> AnyPublisher<ChatMessage, Error> {

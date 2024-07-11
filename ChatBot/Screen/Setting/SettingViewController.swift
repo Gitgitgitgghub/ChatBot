@@ -48,6 +48,7 @@ class SettingViewController: UIViewController {
     /// 處理帳號登出
     private func handelLogout() {
         if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
+            AccountManager.shared.logout()
             sceneDelegate.switchRootToLoginViewController()
         }
     }

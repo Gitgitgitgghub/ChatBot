@@ -24,6 +24,9 @@
 		323E88B22C354BA200401F50 /* HomeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88B12C354BA200401F50 /* HomeViews.swift */; };
 		323E88B42C3B761800401F50 /* HistoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88B32C3B761800401F50 /* HistoryViews.swift */; };
 		3241BE412C3F7A720047BB71 /* SettingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE402C3F7A720047BB71 /* SettingViews.swift */; };
+		3241BE442C3F81D80047BB71 /* UserDefault+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE432C3F81D80047BB71 /* UserDefault+.swift */; };
+		3241BE462C3F82410047BB71 /* DefaultKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE452C3F82410047BB71 /* DefaultKeys.swift */; };
+		3241BE482C3F841E0047BB71 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE472C3F841E0047BB71 /* AccountManager.swift */; };
 		32690FB22C3B837800700192 /* ChatMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FB12C3B837800700192 /* ChatMessage+CoreDataClass.swift */; };
 		32690FB52C3B83A100700192 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 32690FB32C3B83A100700192 /* DataModel.xcdatamodeld */; };
 		32690FBF2C3B846600700192 /* MyChatRoom+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */; };
@@ -103,6 +106,9 @@
 		323E88B12C354BA200401F50 /* HomeViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViews.swift; sourceTree = "<group>"; };
 		323E88B32C3B761800401F50 /* HistoryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViews.swift; sourceTree = "<group>"; };
 		3241BE402C3F7A720047BB71 /* SettingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViews.swift; sourceTree = "<group>"; };
+		3241BE432C3F81D80047BB71 /* UserDefault+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefault+.swift"; sourceTree = "<group>"; };
+		3241BE452C3F82410047BB71 /* DefaultKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultKeys.swift; sourceTree = "<group>"; };
+		3241BE472C3F841E0047BB71 /* AccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		32690FB12C3B837800700192 /* ChatMessage+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataClass.swift"; sourceTree = "<group>"; };
 		32690FB42C3B83A100700192 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MyChatRoom+CoreData.swift"; sourceTree = "<group>"; };
@@ -198,6 +204,7 @@
 		322A2CFD2C1949ED007A8075 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				3241BE422C3F81BE0047BB71 /* UserDefault */,
 				322A2CFE2C194A65007A8075 /* NSObject+.swift */,
 				322A2D002C194C88007A8075 /* UITableView+.swift */,
 				32E264332C1BE75C0083EC63 /* Extensions.swift */,
@@ -228,6 +235,15 @@
 				323E88B32C3B761800401F50 /* HistoryViews.swift */,
 			);
 			path = History;
+			sourceTree = "<group>";
+		};
+		3241BE422C3F81BE0047BB71 /* UserDefault */ = {
+			isa = PBXGroup;
+			children = (
+				3241BE432C3F81D80047BB71 /* UserDefault+.swift */,
+				3241BE452C3F82410047BB71 /* DefaultKeys.swift */,
+			);
+			path = UserDefault;
 			sourceTree = "<group>";
 		};
 		32690FC22C3BA06100700192 /* Base */ = {
@@ -261,6 +277,7 @@
 			children = (
 				32690FBD2C3B846600700192 /* MyChatRoomManager.swift */,
 				32690FD02C3E679200700192 /* SpeechVoiceManager.swift */,
+				3241BE472C3F841E0047BB71 /* AccountManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -577,6 +594,7 @@
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,
 				32800F022C21850A00FE5786 /* UploadImageSelectorViewController.swift in Sources */,
 				32690FD12C3E679200700192 /* SpeechVoiceManager.swift in Sources */,
+				3241BE482C3F841E0047BB71 /* AccountManager.swift in Sources */,
 				32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */,
 				32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */,
 				326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */,
@@ -586,11 +604,13 @@
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
+				3241BE442C3F81D80047BB71 /* UserDefault+.swift in Sources */,
 				3241BE412C3F7A720047BB71 /* SettingViews.swift in Sources */,
 				32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */,
 				323E88AE2C353DFA00401F50 /* HomeViewController.swift in Sources */,
 				323E88B42C3B761800401F50 /* HistoryViews.swift in Sources */,
 				323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */,
+				3241BE462C3F82410047BB71 /* DefaultKeys.swift in Sources */,
 				322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */,
 				320421992C19343E00D72203 /* ChatViewModel.swift in Sources */,
 				32690FCB2C3D2F0600700192 /* SettingViewController.swift in Sources */,
