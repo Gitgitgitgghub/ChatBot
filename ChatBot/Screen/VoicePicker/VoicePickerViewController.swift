@@ -17,6 +17,16 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     var saveButton = UIButton(type: .system).apply { button in
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("保存", for: .normal)
+        button.cornerRadius = 8
+        button.backgroundColor = .systemBlue.withAlphaComponent(0.8)
+        button.setTitleColor(.white, for: .normal)
+    }
+    var closeButton = UIButton(type: .system).apply { button in
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("離開", for: .normal)
+        button.cornerRadius = 8
+        button.backgroundColor = .red.withAlphaComponent(0.6)
+        button.setTitleColor(.white, for: .normal)
     }
     var contentView: UIView = UIView().apply { view in
         view.backgroundColor = .white
@@ -102,6 +112,7 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         contentView.addSubview(speakChineseButton)
         contentView.addSubview(speakEnglishButton)
         contentView.addSubview(saveButton)
+        contentView.addSubview(closeButton)
         pickerView.delegate = self
         pickerView.dataSource = self
         contentView.snp.makeConstraints { make in
@@ -168,9 +179,15 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         saveButton.snp.makeConstraints { make in
             make.size.equalTo(CGSize(width: 100, height: 50))
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
-            make.centerX.equalToSuperview()
+            make.centerX.equalToSuperview().multipliedBy(1.5)
+        }
+        closeButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 100, height: 50))
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
+            make.centerX.equalToSuperview().multipliedBy(0.5)
         }
         saveButton.addTarget(self, action: #selector(saveVoice), for: .touchUpInside)
+        closeButton.addTarget(self, action: #selector(close), for: .touchUpInside)
         rateSlider.addTarget(self, action: #selector(rateSliderChanged(_:)), for: .valueChanged)
         pitchSlider.addTarget(self, action: #selector(pitchSliderChanged(_:)), for: .valueChanged)
         speakChineseButton.addTarget(self, action: #selector(onSpeakButtonClicked(sender:)), for: .touchUpInside)
@@ -180,16 +197,16 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     /// 設定ＵＩ預設值
     private func setDefaultValue() {
-        if let index = indexOfVoice(voiceId: voiceManager.selectedChineseVoiceId, voices: voiceManager.chineseVoices) {
+        if let index = indexOfVoice(voiceId: voiceManager.voiceSetting.selectedChineseVoiceId, voices: voiceManager.chineseVoices) {
             currentChineseVoiceLabel.text = "當前: \(voiceManager.chineseVoices[index].displayName(number: index + 1))"
             pickerView.selectRow(index, inComponent: 0, animated: false)
         }
-        if let index = indexOfVoice(voiceId: voiceManager.selectedEnglishVoiceId, voices: voiceManager.englishVoices) {
+        if let index = indexOfVoice(voiceId: voiceManager.voiceSetting.selectedEnglishVoiceId, voices: voiceManager.englishVoices) {
             currentEnglishVoiceLabel.text = "當前: \(voiceManager.englishVoices[index].displayName(number: index + 1))"
             pickerView.selectRow(index, inComponent: 1, animated: false)
         }
-        rateSlider.value = voiceManager.voiceRate
-        pitchSlider.value = voiceManager.voicePitch
+        rateSlider.value = voiceManager.voiceSetting.voiceRate
+        pitchSlider.value = voiceManager.voiceSetting.voicePitch
         rateSliderChanged(rateSlider)
         pitchSliderChanged(pitchSlider)
     }
@@ -201,6 +218,11 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     /// 保存聲音檔
     @objc private func saveVoice() {
         voiceManager.saveVoice(chIndex: pickerView.selectedRow(inComponent: 0), engIndex: pickerView.selectedRow(inComponent: 1), rate: rateSlider.value, pitch: pitchSlider.value)
+        close()
+    }
+    
+    /// 離開不保存
+    @objc private func close() {
         dismiss(animated: true)
     }
     
@@ -214,21 +236,25 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     /// 點選播放按鈕
     @objc private func onSpeakButtonClicked(sender: UIButton) {
-        switch sender {
-        case speakChineseButton:
+        let component = sender == speakChineseButton ? 0 : 1
+        speak(component: component)
+    }
+    
+    private func speak(component: Int) {
+        self.playingVoiceComponent = component
+        switch component {
+        case 0:
             let voice = voiceManager.chineseVoices[pickerView.selectedRow(inComponent: 0)]
             let utterance = AVSpeechUtterance(string: "賣苦棄養 test test")
             utterance.rate = rateSlider.value
             utterance.pitchMultiplier = pitchSlider.value
             voiceManager.speak(utterance: utterance, voice: voice)
-            playingVoiceComponent = 0
-        case speakEnglishButton:
+        case 1:
             let voice = voiceManager.englishVoices[pickerView.selectedRow(inComponent: 1)]
             let utterance = AVSpeechUtterance(string: "hello, how are you?")
             utterance.rate = rateSlider.value
             utterance.pitchMultiplier = pitchSlider.value
             voiceManager.speak(utterance: utterance, voice: voice)
-            playingVoiceComponent = 1
         default: break
         }
     }
@@ -250,6 +276,10 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         let voice = (component == 0) ? voiceManager.chineseVoices[row] : voiceManager.englishVoices[row]
         return voice.displayName(number: row + 1)
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        speak(component: component)
     }
 }
 

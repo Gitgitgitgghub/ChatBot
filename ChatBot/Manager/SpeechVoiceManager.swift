@@ -16,9 +16,9 @@ class SpeechVoiceManager {
     private init(){
         DispatchQueue.global().async {
             self.setupVoices()
-            self.setDelaultValue()
         }
     }
+    
     /// 想要的語言 英文： 英國 美國 澳洲 加拿大 印度
     let targetLanguages = ["en-GB", "en-US", "en-AU", "en-CA", "en-IN"]
     let synthesizer = AVSpeechSynthesizer()
@@ -26,43 +26,9 @@ class SpeechVoiceManager {
     var englishVoices: [AVSpeechSynthesisVoice] = []
     /// 中文語音包
     var chineseVoices: [AVSpeechSynthesisVoice] = []
-    /// 選擇的英文語音id
-    private(set) var selectedEnglishVoiceId: String {
-        set {
-            MyDefaults[.englishVoiceId] = newValue
-        }
-        get {
-            return MyDefaults[.englishVoiceId]
-        }
-    }
-    /// 選擇的中文語音id
-    private(set) var selectedChineseVoiceId: String {
-        set {
-            MyDefaults[.chineseVoiceId] = newValue
-        }
-        get {
-            return MyDefaults[.chineseVoiceId]
-        }
-    }
+    /// 聲音設定
+    private(set) var voiceSetting: SpeechVoiceSeting!
     
-    /// 語調
-    private(set) var voicePitch: Float {
-        set {
-            MyDefaults[.voicePitch] = newValue
-        }
-        get {
-            return MyDefaults[.voicePitch]
-        }
-    }
-    /// 語速
-    private(set) var voiceRate: Float {
-        set {
-            MyDefaults[.voiceRate] = newValue
-        }
-        get {
-            return MyDefaults[.voiceRate]
-        }
-    }
     /// synthesizer的代理
     weak var delegate: AVSpeechSynthesizerDelegate? {
         didSet {
@@ -72,6 +38,7 @@ class SpeechVoiceManager {
     
     
     private func setupVoices() {
+        self.voiceSetting = MyDefaults.loadVoiceSetting()
         let voices = AVSpeechSynthesisVoice.speechVoices()
         // 先對語音做分類
         for voice in voices {
@@ -83,31 +50,13 @@ class SpeechVoiceManager {
         }
     }
     
-    
-    private func setDelaultValue() {
-        if selectedChineseVoiceId.isEmpty {
-            selectedChineseVoiceId = chineseVoices.first?.identifier ?? ""
-        }
-        if selectedEnglishVoiceId.isEmpty {
-            selectedEnglishVoiceId = englishVoices.first?.identifier ?? ""
-        }
-        if voiceRate == 0 {
-            voiceRate = 0.5
-        }
-        if voicePitch == 0 {
-            voicePitch = 1.0
-        }
-    }
-    
     func resetAll() {
-        MyDefaults[.voiceRate] = .zero
-        MyDefaults[.voicePitch] = .zero
-        MyDefaults[.chineseVoiceId] = ""
-        MyDefaults[.englishVoiceId] = ""
-        setDelaultValue()
+        let defaultSetting = SpeechVoiceSeting()
+        MyDefaults.saveVoiceSetting(setting: defaultSetting)
+        self.voiceSetting = defaultSetting
     }
     
-    //TODO: - 看能不能預先處理好不然第一次播放聲音都很慢
+    /// 預先播放聲音(避免第一次播放會卡很久 爬文看是iOS本身bug)
     func prepareSpeechSynthesizer() {
         let silentUtterance = AVSpeechUtterance(string: "see you tomorrow")
         silentUtterance.voice = AVSpeechSynthesisVoice(language: "en-US")
@@ -132,8 +81,8 @@ class SpeechVoiceManager {
         }
         // preUtteranceDelay 方式製造停頓(目前聽起來比較自然)
         let utterance = AVSpeechUtterance(string: text)
-        utterance.rate = voiceRate
-        utterance.pitchMultiplier = voicePitch
+        utterance.rate = voiceSetting.voiceRate
+        utterance.pitchMultiplier = voiceSetting.voicePitch
         utterance.voice = voice
         utterance.preUtteranceDelay = 0.1
         synthesizer.speak(utterance)
@@ -157,8 +106,8 @@ class SpeechVoiceManager {
         var utterances: [AVSpeechUtterance] = []
         for component in components {
             let utterance = AVSpeechUtterance(string: component)
-            utterance.rate = voiceRate
-            utterance.pitchMultiplier = voicePitch
+            utterance.rate = voiceSetting.voiceRate
+            utterance.pitchMultiplier = voiceSetting.voicePitch
             utterance.voice = voice
             //utterance.preUtteranceDelay = 0.1
             utterances.append(utterance)
@@ -168,19 +117,50 @@ class SpeechVoiceManager {
     
     private func getVoiceForText(text: String) -> AVSpeechSynthesisVoice? {
         if text.containsChinese() {
-            return AVSpeechSynthesisVoice(identifier: selectedChineseVoiceId)
+            return AVSpeechSynthesisVoice(identifier: voiceSetting.selectedChineseVoiceId)
         }
-        return AVSpeechSynthesisVoice(identifier: selectedEnglishVoiceId)
+        return AVSpeechSynthesisVoice(identifier: voiceSetting.selectedEnglishVoiceId)
     }
     
     /// 保存聲音
     func saveVoice(chIndex: Int, engIndex: Int, rate: Float, pitch: Float) {
         let chId = chineseVoices[chIndex].identifier
         let enId = englishVoices[engIndex].identifier
-        selectedChineseVoiceId = chId
-        selectedEnglishVoiceId = enId
-        voiceRate = rate
-        voicePitch = pitch
+        voiceSetting.selectedChineseVoiceId = chId
+        voiceSetting.selectedEnglishVoiceId = enId
+        voiceSetting.voiceRate = rate
+        voiceSetting.voicePitch = pitch
+        MyDefaults.saveVoiceSetting(setting: voiceSetting)
+    }
+    
+}
+
+struct SpeechVoiceSeting: Codable {
+    /// 選擇的中文語音id
+    var selectedChineseVoiceId = ""
+    /// 選擇的英文語音id
+    var selectedEnglishVoiceId = ""
+    /// 語速
+    var voiceRate: Float = 0.5
+    /// 語調
+    var voicePitch: Float = 1.0
+}
+
+private extension UserDefaults {
+    
+    /// 儲存SpeechVoiceSeting(Data型式)
+    func saveVoiceSetting(setting: SpeechVoiceSeting) {
+        let encoder = JSONEncoder()
+        guard let encodeData = try? encoder.encode(setting) else { return }
+        MyDefaults[.voiceSetting] = encodeData
+    }
+    
+    /// 讀取SpeechVoiceSeting
+    func loadVoiceSetting() -> SpeechVoiceSeting {
+        let obj = MyDefaults[.voiceSetting]
+        let decoder = JSONDecoder()
+        guard let obj = try? decoder.decode(SpeechVoiceSeting.self, from: obj) else { return SpeechVoiceSeting() }
+        return obj
     }
     
 }

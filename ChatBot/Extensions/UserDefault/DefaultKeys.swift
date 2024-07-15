@@ -18,13 +18,8 @@ extension DefaultsKeys {
 
 /// 聲音相關
 extension DefaultsKeys {
-    
-    static var chineseVoiceId = DefaultsKey<String>("chineseVoice")
-    static var englishVoiceId = DefaultsKey<String>("englishVoice")
-    /// 語調
-    static var voicePitch = DefaultsKey<Float>("voicePitch")
-    /// 語速
-    static var voiceRate = DefaultsKey<Float>("voiceRate")
+    /// 聲音設定
+    static var voiceSetting = DefaultsKey<Data>("voiceSetting")
     
 }
 
