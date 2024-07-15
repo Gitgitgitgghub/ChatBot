@@ -24,37 +24,45 @@ class DatabaseManager {
                 .url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
                 .appendingPathComponent("db.sqlite")
             dbQueue = try DatabaseQueue(path: databaseURL.path)
-            
-            try dbQueue.write { db in
+            var migrator = DatabaseMigrator()
+
+            migrator.registerMigration("createChatRooms") { db in
                 try db.create(table: ChatRoom.databaseTableName, ifNotExists: true) { t in
-                    t.column("id", .text).primaryKey()
-                    t.column("lastUpdate", .datetime)
+                    t.autoIncrementedPrimaryKey("id")
+                    t.column("lastUpdate", .datetime).notNull()
                 }
                 try db.create(table: ChatMessage.databaseTableName, ifNotExists: true) { t in
-                    t.column("id", .text).primaryKey()
-                    t.column("message", .text)
-                    t.column("timestamp", .datetime)
-                    t.column("type", .integer)
-                    t.column("role", .text)
-                    t.column("chatRoomId", .text).references(ChatRoom.databaseTableName, onDelete: .cascade)
+                    t.autoIncrementedPrimaryKey("id")
+                    t.column("message", .text).notNull()
+                    t.column("timestamp", .datetime).notNull()
+                    t.column("type", .integer).notNull()
+                    t.column("role", .text).notNull()
+                    t.belongsTo(ChatRoom.databaseTableName, onDelete: .cascade).notNull()
                 }
             }
+            try migrator.migrate(dbQueue)
+            print("🟢創建ＤＢ成功")
         } catch {
-            print("Error creating database: \(error)")
+            print("🔴創建ＤＢ失敗: \(error)")
         }
     }
     
+    //TODO: - 如果聊天室已經存在不應該創建新的
     func saveChatRoom(_ chatRoom: ChatRoom, messages: [ChatMessage]) -> AnyPublisher<Void, Error> {
         Future { promise in
             do {
                 try self.dbQueue.write { db in
-                    try chatRoom.save(db)
+                    try chatRoom.insert(db)
                     for message in messages {
-                        try message.save(db)
+                        //注意這邊chatRoom insert後會有id他是ChatMessage的chatRoomsId一定要給不然會錯誤
+                        message.chatRoomsId = chatRoom.id!
+                        try message.insert(db)
                     }
                 }
+                print("🟢saveChatRoom success \(chatRoom.id ?? -1)")
                 promise(.success(()))
             } catch {
+                print("🔴saveChatRoom error: \(error)")
                 promise(.failure(error))
             }
         }
@@ -66,10 +74,6 @@ class DatabaseManager {
             do {
                 let chatRooms = try self.dbQueue.read { db in
                     let chatRooms = try ChatRoom.fetchAll(db, sql: "SELECT * FROM chatRooms ORDER BY lastUpdate DESC")
-                    for chatRoom in chatRooms {
-                        let messages = try ChatMessage.fetchAll(db, sql: "SELECT * FROM messages WHERE chatRoomId = ? ORDER BY timestamp ASC", arguments: [chatRoom.id])
-                        //chatRoom.messages = messages
-                    }
                     return chatRooms
                 }
                 promise(.success(chatRooms))

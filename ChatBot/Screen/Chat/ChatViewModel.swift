@@ -93,7 +93,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         var mocks: [ChatMessage] = []
         for _ in 0...100 {
             let message = Bool.random() ? mockString : mockString2
-            let chatMessage = ChatMessage(message: message, type: .mock, role: .assistant, chatRoomId: chatRoom.id)
+            let chatMessage = ChatMessage(message: message, type: .mock, role: .assistant)
             mocks.append(chatMessage)
         }
         displayMessages.append(contentsOf: mocks)
@@ -129,7 +129,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     private func handleLaunchMode() {
         switch chatLaunchMode {
         case .normal:
-            self.chatRoom = ChatRoom(id: UUID().uuidString, lastUpdate: Date(), messages: [])
+            self.chatRoom = .init(lastUpdate: .now)
             break
         case .chatRoom(let chatRoom):
             self.chatRoom = chatRoom
@@ -142,8 +142,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                 
             }
         case .prompt(_, prompt: let prompt):
-            self.chatRoom = ChatRoom(id: UUID().uuidString, lastUpdate: Date(), messages: [])
-            let message = ChatMessage(message: prompt, type: .message, role: .system, chatRoomId: chatRoom.id)
+            self.chatRoom = .init(lastUpdate: .now)
+            let message = ChatMessage(message: prompt, type: .message, role: .system)
             displayMessages.append(message)
             preloadAttributedStringEvent(startIndex: self.displayMessages.count - 1)
         }
@@ -255,7 +255,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     /// 綁定送出文字訊息事件
     private func sendMessageEvent(appendInputMessage: Bool = true) {
         guard let inputMessage = inputMessage, !inputMessage.isEmpty else { return }
-        let chatMessage = ChatMessage(message: inputMessage, type: .message, role: .user, chatRoomId: chatRoom.id)
+        let chatMessage = ChatMessage(message: inputMessage, type: .message, role: .user)
         if inputMessage == "mock" {
             mock()
             return
@@ -268,12 +268,11 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
         publisher
-            .flatMap({ [self] in openai.chatQuery(messages: self.displayMessages, model: .gpt4_o)
-            })
+            .flatMap({ self.openai.chatQuery(messages: self.displayMessages, model: .gpt4_o) })
             .map({ chatRsutlt in
-                return ChatMessage(message: chatRsutlt.choices.first?.message.content?.string ?? "", timestamp: Date(), type: .message, role: chatRsutlt.choices.first?.message.role ?? .assistant, chatRoomId: self.chatRoom.id)
+                return ChatMessage(message: chatRsutlt.choices.first?.message.content?.string ?? "", timestamp: Date(), type: .message, role: chatRsutlt.choices.first?.message.role ?? .assistant)
             })
-            .flatMap({ [self] chatMessage in
+            .flatMap({ chatMessage in
                 print("回應訊息： \(String(describing: chatMessage.message))")
                 return self.appendNewMessage(newMessage: chatMessage)
             })

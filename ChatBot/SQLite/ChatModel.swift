@@ -15,46 +15,46 @@ class ChatMessage: Codable, FetchableRecord, PersistableRecord {
         case mock, message
     }
     typealias Role = ChatQuery.ChatCompletionMessageParam.Role
-    
-    var id: String
+    /// id由資料庫自動產生所以是nil
+    var id: Int64?
+    /// 訊息的聊天室id (注意這邊命名規則有要求)
+    /// 定義 static let chatRoom = belongsTo(ChatRoom.self)
+    /// 所以欄位名稱為 ChatRoom的tableName + "Id"
+    var chatRoomsId: Int64 = 0
     var message: String
     var timestamp: Date
     var type: MessageType
     var role: Role
-    var chatRoomId: String
-    static let chatRoom = belongsTo(ChatRoom.self)
-    var chatRoom: QueryInterfaceRequest<ChatRoom> {
-        request(for: ChatMessage.chatRoom)
-    }
+   
     
-    init(id: String = UUID().uuidString, message: String, timestamp: Date, type: MessageType, role: Role, chatRoomId: String) {
-        self.id = id
+    init(message: String, timestamp: Date, type: MessageType, role: Role) {
         self.message = message
         self.timestamp = timestamp
         self.type = type
         self.role = role
-        self.chatRoomId = chatRoomId
     }
     
-    init(message: String, type: MessageType, role: Role, chatRoomId: String) {
-        self.id = UUID().uuidString
+    init(message: String, type: MessageType, role: Role) {
         self.message = message
-        self.timestamp = Date()
+        self.timestamp = .now
         self.type = type
         self.role = role
-        self.chatRoomId = chatRoomId
     }
     
-    enum Columns {
-        static let id = Column(CodingKeys.id)
-        static let message = Column(CodingKeys.message)
-        static let timestamp = Column(CodingKeys.timestamp)
-        static let type = Column(CodingKeys.type)
-        static let role = Column(CodingKeys.role)
-        static let chatRoomId = Column(CodingKeys.chatRoomId)
+    /// 插入成功後會有一個id，要手動把inserted.rowID指定給self.id
+    func didInsert(_ inserted: InsertionSuccess) {
+        id = inserted.rowID
     }
     
     static let databaseTableName = "messages"
+}
+
+//MARK: - 定義 ChatMessage 關聯
+extension ChatMessage {
+    static let chatRoom = belongsTo(ChatRoom.self)
+    var chatRoom: QueryInterfaceRequest<ChatRoom> {
+        request(for: ChatMessage.chatRoom)
+    }
 }
 
 /// 簡易轉換
@@ -67,25 +67,31 @@ extension Array where Element: ChatMessage {
 }
 
 
-//TODO: - ChatRoom ChatMessage 關聯處理是否能優化一點
+//TODO: - ChatRoom,ChatMessage關聯處理，讀取是否能優化一點
 class ChatRoom: Codable, FetchableRecord, PersistableRecord {
-    var id: String
+    var id: Int64?
     var lastUpdate: Date
     //var messages: [ChatMessage]
-    static let messages = hasMany(ChatMessage.self)
-    var messages: QueryInterfaceRequest<ChatMessage> {
-        request(for: ChatRoom.messages)
-    }
     
-    init(id: String, lastUpdate: Date, messages: [ChatMessage]) {
+    
+    init(id: Int64? = nil, lastUpdate: Date) {
         self.id = id
         self.lastUpdate = lastUpdate
     }
     
-    enum Columns: String, ColumnExpression {
-        case id, lastUpdate
+    func didInsert(_ inserted: InsertionSuccess) {
+        id = inserted.rowID
+        print("ChatRoom didInsert id: \(inserted.rowID)")
     }
     
     static let databaseTableName = "chatRooms"
+}
+
+//MARK: -定義 ChatRoom 關聯
+extension ChatRoom {
+    static let messages = hasMany(ChatMessage.self)
+    var messages: QueryInterfaceRequest<ChatMessage> {
+        request(for: ChatRoom.messages)
+    }
 }
 
