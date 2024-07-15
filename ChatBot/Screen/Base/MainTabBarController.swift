@@ -8,6 +8,48 @@
 import UIKit
 
 class MainTabBarController: UITabBarController {
+    
+    /// tab頁面列舉
+    enum Tab {
+        case Home
+        case History
+        case MyNote
+        case Setting
+        
+        var viewController: UIViewController {
+            let vc: UIViewController
+            switch self {
+            case .Home:
+                vc = ScreenLoader.loadScreen(screen: .home)
+            case .History:
+                vc = ScreenLoader.loadScreen(screen: .history)
+            case .MyNote:
+                vc = ScreenLoader.loadScreen(screen: .myNote)
+            case .Setting:
+                vc = ScreenLoader.loadScreen(screen: .setting)
+            }
+            vc.tabBarItem = self.tabBarItem
+            // 這邊是讓tabvc的子vc的view從tabbar上方開始
+            vc.edgesForExtendedLayout = .init(rawValue: 0)
+            return vc
+        }
+        
+        var tabBarItem: UITabBarItem {
+            switch self {
+            case .Home:
+                return UITabBarItem(title: "首頁", image: .init(systemName: "house"), tag: 0)
+            case .History:
+                return UITabBarItem(title: "聊天記錄", image: .init(systemName: "clock.fill"), tag: 1)
+            case .MyNote:
+                return UITabBarItem(title: "我的筆記", image: .init(systemName: "note.text"), tag: 2)
+            case .Setting:
+                return UITabBarItem(title: "設定", image: .init(systemName: "gear"), tag: 3)
+            }
+        }
+    }
+    
+    private let tabs: [Tab] = [.Home, .History, .MyNote, .Setting]
+    private lazy var tabViewControllers = self.tabs.map({ $0.viewController })
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,19 +68,7 @@ class MainTabBarController: UITabBarController {
     private func setup() {
         // 這邊是讓tabvc的view從navigationbar下方開始
         edgesForExtendedLayout = .init(rawValue: 0)
-        let homeViewController = ScreenLoader.loadScreen(screen: .home)
-        let historyViewController = ScreenLoader.loadScreen(screen: .history)
-        let myNoteViewController = ScreenLoader.loadScreen(screen: .myNote)
-        let settingViewController = ScreenLoader.loadScreen(screen: .setting)
-        // 這邊是讓tabvc的子vc的view從tabbar上方開始
-        homeViewController.edgesForExtendedLayout = .init(rawValue: 0)
-        historyViewController.edgesForExtendedLayout = .init(rawValue: 0)
-        homeViewController.tabBarItem = UITabBarItem(title: "首頁", image: .init(systemName: "house"), tag: 0)
-        historyViewController.tabBarItem = UITabBarItem(title: "聊天記錄", image: .init(systemName: "clock.fill"), tag: 1)
-        myNoteViewController.tabBarItem = UITabBarItem(title: "我的筆記", image: .init(systemName: "note.text"), tag: 2)
-        settingViewController.tabBarItem = UITabBarItem(title: "設定", image: .init(systemName: "gear"), tag: 3)
-        let viewControllerList = [homeViewController, historyViewController, myNoteViewController, settingViewController]
-        viewControllers = viewControllerList
+        viewControllers = tabViewControllers
     }
 
 }
