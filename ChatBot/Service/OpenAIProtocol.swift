@@ -15,7 +15,7 @@ protocol OpenAIProtocol: AnyObject, ImageFileHandler {
     //var openAI: OpenAI {  get }
     var loadingStatusSubject: CurrentValueSubject<LoadingStatus, Never> { get }
     
-    func chatQuery(messages: [ChatMessage], model: Model) -> AnyPublisher<ChatMessage, Error>
+    func chatQuery(messages: [ChatMessage], model: Model) -> AnyPublisher<ChatResult, Error>
     
     func createImage(prompt: String, size: ImagesQuery.Size) -> AnyPublisher<ImagesResult, Error>
     

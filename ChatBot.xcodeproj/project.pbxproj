@@ -27,11 +27,9 @@
 		3241BE442C3F81D80047BB71 /* UserDefault+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE432C3F81D80047BB71 /* UserDefault+.swift */; };
 		3241BE462C3F82410047BB71 /* DefaultKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE452C3F82410047BB71 /* DefaultKeys.swift */; };
 		3241BE482C3F841E0047BB71 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE472C3F841E0047BB71 /* AccountManager.swift */; };
-		32690FB22C3B837800700192 /* ChatMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FB12C3B837800700192 /* ChatMessage+CoreDataClass.swift */; };
-		32690FB52C3B83A100700192 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 32690FB32C3B83A100700192 /* DataModel.xcdatamodeld */; };
-		32690FBF2C3B846600700192 /* MyChatRoom+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */; };
-		32690FC02C3B846600700192 /* MyChatRoomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FBD2C3B846600700192 /* MyChatRoomManager.swift */; };
-		32690FC12C3B846600700192 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FBE2C3B846600700192 /* CoreDataStack.swift */; };
+		3241BE4B2C44B01A0047BB71 /* ChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE4A2C44B01A0047BB71 /* ChatModel.swift */; };
+		3241BE4E2C44B1B90047BB71 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 3241BE4D2C44B1B90047BB71 /* GRDB */; };
+		3241BE502C44B3FC0047BB71 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE4F2C44B3FC0047BB71 /* DatabaseManager.swift */; };
 		32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */; };
 		32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FC52C3CE62A00700192 /* ImageFileHandler.swift */; };
 		32690FCB2C3D2F0600700192 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FCA2C3D2F0600700192 /* SettingViewController.swift */; };
@@ -109,11 +107,8 @@
 		3241BE432C3F81D80047BB71 /* UserDefault+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefault+.swift"; sourceTree = "<group>"; };
 		3241BE452C3F82410047BB71 /* DefaultKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultKeys.swift; sourceTree = "<group>"; };
 		3241BE472C3F841E0047BB71 /* AccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
-		32690FB12C3B837800700192 /* ChatMessage+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataClass.swift"; sourceTree = "<group>"; };
-		32690FB42C3B83A100700192 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
-		32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MyChatRoom+CoreData.swift"; sourceTree = "<group>"; };
-		32690FBD2C3B846600700192 /* MyChatRoomManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyChatRoomManager.swift; sourceTree = "<group>"; };
-		32690FBE2C3B846600700192 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		3241BE4A2C44B01A0047BB71 /* ChatModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModel.swift; sourceTree = "<group>"; };
+		3241BE4F2C44B3FC0047BB71 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageAttachment.swift; sourceTree = "<group>"; };
 		32690FC52C3CE62A00700192 /* ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFileHandler.swift; sourceTree = "<group>"; };
 		32690FCA2C3D2F0600700192 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
@@ -166,6 +161,7 @@
 				32800F072C22A45900FE5786 /* Kingfisher in Frameworks */,
 				323E88A62C35251000401F50 /* NVActivityIndicatorView in Frameworks */,
 				320421952C19331500D72203 /* OpenAI in Frameworks */,
+				3241BE4E2C44B1B90047BB71 /* GRDB in Frameworks */,
 				326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */,
 				3204219E2C19405500D72203 /* SnapKit in Frameworks */,
 			);
@@ -246,6 +242,15 @@
 			path = UserDefault;
 			sourceTree = "<group>";
 		};
+		3241BE492C44AF980047BB71 /* SQLite */ = {
+			isa = PBXGroup;
+			children = (
+				3241BE4A2C44B01A0047BB71 /* ChatModel.swift */,
+				3241BE4F2C44B3FC0047BB71 /* DatabaseManager.swift */,
+			);
+			path = SQLite;
+			sourceTree = "<group>";
+		};
 		32690FC22C3BA06100700192 /* Base */ = {
 			isa = PBXGroup;
 			children = (
@@ -275,7 +280,6 @@
 		32690FC92C3D2EC300700192 /* Manager */ = {
 			isa = PBXGroup;
 			children = (
-				32690FBD2C3B846600700192 /* MyChatRoomManager.swift */,
 				32690FD02C3E679200700192 /* SpeechVoiceManager.swift */,
 				3241BE472C3F841E0047BB71 /* AccountManager.swift */,
 			);
@@ -365,8 +369,8 @@
 			isa = PBXGroup;
 			children = (
 				320421962C1933EC00D72203 /* SystemDefine.swift */,
+				3241BE492C44AF980047BB71 /* SQLite */,
 				32690FC92C3D2EC300700192 /* Manager */,
-				94A6CF8D2C38652B00B1E4E3 /* CoreData */,
 				32800F102C251DAF00FE5786 /* protocol */,
 				32800EE82C1C225500FE5786 /* Screen */,
 				32E264302C1BDA200083EC63 /* Service */,
@@ -415,17 +419,6 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
-		94A6CF8D2C38652B00B1E4E3 /* CoreData */ = {
-			isa = PBXGroup;
-			children = (
-				32690FBE2C3B846600700192 /* CoreDataStack.swift */,
-				32690FBC2C3B846600700192 /* MyChatRoom+CoreData.swift */,
-				32690FB32C3B83A100700192 /* DataModel.xcdatamodeld */,
-				32690FB12C3B837800700192 /* ChatMessage+CoreDataClass.swift */,
-			);
-			path = CoreData;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -448,6 +441,7 @@
 				32800F062C22A45900FE5786 /* Kingfisher */,
 				326F728D2C2A5CDE00B06DF8 /* SDWebImage */,
 				323E88A52C35251000401F50 /* NVActivityIndicatorView */,
+				3241BE4D2C44B1B90047BB71 /* GRDB */,
 			);
 			productName = ChatBot;
 			productReference = 32C77FC32C18504E00F335FE /* ChatBot.app */;
@@ -527,6 +521,7 @@
 				32800F052C22A45900FE5786 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				323E88A42C35251000401F50 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
+				3241BE4C2C44B1B90047BB71 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 			);
 			productRefGroup = 32C77FC42C18504E00F335FE /* Products */;
 			projectDirPath = "";
@@ -572,17 +567,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */,
-				32690FC12C3B846600700192 /* CoreDataStack.swift in Sources */,
 				94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */,
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
 				32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */,
 				323E88B22C354BA200401F50 /* HomeViews.swift in Sources */,
-				32690FB22C3B837800700192 /* ChatMessage+CoreDataClass.swift in Sources */,
 				326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
 				32690FD42C3E766300700192 /* VoicePickerViewController.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
-				32690FB52C3B83A100700192 /* DataModel.xcdatamodeld in Sources */,
 				32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */,
 				320421972C1933EC00D72203 /* SystemDefine.swift in Sources */,
 				3204219B2C193B4100D72203 /* ChatViews.swift in Sources */,
@@ -606,6 +598,7 @@
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				3241BE442C3F81D80047BB71 /* UserDefault+.swift in Sources */,
 				3241BE412C3F7A720047BB71 /* SettingViews.swift in Sources */,
+				3241BE4B2C44B01A0047BB71 /* ChatModel.swift in Sources */,
 				32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */,
 				323E88AE2C353DFA00401F50 /* HomeViewController.swift in Sources */,
 				323E88B42C3B761800401F50 /* HistoryViews.swift in Sources */,
@@ -617,14 +610,13 @@
 				32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */,
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,
-				32690FBF2C3B846600700192 /* MyChatRoom+CoreData.swift in Sources */,
+				3241BE502C44B3FC0047BB71 /* DatabaseManager.swift in Sources */,
 				326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */,
 				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
 				323E88AC2C353DE800401F50 /* HistoryViewController.swift in Sources */,
 				32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */,
-				32690FC02C3B846600700192 /* MyChatRoomManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -974,6 +966,14 @@
 				minimumVersion = 5.2.0;
 			};
 		};
+		3241BE4C2C44B1B90047BB71 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
@@ -1008,6 +1008,11 @@
 			package = 323E88A42C35251000401F50 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
 			productName = NVActivityIndicatorView;
 		};
+		3241BE4D2C44B1B90047BB71 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3241BE4C2C44B1B90047BB71 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
 		326F728D2C2A5CDE00B06DF8 /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */;
@@ -1019,20 +1024,6 @@
 			productName = Kingfisher;
 		};
 /* End XCSwiftPackageProductDependency section */
-
-/* Begin XCVersionGroup section */
-		32690FB32C3B83A100700192 /* DataModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				32690FB42C3B83A100700192 /* DataModel.xcdatamodel */,
-			);
-			currentVersion = 32690FB42C3B83A100700192 /* DataModel.xcdatamodel */;
-			name = DataModel.xcdatamodeld;
-			path = /Users/wujunyan/Desktop/ChatBot/ChatBot/CoreData/DataModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 32C77FBB2C18504E00F335FE /* Project object */;
 }

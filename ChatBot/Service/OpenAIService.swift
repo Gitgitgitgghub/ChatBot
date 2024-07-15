@@ -16,16 +16,13 @@ class OpenAIService: OpenAIProtocol {
     let openai = OpenAI(apiToken: AccountManager.shared.apiKey)
     let loadingStatusSubject = CurrentValueSubject<LoadingStatus, Never>(.none)
     
-    func chatQuery(messages: [ChatMessage], model: Model = .gpt3_5Turbo) -> AnyPublisher<ChatMessage, Error> {
+    func chatQuery(messages: [ChatMessage], model: Model = .gpt3_5Turbo) -> AnyPublisher<ChatResult, Error> {
         let queryMessages = messages.toChatCompletionMessageParam()
         let query = ChatQuery(messages: queryMessages, model: model)
         let publisher = openai.chats(query: query)
             .eraseToAnyPublisher()
         return performAPICall(publisher)
             .print("chatQuery")
-            .compactMap({ result in
-                return ChatMessage.createNewMessage(content: result.choices.first?.message.content?.string ?? "", role: .assistant, messageType: .message)
-            })
             .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()

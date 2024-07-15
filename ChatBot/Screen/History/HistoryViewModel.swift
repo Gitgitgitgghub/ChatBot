@@ -20,8 +20,7 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
         case toast(message: String, reload: Bool = false)
     }
     
-    @Published var chatRooms: [MyChatRoom] = []
-    private let chatRoomManager = MyChatRoomManager.shared
+    @Published var chatRooms: [ChatRoom] = []
     
     func bind() {
         inputSubject
@@ -48,8 +47,8 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
     
     private func deleteChatRoom(indexPath: IndexPath) {
         guard let id = chatRooms.getOrNil(index: indexPath.row)?.id else { return }
-        MyChatRoomManager.shared
-            .deleteChatRoom(id: id)
+        DatabaseManager.shared
+            .deleteChatRoom(byID: id)
             .sink { [weak self] completion in
                 switch completion {
                 case .finished: break
@@ -66,8 +65,8 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
     
     private func deleteAllChatRoom() {
         guard chatRooms.isNotEmpty else { return }
-        MyChatRoomManager.shared
-            .deleteAllChatRoom()
+        DatabaseManager.shared
+            .deleteAllChatRooms()
             .sink { [weak self] completion in
                 switch completion {
                 case .finished: break
@@ -84,7 +83,8 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
     
     /// 拿取所有聊天室資料
     private func fetchChatRooms() {
-        chatRoomManager.fetchAllChatRooms()
+        DatabaseManager.shared
+            .fetchChatRooms()
             .receive(on: RunLoop.main)
             .sink { _ in
                 

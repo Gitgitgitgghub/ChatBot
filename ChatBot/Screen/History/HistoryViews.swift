@@ -50,7 +50,7 @@ extension HistoryViews {
             label.numberOfLines = 1
             label.textColor = .red.withAlphaComponent(0.8)
         }
-        private(set) var chatRoom: MyChatRoom?
+        private(set) var chatRoom: ChatRoom?
         private let dateFormatter = DateFormatter().apply { formatter in
             formatter.dateFormat = "yyyy/MM/dd HH:mm"
         }
@@ -83,29 +83,34 @@ extension HistoryViews {
             }
         }
         
-        func bindChatRoom(chatRoom: MyChatRoom) {
+        func bindChatRoom(chatRoom: ChatRoom) {
             self.chatRoom = chatRoom
             setupUI()
         }
         
         private func setupUI() {
-            guard let chatRoom = chatRoom else { return }
-            guard let lastMessage = chatRoom.sortedMessages.last else { return }
-            switch lastMessage.role {
-            case .system, .tool:
-                roleLabel.text = "系統："
-                roleLabel.textColor = .gray.withAlphaComponent(0.8)
-            case .user:
-                roleLabel.text = "你："
-                roleLabel.textColor = .green.withAlphaComponent(0.8)
-            case .assistant:
-                roleLabel.text = "AI："
-                roleLabel.textColor = .blue.withAlphaComponent(0.8)
+            do {
+                guard let chatRoom = chatRoom else { return }
+                lastUpdateLabel.text = dateFormatter.string(from: chatRoom.lastUpdate)
+                try DatabaseManager.shared.dbQueue.read { db in
+                    guard let lastMessage = try chatRoom.messages.fetchAll(db).last else { return }
+                    switch lastMessage.role {
+                    case .system, .tool:
+                        roleLabel.text = "系統："
+                        roleLabel.textColor = .gray.withAlphaComponent(0.8)
+                    case .user:
+                        roleLabel.text = "你："
+                        roleLabel.textColor = .green.withAlphaComponent(0.8)
+                    case .assistant:
+                        roleLabel.text = "AI："
+                        roleLabel.textColor = .blue.withAlphaComponent(0.8)
+                    }
+                    messageLabel.text = lastMessage.message
+                }
+            }catch {
+                
             }
-            messageLabel.text = lastMessage.message
-            if let lastUpdate = chatRoom.lastUpdate {
-                lastUpdateLabel.text = dateFormatter.string(from: lastUpdate)
-            }
+            
         }
         
     }

@@ -25,7 +25,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     private(set) var attributedStringCatches: [Int : NSAttributedString] = [:]
     private(set) var estimatedHeightCatches: [Int : CGFloat] = [:]
     /// 聊天室
-    private(set) var chatRoom: MyChatRoom!
+    private(set) var chatRoom: ChatRoom!
     /// 載入狀態
     private(set) var isLoading = CurrentValueSubject<LoadingStatus, Never>(.none)
     
@@ -93,9 +93,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         var mocks: [ChatMessage] = []
         for _ in 0...100 {
             let message = Bool.random() ? mockString : mockString2
-            if let chatMessage = ChatMessage.createNewMessage(content: message, role: .assistant, messageType: .mock) {
-                mocks.append(chatMessage)
-            }
+            let chatMessage = ChatMessage(message: message, type: .mock, role: .assistant, chatRoomId: chatRoom.id)
+            mocks.append(chatMessage)
         }
         displayMessages.append(contentsOf: mocks)
         delay(delay: 1) {
@@ -130,14 +129,21 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     private func handleLaunchMode() {
         switch chatLaunchMode {
         case .normal:
-            self.chatRoom = MyChatRoomManager.shared.createChatRoom()
+            self.chatRoom = ChatRoom(id: UUID().uuidString, lastUpdate: Date(), messages: [])
             break
         case .chatRoom(let chatRoom):
             self.chatRoom = chatRoom
-            displayMessages = chatRoom.sortedMessages
-            preloadAttributedStringEvent(startIndex: self.displayMessages.count - 1)
+            do {
+                try DatabaseManager.shared.dbQueue.read { db in
+                    displayMessages = try chatRoom.messages.fetchAll(db)
+                    preloadAttributedStringEvent(startIndex: self.displayMessages.count - 1)
+                }
+            }catch {
+                
+            }
         case .prompt(_, prompt: let prompt):
-            guard let message = ChatMessage.createNewMessage(content: prompt, role: .system, messageType: .message) else { return }
+            self.chatRoom = ChatRoom(id: UUID().uuidString, lastUpdate: Date(), messages: [])
+            let message = ChatMessage(message: prompt, type: .message, role: .system, chatRoomId: chatRoom.id)
             displayMessages.append(message)
             preloadAttributedStringEvent(startIndex: self.displayMessages.count - 1)
         }
@@ -179,7 +185,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                 let preloadIndexs = self.generateAlternatingNumbers(start: startIndex, count: self.proloadBatchCount)
                 for index in preloadIndexs {
                     if let message = self.displayMessages.getOrNil(index: index), self.attributedStringCatches[index] == nil {
-                        preloadData.append((index ,message.message ?? ""))
+                        preloadData.append((index ,message.message))
                     }
                 }
                 if preloadData.isEmpty {
@@ -249,7 +255,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     /// 綁定送出文字訊息事件
     private func sendMessageEvent(appendInputMessage: Bool = true) {
         guard let inputMessage = inputMessage, !inputMessage.isEmpty else { return }
-        guard let chatMessage = ChatMessage.createNewMessage(content: inputMessage, role: .user, messageType: .message) else { return }
+        let chatMessage = ChatMessage(message: inputMessage, type: .message, role: .user, chatRoomId: chatRoom.id)
         if inputMessage == "mock" {
             mock()
             return
@@ -262,7 +268,11 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
         publisher
-            .flatMap({ [self] in openai.chatQuery(messages: self.displayMessages, model: .gpt4_o) })
+            .flatMap({ [self] in openai.chatQuery(messages: self.displayMessages, model: .gpt4_o)
+            })
+            .map({ chatRsutlt in
+                return ChatMessage(message: chatRsutlt.choices.first?.message.content?.string ?? "", timestamp: Date(), type: .message, role: chatRsutlt.choices.first?.message.role ?? .assistant, chatRoomId: self.chatRoom.id)
+            })
             .flatMap({ [self] chatMessage in
                 print("回應訊息： \(String(describing: chatMessage.message))")
                 return self.appendNewMessage(newMessage: chatMessage)
@@ -277,7 +287,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     
     /// 把訊息轉attr後加入displayMessage
     private func appendNewMessage(newMessage: ChatMessage) -> AnyPublisher<Void, Error> {
-        return parser.convertStringToAttributedString(string: newMessage.message ?? "")
+        return parser.convertStringToAttributedString(string: newMessage.message)
             .receive(on: RunLoop.main)
             .map({  [weak self] attr in
                 guard let `self` = self else { return }
@@ -300,8 +310,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             outputSubject.send(.saveChatMessageError(error: NSError(domain: "沒有聊天訊息", code: 1)))
             return
         }
-        let manager = MyChatRoomManager.shared
-        manager.saveChatMessage(chatRoom: chatRoom, messages: displayMessages)
+        let manager = DatabaseManager.shared
+        manager.saveChatRoom(chatRoom, messages: displayMessages)
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in
                 switch completion {

@@ -33,7 +33,7 @@ class ChatViewController: BaseUIViewController {
         /// 普通
         case normal
         /// 聊天室
-        case chatRoom(chatRoom: MyChatRoom)
+        case chatRoom(chatRoom: ChatRoom)
         /// 附帶prompt
         case prompt(title: String, prompt: String)
         
@@ -305,7 +305,7 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = viewModel.displayMessages.getOrNil(index: indexPath.row)
-        switch message?.messageType {
+        switch message?.type {
         case .message, .mock:
             let message = message!
             switch message.role {
