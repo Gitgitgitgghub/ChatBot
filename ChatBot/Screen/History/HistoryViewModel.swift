@@ -47,7 +47,7 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
     
     private func deleteChatRoom(indexPath: IndexPath) {
         guard let id = chatRooms.getOrNil(index: indexPath.row)?.id else { return }
-        DatabaseManager.shared
+        ChatRoomManager.shared
             .deleteChatRoom(byID: id)
             .sink { [weak self] completion in
                 switch completion {
@@ -65,7 +65,7 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
     
     private func deleteAllChatRoom() {
         guard chatRooms.isNotEmpty else { return }
-        DatabaseManager.shared
+        ChatRoomManager.shared
             .deleteAllChatRooms()
             .sink { [weak self] completion in
                 switch completion {
@@ -83,7 +83,7 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
     
     /// 拿取所有聊天室資料
     private func fetchChatRooms() {
-        DatabaseManager.shared
+        ChatRoomManager.shared
             .fetchChatRooms()
             .receive(on: RunLoop.main)
             .sink { _ in

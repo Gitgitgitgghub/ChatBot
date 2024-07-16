@@ -339,7 +339,7 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
                     self.speakMessage(message: message.message)
                 }
                 let action2 = UIAction(title: "儲存到筆記", image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off) { (action) in
-                    //Do something when clicked
+                    self.viewModel.transform(inputEvent: .saveMessageToMyNote(indexPath: indexPath))
                 }
                 return UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: [action1, action2])
             })

@@ -37,6 +37,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         case preloadAttributedString(currentIndex: Int)
         case saveMessages
         case retrySendMessage
+        case saveMessageToMyNote(indexPath: IndexPath)
     }
     
     enum OutPutEvent {
@@ -120,6 +121,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                     self.saveMessages()
                 case .retrySendMessage:
                     self.retrySendMessage()
+                case .saveMessageToMyNote(let indexPath):
+                    self.saveMessageToMyNote(indexPath: indexPath)
                 }
             }
             .store(in: &subscriptions)
@@ -252,6 +255,23 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         sendMessageEvent(appendInputMessage: false)
     }
     
+    private func saveMessageToMyNote(indexPath: IndexPath) {
+        guard let attr = attributedStringCatches[indexPath.row] else { return }
+        guard let note = try? MyNote(attributedString: attr) else { return }
+        NoteManager.shared.saveNote(note, comments: [])
+            .sink { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    self?.outputSubject.send(.saveChatMessageError(error: error))
+                case .finished: break
+                }
+                
+            } receiveValue: { [weak self] _ in
+                self?.outputSubject.send(.saveChatMessageSuccess)
+            }
+            .store(in: &subscriptions)
+    }
+    
     /// 綁定送出文字訊息事件
     private func sendMessageEvent(appendInputMessage: Bool = true) {
         guard let inputMessage = inputMessage, !inputMessage.isEmpty else { return }
@@ -309,8 +329,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             outputSubject.send(.saveChatMessageError(error: NSError(domain: "沒有聊天訊息", code: 1)))
             return
         }
-        let manager = DatabaseManager.shared
-        manager.saveChatRoom(chatRoom, messages: displayMessages)
+        ChatRoomManager.shared.saveChatRoom(chatRoom, messages: displayMessages)
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in
                 switch completion {

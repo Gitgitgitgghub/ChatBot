@@ -61,6 +61,7 @@ class MainTabBarController: UITabBarController {
     private func prepare() {
         DispatchQueue.global().async {
             SpeechVoiceManager.shared.prepareSpeechSynthesizer()
+            _ = DatabaseManager.shared
         }
     }
     

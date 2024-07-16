@@ -20,6 +20,20 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
         self.attributedStringData = attributedStringData
     }
     
+    init(attributedString: NSAttributedString) throws {
+        self.lastUpdate = .now
+        self.attributedStringData = try NSKeyedArchiver.archivedData(withRootObject: attributedString, requiringSecureCoding: true)
+    }
+    
+    func attributedString() -> NSAttributedString? {
+        do {
+            return try NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: attributedStringData)
+        } catch {
+            print("Error unarchiving attributed string: \(error)")
+            return nil
+        }
+    }
+    
     func didInsert(_ inserted: InsertionSuccess) {
         id = inserted.rowID
     }
@@ -45,6 +59,23 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
         self.myNotesId = myNoteId
         self.lastUpdate = lastUpdate
         self.attributedStringData = attributedStringData
+    }
+    
+    init(attributedString: NSAttributedString) throws {
+        self.lastUpdate = .now
+        self.attributedStringData = try NSKeyedArchiver.archivedData(withRootObject: attributedString, requiringSecureCoding: true)
+    }
+    
+    ///required init(row: Row)
+    ///encode(to container: inout PersistenceContainer)兩個方法因為遵從codable可以不用實作，但是如果要新增不再row的變數就要實作告訴他怎麼初始化
+    
+    func attributedString() -> NSAttributedString? {
+        do {
+            return try NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: attributedStringData)
+        } catch {
+            print("Error unarchiving attributed string: \(error)")
+            return nil
+        }
     }
     
     func didInsert(_ inserted: InsertionSuccess) {
