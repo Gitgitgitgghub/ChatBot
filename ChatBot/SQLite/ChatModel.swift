@@ -15,7 +15,7 @@ class ChatMessage: Codable, FetchableRecord, PersistableRecord {
         case mock, message
     }
     typealias Role = ChatQuery.ChatCompletionMessageParam.Role
-    /// id由資料庫自動產生所以是nil
+    /// id由資料庫自動產生所以是optional
     var id: Int64?
     /// 訊息的聊天室id (注意這邊命名規則有要求)
     /// 定義 static let chatRoom = belongsTo(ChatRoom.self)

@@ -25,7 +25,7 @@ class DatabaseManager {
                 .appendingPathComponent("db.sqlite")
             dbQueue = try DatabaseQueue(path: databaseURL.path)
             var migrator = DatabaseMigrator()
-
+            // 創造聊天室和訊息的表
             migrator.registerMigration("createChatRooms") { db in
                 try db.create(table: ChatRoom.databaseTableName, ifNotExists: true) { t in
                     t.autoIncrementedPrimaryKey("id")
@@ -38,6 +38,20 @@ class DatabaseManager {
                     t.column("type", .integer).notNull()
                     t.column("role", .text).notNull()
                     t.belongsTo(ChatRoom.databaseTableName, onDelete: .cascade).notNull()
+                }
+            }
+            // 創造Note跟Comment的表
+            migrator.registerMigration("createMyNotesAndComments") { db in
+                try db.create(table: MyNote.databaseTableName, ifNotExists: true) { t in
+                    t.autoIncrementedPrimaryKey("id")
+                    t.column("lastUpdate", .datetime).notNull()
+                    t.column("attributedStringData", .blob).notNull()
+                }
+                try db.create(table: MyComment.databaseTableName, ifNotExists: true) { t in
+                    t.autoIncrementedPrimaryKey("id")
+                    t.column("lastUpdate", .datetime).notNull()
+                    t.column("attributedStringData", .blob).notNull()
+                    t.belongsTo(MyNote.databaseTableName, onDelete: .cascade).notNull()
                 }
             }
             try migrator.migrate(dbQueue)
