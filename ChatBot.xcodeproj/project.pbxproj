@@ -68,6 +68,7 @@
 		32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */; };
 		32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264312C1BDA8D0083EC63 /* OpenAIService.swift */; };
 		32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264332C1BE75C0083EC63 /* Extensions.swift */; };
+		946F7A382C464EC4007DC7A8 /* NoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7A372C464EC4007DC7A8 /* NoteModel.swift */; };
 		94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */; };
 		94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6CFC32C39EBD500B1E4E3 /* HistoryViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -149,6 +150,7 @@
 		32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
 		32E264312C1BDA8D0083EC63 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		32E264332C1BE75C0083EC63 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		946F7A372C464EC4007DC7A8 /* NoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteModel.swift; sourceTree = "<group>"; };
 		94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
 		94A6CFC32C39EBD500B1E4E3 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -246,7 +248,7 @@
 			isa = PBXGroup;
 			children = (
 				3241BE4A2C44B01A0047BB71 /* ChatModel.swift */,
-				3241BE4F2C44B3FC0047BB71 /* DatabaseManager.swift */,
+				946F7A372C464EC4007DC7A8 /* NoteModel.swift */,
 			);
 			path = SQLite;
 			sourceTree = "<group>";
@@ -280,6 +282,7 @@
 		32690FC92C3D2EC300700192 /* Manager */ = {
 			isa = PBXGroup;
 			children = (
+				3241BE4F2C44B3FC0047BB71 /* DatabaseManager.swift */,
 				32690FD02C3E679200700192 /* SpeechVoiceManager.swift */,
 				3241BE472C3F841E0047BB71 /* AccountManager.swift */,
 			);
@@ -571,6 +574,7 @@
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
 				32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */,
 				323E88B22C354BA200401F50 /* HomeViews.swift in Sources */,
+				946F7A382C464EC4007DC7A8 /* NoteModel.swift in Sources */,
 				326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
 				32690FD42C3E766300700192 /* VoicePickerViewController.swift in Sources */,

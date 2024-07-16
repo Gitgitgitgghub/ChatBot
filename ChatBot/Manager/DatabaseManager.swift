@@ -47,68 +47,45 @@ class DatabaseManager {
         }
     }
     
-    //TODO: - 如果聊天室已經存在不應該創建新的
+    /// 保存聊天訊息
     func saveChatRoom(_ chatRoom: ChatRoom, messages: [ChatMessage]) -> AnyPublisher<Void, Error> {
-        Future { promise in
-            do {
-                try self.dbQueue.write { db in
-                    try chatRoom.insert(db)
-                    for message in messages {
-                        //注意這邊chatRoom insert後會有id他是ChatMessage的chatRoomsId一定要給不然會錯誤
-                        message.chatRoomsId = chatRoom.id!
-                        try message.insert(db)
-                    }
-                }
-                print("🟢saveChatRoom success \(chatRoom.id ?? -1)")
-                promise(.success(()))
-            } catch {
-                print("🔴saveChatRoom error: \(error)")
-                promise(.failure(error))
+        dbQueue.writePublisher(receiveOn: RunLoop.main) { db in
+            // save結合了indert跟update如果主鍵不存在則insert反之update
+            chatRoom.lastUpdate = .now
+            try chatRoom.save(db)
+            for message in messages {
+                //注意這邊chatRoom insert後會有id他是ChatMessage的chatRoomsId一定要給不然會錯誤
+                message.chatRoomsId = chatRoom.id!
+                try message.save(db)
             }
         }
+        .map { _ in () }
         .eraseToAnyPublisher()
     }
     
+    /// 讀取所有聊天室資料
     func fetchChatRooms() -> AnyPublisher<[ChatRoom], Error> {
-        Future { promise in
-            do {
-                let chatRooms = try self.dbQueue.read { db in
-                    let chatRooms = try ChatRoom.fetchAll(db, sql: "SELECT * FROM chatRooms ORDER BY lastUpdate DESC")
-                    return chatRooms
-                }
-                promise(.success(chatRooms))
-            } catch {
-                promise(.failure(error))
-            }
+        dbQueue.readPublisher(receiveOn: RunLoop.main) { db in
+            return try ChatRoom.fetchAll(db, sql: "SELECT * FROM chatRooms ORDER BY lastUpdate DESC")
         }
         .eraseToAnyPublisher()
     }
     
-    func deleteChatRoom(byID id: String) -> AnyPublisher<Void, Error> {
-        Future { promise in
-            do {
-                try self.dbQueue.write { db in
-                    _ = try ChatRoom.deleteOne(db, key: id)
-                }
-                promise(.success(()))
-            } catch {
-                promise(.failure(error))
-            }
+    /// 刪除特定的聊天室
+    func deleteChatRoom(byID id: Int64) -> AnyPublisher<Void, Error> {
+        dbQueue.writePublisher(receiveOn: RunLoop.main) { db in
+            try ChatRoom.deleteOne(db, key: id)
         }
+        .map { _ in () }
         .eraseToAnyPublisher()
     }
     
+    /// 刪除所有聊天室
     func deleteAllChatRooms() -> AnyPublisher<Void, Error> {
-        Future { promise in
-            do {
-                try self.dbQueue.write { db in
-                    let _ = try ChatRoom.deleteAll(db)
-                }
-                promise(.success(()))
-            } catch {
-                promise(.failure(error))
-            }
+        dbQueue.writePublisher { db in
+            try ChatRoom.deleteAll(db)
         }
+        .map { _ in () }
         .eraseToAnyPublisher()
     }
 }

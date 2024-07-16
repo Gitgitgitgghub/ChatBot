@@ -46,21 +46,21 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
     }
     
     private func deleteChatRoom(indexPath: IndexPath) {
-//        guard let id = chatRooms.getOrNil(index: indexPath.row)?.id else { return }
-//        DatabaseManager.shared
-//            .deleteChatRoom(byID: id)
-//            .sink { [weak self] completion in
-//                switch completion {
-//                case .finished: break
-//                case .failure(let error):
-//                    self?.outputSubject.send(.toast(message: "刪除失敗： \(error.localizedDescription)"))
-//                }
-//                
-//            } receiveValue: { [weak self] _ in
-//                self?.chatRooms.remove(at: indexPath.row)
-//                self?.outputSubject.send(.toast(message: "刪除成功 ！", reload: true))
-//            }
-//            .store(in: &subscriptions)
+        guard let id = chatRooms.getOrNil(index: indexPath.row)?.id else { return }
+        DatabaseManager.shared
+            .deleteChatRoom(byID: id)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished: break
+                case .failure(let error):
+                    self?.outputSubject.send(.toast(message: "刪除失敗： \(error.localizedDescription)"))
+                }
+                
+            } receiveValue: { [weak self] _ in
+                self?.chatRooms.remove(at: indexPath.row)
+                self?.outputSubject.send(.toast(message: "刪除成功 ！", reload: true))
+            }
+            .store(in: &subscriptions)
     }
     
     private func deleteAllChatRoom() {
