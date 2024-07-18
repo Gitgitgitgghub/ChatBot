@@ -12,22 +12,30 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
     
     var id: Int64?
     var lastUpdate: Date
+    var title: String
     var attributedStringData: Data
+    var documentType: String
     
-    init(id: Int64? = nil, lastUpdate: Date, attributedStringData: Data) {
+    
+    init(id: Int64? = nil, title: String, lastUpdate: Date, attributedStringData: Data, documentType: String) {
         self.id = id
+        self.title = title
         self.lastUpdate = lastUpdate
         self.attributedStringData = attributedStringData
+        self.documentType = documentType
     }
     
-    init(attributedString: NSAttributedString) throws {
+    init(title: String, attributedString: NSAttributedString) throws {
+        self.title = title
         self.lastUpdate = .now
-        self.attributedStringData = try NSKeyedArchiver.archivedData(withRootObject: attributedString, requiringSecureCoding: true)
+        let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
+        self.documentType = documentType.rawValue
+        self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
     }
     
     func attributedString() -> NSAttributedString? {
         do {
-            return try NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: attributedStringData)
+            return try NSAttributedString(data: attributedStringData, options: [.documentType: self.documentType, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
         } catch {
             print("Error unarchiving attributed string: \(error)")
             return nil
@@ -49,34 +57,39 @@ extension MyNote {
 }
 
 class MyComment: Codable, FetchableRecord, PersistableRecord {
+    
     var id: Int64?
     var myNotesId: Int64 = 0
     var lastUpdate: Date
     var attributedStringData: Data
+    var documentType: String
     
-    init(id: Int64? = nil, myNoteId: Int64, lastUpdate: Date, attributedStringData: Data) {
+    init(id: Int64? = nil, myNoteId: Int64, lastUpdate: Date, attributedStringData: Data, documentType: String) {
         self.id = id
         self.myNotesId = myNoteId
         self.lastUpdate = lastUpdate
         self.attributedStringData = attributedStringData
+        self.documentType = documentType
     }
     
     init(attributedString: NSAttributedString) throws {
         self.lastUpdate = .now
-        self.attributedStringData = try NSKeyedArchiver.archivedData(withRootObject: attributedString, requiringSecureCoding: true)
+        let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
+        self.documentType = documentType.rawValue
+        self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
     }
-    
-    ///required init(row: Row)
-    ///encode(to container: inout PersistenceContainer)兩個方法因為遵從codable可以不用實作，但是如果要新增不再row的變數就要實作告訴他怎麼初始化
     
     func attributedString() -> NSAttributedString? {
         do {
-            return try NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: attributedStringData)
+            return try NSAttributedString(data: attributedStringData, options: [.documentType: self.documentType, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
         } catch {
             print("Error unarchiving attributed string: \(error)")
             return nil
         }
     }
+    
+    ///required init(row: Row)
+    ///encode(to container: inout PersistenceContainer)兩個方法因為遵從codable可以不用實作，但是如果要新增不再row的變數就要實作告訴他怎麼初始化
     
     func didInsert(_ inserted: InsertionSuccess) {
         id = inserted.rowID

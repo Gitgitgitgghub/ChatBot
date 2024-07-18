@@ -68,6 +68,8 @@
 		32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */; };
 		32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264312C1BDA8D0083EC63 /* OpenAIService.swift */; };
 		32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264332C1BE75C0083EC63 /* Extensions.swift */; };
+		9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */; };
+		9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */; };
 		946F7A382C464EC4007DC7A8 /* NoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7A372C464EC4007DC7A8 /* NoteModel.swift */; };
 		946F7A3A2C466F38007DC7A8 /* NoteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7A392C466F38007DC7A8 /* NoteManager.swift */; };
 		946F7A3C2C466FAA007DC7A8 /* ChatRoomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7A3B2C466FAA007DC7A8 /* ChatRoomManager.swift */; };
@@ -152,6 +154,8 @@
 		32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
 		32E264312C1BDA8D0083EC63 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		32E264332C1BE75C0083EC63 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViews.swift; sourceTree = "<group>"; };
+		9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViewModel.swift; sourceTree = "<group>"; };
 		946F7A372C464EC4007DC7A8 /* NoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteModel.swift; sourceTree = "<group>"; };
 		946F7A392C466F38007DC7A8 /* NoteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteManager.swift; sourceTree = "<group>"; };
 		946F7A3B2C466FAA007DC7A8 /* ChatRoomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomManager.swift; sourceTree = "<group>"; };
@@ -279,6 +283,8 @@
 			isa = PBXGroup;
 			children = (
 				32690FCC2C3D2F2400700192 /* MyNoteViewController.swift */,
+				9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */,
+				9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */,
 			);
 			path = MyNote;
 			sourceTree = "<group>";
@@ -591,6 +597,8 @@
 				94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */,
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */,
+				9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */,
+				9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,

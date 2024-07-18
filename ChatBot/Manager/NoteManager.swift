@@ -28,4 +28,12 @@ class NoteManager {
         .map { _ in () }
         .eraseToAnyPublisher()
     }
+    
+    /// 讀取所有聊天室資料
+    func fetchMyNotes() -> AnyPublisher<[MyNote], Error> {
+        dbQueue.readPublisher(receiveOn: RunLoop.main) { db in
+            return try MyNote.fetchAll(db, sql: "SELECT * FROM \(MyNote.databaseTableName) ORDER BY lastUpdate DESC")
+        }
+        .eraseToAnyPublisher()
+    }
 }

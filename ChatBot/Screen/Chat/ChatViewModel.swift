@@ -15,7 +15,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     @Published var chatLaunchMode: ChatViewController.ChatLaunchMode
     let openai: OpenAIProtocol
     private var parserSubscription: AnyCancellable? = nil
-    @Published var inputMessage: String? = "I go school every days"
+    @Published var inputMessage: String? = "mock"
     @Published var pickedImageInfo: [UIImagePickerController.InfoKey : Any]?
     private let parser = AttributedStringParser()
     /// 一次要解析多少筆
@@ -37,7 +37,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         case preloadAttributedString(currentIndex: Int)
         case saveMessages
         case retrySendMessage
-        case saveMessageToMyNote(indexPath: IndexPath)
+        case saveMessageToMyNote(noteTitle: String?, indexPath: IndexPath)
     }
     
     enum OutPutEvent {
@@ -121,8 +121,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                     self.saveMessages()
                 case .retrySendMessage:
                     self.retrySendMessage()
-                case .saveMessageToMyNote(let indexPath):
-                    self.saveMessageToMyNote(indexPath: indexPath)
+                case .saveMessageToMyNote(let noteTitle, let indexPath):
+                    self.saveMessageToMyNote(noteTitle: noteTitle, indexPath: indexPath)
                 }
             }
             .store(in: &subscriptions)
@@ -255,9 +255,9 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         sendMessageEvent(appendInputMessage: false)
     }
     
-    private func saveMessageToMyNote(indexPath: IndexPath) {
+    private func saveMessageToMyNote(noteTitle: String?, indexPath: IndexPath) {
         guard let attr = attributedStringCatches[indexPath.row] else { return }
-        guard let note = try? MyNote(attributedString: attr) else { return }
+        guard let note = try? MyNote(title: noteTitle ?? "My Note", attributedString: attr) else { return }
         NoteManager.shared.saveNote(note, comments: [])
             .sink { [weak self] completion in
                 switch completion {

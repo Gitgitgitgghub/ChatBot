@@ -193,6 +193,19 @@ class ChatViewController: BaseUIViewController {
         viewModel.transform(inputEvent: .preloadAttributedString(currentIndex: visibleRows.first!.row))
     }
     
+    /// 顯示儲存筆記輸入title的alertVC
+    private func showNoteTitleInputView(completion: @escaping (_ noteTitle: String?) -> ()) {
+        let vc = UIAlertController(title: "儲存筆記", message: "請輸入標題", preferredStyle: .alert)
+        vc.addTextField { textField in
+            textField.text = "我的筆記"
+        }
+        vc.addAction(.init(title: "保存", style: .default, handler: { action in
+            completion(vc.textFields?.first?.text)
+        }))
+        vc.addAction(.init(title: "取消", style: .cancel))
+        present(vc, animated: true)
+    }
+    
     //MARK: - objc
     @objc private func dismissKeyboard() {
         view.endEditing(true)
@@ -339,7 +352,9 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
                     self.speakMessage(message: message.message)
                 }
                 let action2 = UIAction(title: "儲存到筆記", image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off) { (action) in
-                    self.viewModel.transform(inputEvent: .saveMessageToMyNote(indexPath: indexPath))
+                    self.showNoteTitleInputView { noteTitle in
+                        self.viewModel.transform(inputEvent: .saveMessageToMyNote(noteTitle: noteTitle, indexPath: indexPath))
+                    }
                 }
                 return UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: [action1, action2])
             })

@@ -46,11 +46,14 @@ class DatabaseManager {
                     t.autoIncrementedPrimaryKey("id")
                     t.column("lastUpdate", .datetime).notNull()
                     t.column("attributedStringData", .blob).notNull()
+                    t.column("title", .text).notNull()
+                    t.column("documentType", .text).notNull()
                 }
                 try db.create(table: MyComment.databaseTableName, ifNotExists: true) { t in
                     t.autoIncrementedPrimaryKey("id")
                     t.column("lastUpdate", .datetime).notNull()
                     t.column("attributedStringData", .blob).notNull()
+                    t.column("documentType", .text).notNull()
                     t.belongsTo(MyNote.databaseTableName, onDelete: .cascade).notNull()
                 }
             }
