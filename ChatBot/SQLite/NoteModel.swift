@@ -26,9 +26,14 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
     }
     
     init(title: String, attributedString: NSAttributedString) throws {
+//        self.title = title
+//        self.lastUpdate = .now
+//        let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
+//        self.documentType = documentType.rawValue
+//        self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
         self.title = title
         self.lastUpdate = .now
-        let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
+        let documentType: NSAttributedString.DocumentType = .html
         self.documentType = documentType.rawValue
         self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
     }

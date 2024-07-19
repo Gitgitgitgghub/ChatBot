@@ -20,4 +20,19 @@ extension NSAttributedString {
         return estimatedHeight
     }
     
+    func toHTML() -> String? {
+        let documentAttributes: [NSAttributedString.DocumentAttributeKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: NSNumber(value: String.Encoding.utf8.rawValue)
+        ]
+        
+        do {
+            let htmlData = try self.data(from: NSRange(location: 0, length: self.length), documentAttributes: documentAttributes)
+            return String(data: htmlData, encoding: .utf8)
+        } catch {
+            print("Error converting NSAttributedString to HTML: \(error)")
+            return nil
+        }
+    }
+    
 }

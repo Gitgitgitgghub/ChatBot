@@ -70,6 +70,10 @@
 		32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264332C1BE75C0083EC63 /* Extensions.swift */; };
 		9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */; };
 		9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */; };
+		9455D80C2C4A3FCB007AC9C2 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 9455D8092C4A3FCB007AC9C2 /* index.html */; };
+		9455D80D2C4A3FCB007AC9C2 /* script.js in Resources */ = {isa = PBXBuildFile; fileRef = 9455D80A2C4A3FCB007AC9C2 /* script.js */; };
+		9455D80E2C4A3FCB007AC9C2 /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 9455D80B2C4A3FCB007AC9C2 /* style.css */; };
+		9455D8102C4A3FE6007AC9C2 /* HtmlEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455D80F2C4A3FE6007AC9C2 /* HtmlEditorViewController.swift */; };
 		946F7A382C464EC4007DC7A8 /* NoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7A372C464EC4007DC7A8 /* NoteModel.swift */; };
 		946F7A3A2C466F38007DC7A8 /* NoteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7A392C466F38007DC7A8 /* NoteManager.swift */; };
 		946F7A3C2C466FAA007DC7A8 /* ChatRoomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7A3B2C466FAA007DC7A8 /* ChatRoomManager.swift */; };
@@ -156,6 +160,10 @@
 		32E264332C1BE75C0083EC63 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViews.swift; sourceTree = "<group>"; };
 		9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViewModel.swift; sourceTree = "<group>"; };
+		9455D8092C4A3FCB007AC9C2 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		9455D80A2C4A3FCB007AC9C2 /* script.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = script.js; sourceTree = "<group>"; };
+		9455D80B2C4A3FCB007AC9C2 /* style.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
+		9455D80F2C4A3FE6007AC9C2 /* HtmlEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HtmlEditorViewController.swift; sourceTree = "<group>"; };
 		946F7A372C464EC4007DC7A8 /* NoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteModel.swift; sourceTree = "<group>"; };
 		946F7A392C466F38007DC7A8 /* NoteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteManager.swift; sourceTree = "<group>"; };
 		946F7A3B2C466FAA007DC7A8 /* ChatRoomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomManager.swift; sourceTree = "<group>"; };
@@ -312,6 +320,7 @@
 		32800EE82C1C225500FE5786 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
+				9455D8082C4A3FA3007AC9C2 /* HtmlEditor */,
 				32690FD22C3E763100700192 /* VoicePicker */,
 				32690FC82C3D0F7000700192 /* MyNote */,
 				32690FC72C3D0F6600700192 /* Setting */,
@@ -434,6 +443,17 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
+		9455D8082C4A3FA3007AC9C2 /* HtmlEditor */ = {
+			isa = PBXGroup;
+			children = (
+				9455D8092C4A3FCB007AC9C2 /* index.html */,
+				9455D80A2C4A3FCB007AC9C2 /* script.js */,
+				9455D80B2C4A3FCB007AC9C2 /* style.css */,
+				9455D80F2C4A3FE6007AC9C2 /* HtmlEditorViewController.swift */,
+			);
+			path = HtmlEditor;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -554,7 +574,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9455D80D2C4A3FCB007AC9C2 /* script.js in Resources */,
+				9455D80E2C4A3FCB007AC9C2 /* style.css in Resources */,
 				32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */,
+				9455D80C2C4A3FCB007AC9C2 /* index.html in Resources */,
 				32690FCF2C3E2D2500700192 /* Test.xib in Resources */,
 				32800EFE2C21316D00FE5786 /* LaunchScreen.storyboard in Resources */,
 			);
@@ -616,6 +639,7 @@
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				3241BE442C3F81D80047BB71 /* UserDefault+.swift in Sources */,
+				9455D8102C4A3FE6007AC9C2 /* HtmlEditorViewController.swift in Sources */,
 				3241BE412C3F7A720047BB71 /* SettingViews.swift in Sources */,
 				946F7A3C2C466FAA007DC7A8 /* ChatRoomManager.swift in Sources */,
 				3241BE4B2C44B01A0047BB71 /* ChatModel.swift in Sources */,

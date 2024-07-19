@@ -117,7 +117,7 @@ extension MyNoteViews {
                 guard let myNote = self.myNote else { return }
                 titleLabel.text = myNote.title
                 lastUpdateLabel.text = dateFormatter.string(from: myNote.lastUpdate)
-                messageLabel.text = myNote.attributedString()?.string
+                messageLabel.attributedText = myNote.attributedString()
                 try DatabaseManager.shared.dbQueue.read { db in
                     let commentCount = try myNote.comments.fetchCount(db)
                     commentCountLabel.text = ": \(commentCount)"

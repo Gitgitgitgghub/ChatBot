@@ -44,7 +44,7 @@ class AttributedStringParser: AttributedStringParsable {
     func createAttributedString(string: String) throws -> NSAttributedString {
         let attributedString = NSMutableAttributedString(string: string)
         attributedString.addAttributes([.font : UIFont.systemFont(ofSize: 16),
-                                        .foregroundColor : UIColor.white], range: NSRange(location: 0, length: string.count))
+                                        .foregroundColor : SystemDefine.Message.textColor], range: NSRange(location: 0, length: string.count))
         do {
             try self.matchTitleTexts(string: string, attributedString: attributedString)
             try self.matchUrlTexts(string: string, attributedString: attributedString)
