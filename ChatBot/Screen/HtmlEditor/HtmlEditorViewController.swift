@@ -55,7 +55,7 @@ class HtmlEditorViewController: BaseUIViewController {
             var html = try String(contentsOfFile: htmlPath, encoding: .utf8)
             if let htmlContent = attr?.toHTML() {
                 print("load: \(htmlContent)")
-                html = html.replacingOccurrences(of: "<div id=\"content\"></div>", with: "<div id=\"content\">\(htmlContent)</div>")
+                html = html.replacingOccurrences(of: "<div id=\"text-input\" contenteditable=\"true\"></div>", with: "<div id=\"text-input\" contenteditable=\"true\">\(htmlContent)</div>")
             }
             webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
         } catch {
@@ -70,20 +70,16 @@ class HtmlEditorViewController: BaseUIViewController {
         }
     }
     
-    private func convertHTMLToAttributedString(html: String) {
-        guard let data = html.data(using: .utf8) else { return }
-        if let attr = try? NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil) {
-            delegate?.didSaveAttributedString(attributedString: attr)
-        }else {
-            print("[DEBUG]: \(#function) error")
-        }
+    private func convertHTMLToAttributedString(html: String) -> NSAttributedString? {
+        guard let data = html.data(using: .utf8) else { return nil}
+        return try? NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
     }
     
     @objc private func save() {
         webView.evaluateJavaScript("document.getElementById('text-input').innerHTML") { [weak self] result, error in
-            if let htmlContent = result as? String {
+            if let htmlContent = result as? String, let attr = self?.convertHTMLToAttributedString(html: htmlContent) {
                 print("save: \(htmlContent)")
-                self?.convertHTMLToAttributedString(html: htmlContent)
+                self?.delegate?.didSaveAttributedString(attributedString: attr)
             } else if let error = error {
                 print("[DEBUG]: \(#function) \(error.localizedDescription)")
             }
