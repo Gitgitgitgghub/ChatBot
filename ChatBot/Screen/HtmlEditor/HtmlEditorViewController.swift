@@ -16,24 +16,24 @@ protocol HtmlEditorViewControllerDelegate: AnyObject {
 
 class HtmlEditorViewController: BaseUIViewController {
     
-    let webView = WKWebView()
+    lazy var webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
         .apply { webView in
             webView.translatesAutoresizingMaskIntoConstraints = false
+            webView.configuration.userContentController = .init()
+            webView.configuration.userContentController.add(self, name: "task")
         }
-    let saveButton = UIButton(type: .custom).apply { button in
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("保存", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-    }
-    let discardButton = UIButton(type: .custom).apply { button in
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("放棄", for: .normal)
-        button.setTitleColor(.systemRed, for: .normal)
-    }
-    var attr: NSAttributedString
+    var attr: NSAttributedString?
     weak var delegate: HtmlEditorViewControllerDelegate?
     
-    init(attr: NSAttributedString, delegate: HtmlEditorViewControllerDelegate) {
+    /// webview call
+    enum Task: String, CaseIterable {
+        /// 保存
+        case save
+        /// 放棄
+        case discard
+    }
+    
+    init(attr: NSAttributedString?, delegate: HtmlEditorViewControllerDelegate) {
         self.attr = attr
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
@@ -50,48 +50,24 @@ class HtmlEditorViewController: BaseUIViewController {
     }
     
     private func loadWebView() {
-        if let htmlContent = attr.toHTML() {
-            print("[DEBUG]: \(#function) \(htmlContent)")
-            if let htmlPath = Bundle.main.path(forResource: "index", ofType: "html") {
-                do {
-                    var html = try String(contentsOfFile: htmlPath, encoding: .utf8)
-                    html = html.replacingOccurrences(of: "<div id=\"content\"></div>", with: "<div id=\"content\">\(htmlContent)</div>")
-                    webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
-                } catch {
-                    print("Error loading HTML file: \(error)")
-                }
+        guard let htmlPath = Bundle.main.path(forResource: "index", ofType: "html") else { return }
+        do {
+            var html = try String(contentsOfFile: htmlPath, encoding: .utf8)
+            if let htmlContent = attr?.toHTML() {
+                print("load: \(htmlContent)")
+                html = html.replacingOccurrences(of: "<div id=\"content\"></div>", with: "<div id=\"content\">\(htmlContent)</div>")
             }
+            webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
+        } catch {
+            print("Error loading HTML file: \(error)")
         }
-//        let htmlContent = NSAttributedString(string: godzilla)
-//        if let htmlPath = Bundle.main.path(forResource: "index", ofType: "html") {
-//            do {
-//                var html = try String(contentsOfFile: htmlPath, encoding: .utf8)
-//                html = html.replacingOccurrences(of: "<div id=\"content\"></div>", with: "<div id=\"content\">\(htmlContent)</div>")
-//                webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
-//            } catch {
-//                print("Error loading HTML file: \(error)")
-//            }
-//        }
     }
     
     private func initUI() {
-        view.addSubview(saveButton)
-        view.addSubview(discardButton)
         view.addSubview(webView)
-        saveButton.snp.makeConstraints { make in
-            make.top.trailing.equalTo(view.safeAreaLayoutGuide).inset(10)
-            make.size.equalTo(CGSize(width: 100, height: 50))
-        }
-        discardButton.snp.makeConstraints { make in
-            make.top.leading.equalTo(view.safeAreaLayoutGuide).inset(10)
-            make.size.equalTo(CGSize(width: 100, height: 50))
-        }
         webView.snp.makeConstraints { make in
-            make.top.equalTo(saveButton.snp.bottom).offset(10)
-            make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.edges.equalTo(view.safeAreaLayoutGuide)
         }
-        saveButton.addTarget(self, action: #selector(save), for: .touchUpInside)
-        discardButton.addTarget(self, action: #selector(discard), for: .touchUpInside)
     }
     
     private func convertHTMLToAttributedString(html: String) {
@@ -106,6 +82,7 @@ class HtmlEditorViewController: BaseUIViewController {
     @objc private func save() {
         webView.evaluateJavaScript("document.getElementById('text-input').innerHTML") { [weak self] result, error in
             if let htmlContent = result as? String {
+                print("save: \(htmlContent)")
                 self?.convertHTMLToAttributedString(html: htmlContent)
             } else if let error = error {
                 print("[DEBUG]: \(#function) \(error.localizedDescription)")
@@ -117,4 +94,19 @@ class HtmlEditorViewController: BaseUIViewController {
     @objc private func discard() {
         dismiss(animated: true)
     }
+}
+
+//MARK: - WKScriptMessageHandler實作webview與vc溝通
+extension HtmlEditorViewController: WKScriptMessageHandler {
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let body = message.body as? String, let task = Task(rawValue: body) else { return }
+        switch task {
+        case .save:
+            save()
+        case .discard:
+            discard()
+        }
+    }
+    
 }

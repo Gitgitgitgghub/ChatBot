@@ -28,7 +28,9 @@ class ScreenLoader {
         /// 我的筆記
         case myNote
         /// html 文字編輯
-        case HTMLEditor(attr: NSAttributedString, delegate: HtmlEditorViewControllerDelegate)
+        case HTMLEditor(attr: NSAttributedString?, delegate: HtmlEditorViewControllerDelegate)
+        /// 筆記畫面
+        case note(myNote: MyNote)
     }
     
     static func loadScreen(screen: Screen) -> UIViewController {
@@ -41,6 +43,7 @@ class ScreenLoader {
         case .setting: return SettingViewController()
         case .myNote: return MyNoteViewController()
         case .HTMLEditor(attr: let attr, delegate: let delegate): return HtmlEditorViewController(attr: attr, delegate: delegate)
+        case .note(myNote: let myNote): return NoteViewController(myNote: myNote)
         }
     }
 }

@@ -30,6 +30,9 @@
 		3241BE4B2C44B01A0047BB71 /* ChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE4A2C44B01A0047BB71 /* ChatModel.swift */; };
 		3241BE4E2C44B1B90047BB71 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 3241BE4D2C44B1B90047BB71 /* GRDB */; };
 		3241BE502C44B3FC0047BB71 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE4F2C44B3FC0047BB71 /* DatabaseManager.swift */; };
+		3241BE532C4DEAAA0047BB71 /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE522C4DEAAA0047BB71 /* NoteViewController.swift */; };
+		3241BE552C4DF0C70047BB71 /* NoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE542C4DF0C70047BB71 /* NoteViewModel.swift */; };
+		3241BE572C4DF1AA0047BB71 /* NoteViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3241BE562C4DF1AA0047BB71 /* NoteViews.swift */; };
 		32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */; };
 		32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FC52C3CE62A00700192 /* ImageFileHandler.swift */; };
 		32690FCB2C3D2F0600700192 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32690FCA2C3D2F0600700192 /* SettingViewController.swift */; };
@@ -118,6 +121,9 @@
 		3241BE472C3F841E0047BB71 /* AccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		3241BE4A2C44B01A0047BB71 /* ChatModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModel.swift; sourceTree = "<group>"; };
 		3241BE4F2C44B3FC0047BB71 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		3241BE522C4DEAAA0047BB71 /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
+		3241BE542C4DF0C70047BB71 /* NoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewModel.swift; sourceTree = "<group>"; };
+		3241BE562C4DF1AA0047BB71 /* NoteViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViews.swift; sourceTree = "<group>"; };
 		32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageAttachment.swift; sourceTree = "<group>"; };
 		32690FC52C3CE62A00700192 /* ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFileHandler.swift; sourceTree = "<group>"; };
 		32690FCA2C3D2F0600700192 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
@@ -269,6 +275,16 @@
 			path = SQLite;
 			sourceTree = "<group>";
 		};
+		3241BE512C4DEA890047BB71 /* Note */ = {
+			isa = PBXGroup;
+			children = (
+				3241BE522C4DEAAA0047BB71 /* NoteViewController.swift */,
+				3241BE542C4DF0C70047BB71 /* NoteViewModel.swift */,
+				3241BE562C4DF1AA0047BB71 /* NoteViews.swift */,
+			);
+			path = Note;
+			sourceTree = "<group>";
+		};
 		32690FC22C3BA06100700192 /* Base */ = {
 			isa = PBXGroup;
 			children = (
@@ -290,6 +306,7 @@
 		32690FC82C3D0F7000700192 /* MyNote */ = {
 			isa = PBXGroup;
 			children = (
+				3241BE512C4DEA890047BB71 /* Note */,
 				32690FCC2C3D2F2400700192 /* MyNoteViewController.swift */,
 				9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */,
 				9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */,
@@ -612,6 +629,7 @@
 				946F7A382C464EC4007DC7A8 /* NoteModel.swift in Sources */,
 				326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
+				3241BE532C4DEAAA0047BB71 /* NoteViewController.swift in Sources */,
 				32690FD42C3E766300700192 /* VoicePickerViewController.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
 				32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */,
@@ -645,6 +663,7 @@
 				3241BE4B2C44B01A0047BB71 /* ChatModel.swift in Sources */,
 				32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */,
 				323E88AE2C353DFA00401F50 /* HomeViewController.swift in Sources */,
+				3241BE572C4DF1AA0047BB71 /* NoteViews.swift in Sources */,
 				323E88B42C3B761800401F50 /* HistoryViews.swift in Sources */,
 				323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */,
 				3241BE462C3F82410047BB71 /* DefaultKeys.swift in Sources */,
@@ -658,6 +677,7 @@
 				326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */,
 				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
+				3241BE552C4DF0C70047BB71 /* NoteViewModel.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
 				323E88AC2C353DE800401F50 /* HistoryViewController.swift in Sources */,
 				32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */,

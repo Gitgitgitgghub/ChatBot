@@ -26,16 +26,28 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
     }
     
     init(title: String, attributedString: NSAttributedString) throws {
-//        self.title = title
-//        self.lastUpdate = .now
-//        let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
-//        self.documentType = documentType.rawValue
-//        self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+        self.title = title
+        self.lastUpdate = .now
+        let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
+        self.documentType = documentType.rawValue
+        self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+    }
+    
+    init(title: String, htmlString: NSAttributedString) throws {
         self.title = title
         self.lastUpdate = .now
         let documentType: NSAttributedString.DocumentType = .html
         self.documentType = documentType.rawValue
-        self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+        self.attributedStringData = try htmlString.data(from: NSRange(location: 0, length: htmlString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+    }
+    
+    func setAttributedString(attr: NSAttributedString, documentType: NSAttributedString.DocumentType? = nil) {
+        do {
+            let documentType: NSAttributedString.DocumentType = documentType ?? .init(rawValue: self.documentType)
+            self.attributedStringData = try attr.data(from: NSRange(location: 0, length: attr.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+        }catch {
+            print("setAttributedString error: \(error.localizedDescription)")
+        }
     }
     
     func attributedString() -> NSAttributedString? {
@@ -82,6 +94,15 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
         let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
         self.documentType = documentType.rawValue
         self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+    }
+    
+    func setAttributedString(attr: NSAttributedString, documentType: NSAttributedString.DocumentType? = nil) {
+        do {
+            let documentType: NSAttributedString.DocumentType = documentType ?? .init(rawValue: self.documentType)
+            self.attributedStringData = try attr.data(from: NSRange(location: 0, length: attr.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+        }catch {
+            print("setAttributedString error: \(error.localizedDescription)")
+        }
     }
     
     func attributedString() -> NSAttributedString? {

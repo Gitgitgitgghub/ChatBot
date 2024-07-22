@@ -56,22 +56,18 @@ extension MyNoteViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let attr = viewModel.myNotes[indexPath.row].attributedString() {
-            let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(attr: attr, delegate: self))
-            vc.modalPresentationStyle = .fullScreen
-            present(vc, animated: true)
+        tableView.deselectRow(at: indexPath, animated: false)
+        let myNote = viewModel.myNotes[indexPath.row]
+        let vc = ScreenLoader.loadScreen(screen: .note(myNote: myNote))
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { (action, view, completionHandler) in
+            self.viewModel.transform(inputEvent: .deleteNote(indexPath: indexPath))
+            completionHandler(true)
         }
+        return .init(actions: [deleteAction])
     }
 }
 
-//TODO: - 事實上這邊不會打開編輯頁面，只是測試用
-extension MyNoteViewController: HtmlEditorViewControllerDelegate {
-    
-    func didSaveAttributedString(attributedString: NSAttributedString) {
-        let indexPath = IndexPath(row: 0, section: 0)
-        if let new = try? MyNote(title: "更改過的", attributedString: attributedString) {
-            viewModel.myNotes[indexPath.row] = new
-            views.tableView.reloadData()
-        }
-    }
-}

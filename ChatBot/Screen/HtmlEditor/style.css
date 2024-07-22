@@ -82,3 +82,24 @@ input[type="color"]::-moz-color-swatch {
 .active {
   background-color: #e0e9ff;
 }
+.bottomToolbar {
+  display: flex;
+  justify-content: space-between; /* 或者使用 justify-content: center; 或 justify-content: flex-start; 根据需要 */
+  padding: 10px;
+}
+.bottomToolbar button {
+  width: 100px;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px; /* 调整按钮文字大小 */
+}
+
+.bottom-button#save {
+  background-color: green;
+  color: white;
+}
+
+.bottom-button#discard {
+  background-color: red;
+  color: white;
+}

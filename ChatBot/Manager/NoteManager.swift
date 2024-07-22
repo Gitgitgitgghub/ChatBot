@@ -36,4 +36,13 @@ class NoteManager {
         }
         .eraseToAnyPublisher()
     }
+    
+    /// 刪除特定的筆記
+    func deleteMyNote(byID id: Int64) -> AnyPublisher<Void, Error> {
+        dbQueue.writePublisher(receiveOn: RunLoop.main) { db in
+            try MyNote.deleteOne(db, key: id)
+        }
+        .map { _ in () }
+        .eraseToAnyPublisher()
+    }
 }

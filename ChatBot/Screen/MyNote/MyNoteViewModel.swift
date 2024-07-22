@@ -12,10 +12,11 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
     
     enum InputEvent {
         case fetchAllNote
+        case deleteNote(indexPath: IndexPath)
     }
     
     enum OutputEvent {
-        
+        case toast(message: String, reload: Bool)
     }
     
     @Published var myNotes: [MyNote] = []
@@ -28,6 +29,8 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
                 switch event {
                 case .fetchAllNote:
                     self.fetchAllNote()
+                case .deleteNote(indexPath: let indexPath):
+                    self.deleteNote(indexPath: indexPath)
                 }
             }
             .store(in: &subscriptions)
@@ -35,6 +38,20 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
     
     func transform(inputEvent: InputEvent) {
         inputSubject.send(inputEvent)
+    }
+    
+    /// 刪除筆記
+    private func deleteNote(indexPath: IndexPath) {
+        guard let id = myNotes[indexPath.row].id else { return }
+        NoteManager.shared
+            .deleteMyNote(byID: id)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                
+            } receiveValue: { [weak self] _ in
+                self?.outputSubject.send(.toast(message: "刪除成功 ！", reload: true))
+            }
+            .store(in: &subscriptions)
     }
     
     /// 獲取所有筆記
