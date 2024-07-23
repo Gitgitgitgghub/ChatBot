@@ -85,4 +85,50 @@ extension NoteViews {
         }
     }
     
+    class CommentCell: UITableViewCell, UITextViewDelegate {
+        
+        let noteTextView = UITextView().apply {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.textAlignment = .center
+            $0.dataDetectorTypes = .link
+            $0.isScrollEnabled = false
+            $0.backgroundColor = .clear
+            $0.isFindInteractionEnabled = true
+            $0.isUserInteractionEnabled = false
+            $0.isEditable = false
+            $0.cornerRadius = 10
+        }
+        
+        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+            super.init(style: style, reuseIdentifier: reuseIdentifier)
+            initUI()
+        }
+        
+        required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            initUI()
+        }
+        
+        func initUI() {
+            noteTextView.delegate = self
+            noteTextView.backgroundColor = UIColor.blue.withAlphaComponent(0.8)
+            contentView.addSubview(noteTextView)
+            noteTextView.snp.remakeConstraints { make in
+                make.top.bottom.equalToSuperview().inset(10)
+                make.width.lessThanOrEqualTo(SystemDefine.Message.maxWidth)
+                make.centerX.equalToSuperview()
+            }
+        }
+        
+        func bindComment(comment: MyComment) {
+            noteTextView.attributedText = comment.attributedString()
+        }
+        
+        //MARK: - UITextViewDelegate
+        func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+            UIApplication.shared.open(URL)
+            return false // 返回 false，表示讓系統處理超連結的點擊事件
+        }
+    }
+    
 }

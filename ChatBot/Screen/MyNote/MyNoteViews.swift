@@ -113,18 +113,11 @@ extension MyNoteViews {
         }
         
         private func setupUI() {
-            do {
-                guard let myNote = self.myNote else { return }
-                titleLabel.text = myNote.title
-                lastUpdateLabel.text = dateFormatter.string(from: myNote.lastUpdate)
-                messageLabel.attributedText = myNote.attributedString()
-                try DatabaseManager.shared.dbQueue.read { db in
-                    let commentCount = try myNote.comments.fetchCount(db)
-                    commentCountLabel.text = ": \(commentCount)"
-                }
-            }catch {
-                
-            }
+            guard let myNote = self.myNote else { return }
+            titleLabel.text = myNote.title
+            lastUpdateLabel.text = dateFormatter.string(from: myNote.lastUpdate)
+            messageLabel.attributedText = myNote.attributedString()
+            commentCountLabel.text = ": \(myNote.comments.count)"
         }
     }
 }

@@ -35,6 +35,7 @@ class NoteViewController: BaseUIViewController {
         views.tableView.delegate = self
         views.tableView.dataSource = self
         views.tableView.register(cellType: NoteViews.NoteCell.self)
+        views.tableView.register(cellType: NoteViews.CommentCell.self)
         views.addCommentButton.addTarget(self, action: #selector(addComment), for: .touchUpInside)
     }
     
@@ -91,28 +92,39 @@ extension NoteViewController: UITableViewDataSource, UITableViewDelegate {
         case .note:
             return 1
         case .comment:
-            return 0
+            return viewModel.myNote.comments.count
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(with: NoteViews.NoteCell.self, for: indexPath)
-        cell.bindNote(note: viewModel.myNote)
-        return cell
+        switch viewModel.sections[indexPath.section] {
+        case .note:
+            let cell = tableView.dequeueReusableCell(with: NoteViews.NoteCell.self, for: indexPath)
+            cell.bindNote(note: viewModel.myNote)
+            return cell
+        case .comment:
+            let cell = tableView.dequeueReusableCell(with: NoteViews.CommentCell.self, for: indexPath)
+            cell.bindComment(comment: viewModel.myNote.comments[indexPath.row])
+            return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
+        let attr: NSAttributedString?
         switch viewModel.sections[indexPath.section] {
         case .note:
-            guard let attr = viewModel.myNote.attributedString() else { return }
             viewModel.transform(inputEvent: .editNote)
-            let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(attr: attr, delegate: self))
-            vc.modalPresentationStyle = .fullScreen
-            present(vc, animated: true)
+            attr = viewModel.myNote.attributedString()
         case .comment:
+            viewModel.transform(inputEvent: .editComment(indexPath: indexPath))
+            attr = viewModel.myNote.comments[indexPath.row].attributedString()
             break
         }
+        guard let target = attr else { return }
+        let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(attr: target, delegate: self))
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
     
     

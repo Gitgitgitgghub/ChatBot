@@ -15,6 +15,7 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
     var title: String
     var attributedStringData: Data
     var documentType: String
+    var comments: [MyComment] = []
     
     
     init(id: Int64? = nil, title: String, lastUpdate: Date, attributedStringData: Data, documentType: String) {
@@ -62,13 +63,30 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
     func didInsert(_ inserted: InsertionSuccess) {
         id = inserted.rowID
     }
+    
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case lastUpdate
+        case title
+        case attributedStringData
+        case documentType
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encode(lastUpdate, forKey: .lastUpdate)
+        try container.encode(attributedStringData, forKey: .attributedStringData)
+        try container.encode(documentType, forKey: .documentType)
+    }
 }
 
 extension MyNote {
     /// tableName
     static let databaseTableName = "myNotes"
     static let comments = hasMany(MyComment.self)
-    var comments: QueryInterfaceRequest<MyComment> {
+    var commentsRequest: QueryInterfaceRequest<MyComment> {
         request(for: MyNote.comments)
     }
 }

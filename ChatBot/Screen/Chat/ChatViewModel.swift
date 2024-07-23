@@ -258,7 +258,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     private func saveMessageToMyNote(noteTitle: String?, indexPath: IndexPath) {
         guard let attr = attributedStringCatches[indexPath.row] else { return }
         guard let note = try? MyNote(title: noteTitle ?? "My Note", htmlString: attr) else { return }
-        NoteManager.shared.saveNote(note, comments: [])
+        NoteManager.shared.saveNote(note)
             .sink { [weak self] completion in
                 switch completion {
                 case .failure(let error):

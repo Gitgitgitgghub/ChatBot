@@ -63,7 +63,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
         switch action {
         case .editNote:
             myNote.setAttributedString(attr: content)
-            noteManager.saveNote(myNote, comments: [])
+            noteManager.saveNote(myNote)
                 .receive(on: RunLoop.main)
                 .sink { [weak self] completion in
                     if case .failure(let error) = completion {
@@ -75,14 +75,9 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
                 .store(in: &subscriptions)
         case .editComment(let indexPath):
             //TODO: - 太醜之後要改
-            DatabaseManager.shared.dbQueue.readPublisher { db in
-                let comment = try self.myNote.comments.fetchAll(db)[indexPath.row]
-                comment.setAttributedString(attr: content)
-                return comment
-            }
-            .flatMap { comment in
-                self.noteManager.saveNote(self.myNote, comments: [comment])
-            }
+            guard let comment = myNote.comments.getOrNil(index: indexPath.row) else { return }
+            comment.setAttributedString(attr: content)
+            noteManager.saveNote(myNote)
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.outputSubject.send(.toast(message: "editComment error: \(error.localizedDescription)", reload: false))
@@ -93,20 +88,17 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
             .store(in: &self.subscriptions)
         case .addComment:
             //TODO: - 太醜之後要改
-            do {
-                let comment = try MyComment(attributedString: content)
-                noteManager.saveNote(myNote, comments: [comment])
-                    .sink { [weak self] completion in
-                        if case .failure(let error) = completion {
-                            self?.outputSubject.send(.toast(message: "addComment error: \(error.localizedDescription)", reload: false))
-                        }
-                    } receiveValue: { [weak self] _ in
-                        self?.outputSubject.send(.toast(message: "新增筆記成功", reload: true))
+            guard let comment = try? MyComment(attributedString: content) else { return }
+            myNote.comments.append(comment)
+            noteManager.saveNote(myNote)
+                .sink { [weak self] completion in
+                    if case .failure(let error) = completion {
+                        self?.outputSubject.send(.toast(message: "addComment error: \(error.localizedDescription)", reload: false))
                     }
-                    .store(in: &self.subscriptions)
-            }catch {
-                
-            }
+                } receiveValue: { [weak self] _ in
+                    self?.outputSubject.send(.toast(message: "新增筆記成功", reload: true))
+                }
+                .store(in: &self.subscriptions)
         default: break
         }
     }
