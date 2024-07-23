@@ -19,10 +19,17 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
         case addComment
         /// 變更內容
         case modifyNote(content: NSAttributedString)
+        /// 刪除comment
+        case deleteComment(indexPath: IndexPath)
+        /// 刪除筆記
+        case deleteNote
     }
     
     enum OutputEvent {
         case toast(message: String, reload: Bool)
+        case edit(attr: NSAttributedString?)
+        case deleteNoteSuccess
+        case deleteCommentSuccess
     }
     
     enum Section {
@@ -47,8 +54,13 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
                 switch event {
                 case .modifyNote(content: let content):
                     self?.modifyNote(content: content)
-                default: 
+                case .deleteNote:
+                    self?.deleteNote()
+                case .deleteComment(indexPath: let indexPath):
+                    self?.deleteComment(indexPath: indexPath)
+                default:
                     self?.inputEvent = event
+                    self?.chooseEditString()
                 }
             }
             .store(in: &subscriptions)
@@ -58,6 +70,49 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
         inputSubject.send(inputEvent)
     }
     
+    private func deleteNote() {
+        guard let id = myNote.id else { return  }
+        noteManager.deleteMyNote(byID: id)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                
+            } receiveValue: { [weak self] _ in
+                self?.outputSubject.send(.deleteNoteSuccess)
+            }
+            .store(in: &subscriptions)
+
+    }
+    
+    private func deleteComment(indexPath: IndexPath) {
+        guard let removalId = myNote.comments[indexPath.row].id else { return }
+        noteManager.deleteMyCommnet(byID: removalId)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                
+            } receiveValue: { [weak self] _ in
+                self?.myNote.comments.removeAll(where: { $0.id == removalId })
+                self?.outputSubject.send(.deleteCommentSuccess)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    /// 選擇要更改的字串並發送outputEvent
+    private func chooseEditString() {
+        guard let inputEvent = self.inputEvent else { return }
+        var editString: NSAttributedString?
+        switch inputEvent {
+        case .editNote:
+            editString = myNote.attributedString()
+        case .editComment(let indexPath):
+            editString = myNote.comments[indexPath.row].attributedString()
+        case .addComment:
+            editString = nil
+        default: return
+        }
+        outputSubject.send(.edit(attr: editString))
+    }
+    
+    /// 更改筆記內容包含comment
     private func modifyNote(content: NSAttributedString) {
         guard let action = inputEvent else { return }
         switch action {
@@ -74,7 +129,6 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
                 }
                 .store(in: &subscriptions)
         case .editComment(let indexPath):
-            //TODO: - 太醜之後要改
             guard let comment = myNote.comments.getOrNil(index: indexPath.row) else { return }
             comment.setAttributedString(attr: content)
             noteManager.saveNote(myNote)
@@ -87,8 +141,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
             }
             .store(in: &self.subscriptions)
         case .addComment:
-            //TODO: - 太醜之後要改
-            guard let comment = try? MyComment(attributedString: content) else { return }
+            guard let comment = try? MyComment(htmlString: content) else { return }
             myNote.comments.append(comment)
             noteManager.saveNote(myNote)
                 .sink { [weak self] completion in

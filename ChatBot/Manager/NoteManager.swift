@@ -78,4 +78,13 @@ class NoteManager {
         .map { _ in () }
         .eraseToAnyPublisher()
     }
+    
+    /// 刪除特定的comment
+    func deleteMyCommnet(byID id: Int64) -> AnyPublisher<Void, Error> {
+        dbQueue.writePublisher(receiveOn: RunLoop.main) { db in
+            try MyComment.deleteOne(db, key: id)
+        }
+        .map { _ in () }
+        .eraseToAnyPublisher()
+    }
 }

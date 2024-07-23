@@ -15,7 +15,7 @@ class NoteViews: ControllerView {
     var tableView = UITableView(frame: .zero, style: .plain).apply { tableView in
         tableView.estimatedRowHeight = 50
         tableView.keyboardDismissMode = .interactive
-        tableView.separatorStyle = .singleLine
+        tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
     }
     let addCommentButton = UIButton(type: .custom).apply {
@@ -43,7 +43,6 @@ extension NoteViews {
         
         let noteTextView = UITextView().apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.textAlignment = .center
             $0.dataDetectorTypes = .link
             $0.isScrollEnabled = false
             $0.backgroundColor = .clear
@@ -65,11 +64,11 @@ extension NoteViews {
         
         func initUI() {
             noteTextView.delegate = self
-            noteTextView.backgroundColor = UIColor.blue.withAlphaComponent(0.8)
+            noteTextView.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.8)
             contentView.addSubview(noteTextView)
             noteTextView.snp.remakeConstraints { make in
                 make.top.bottom.equalToSuperview().inset(10)
-                make.width.lessThanOrEqualTo(SystemDefine.Message.maxWidth)
+                make.width.equalTo(SystemDefine.Message.maxWidth)
                 make.centerX.equalToSuperview()
             }
         }
@@ -89,7 +88,6 @@ extension NoteViews {
         
         let noteTextView = UITextView().apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.textAlignment = .center
             $0.dataDetectorTypes = .link
             $0.isScrollEnabled = false
             $0.backgroundColor = .clear
@@ -111,11 +109,11 @@ extension NoteViews {
         
         func initUI() {
             noteTextView.delegate = self
-            noteTextView.backgroundColor = UIColor.blue.withAlphaComponent(0.8)
+            noteTextView.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.8)
             contentView.addSubview(noteTextView)
             noteTextView.snp.remakeConstraints { make in
                 make.top.bottom.equalToSuperview().inset(10)
-                make.width.lessThanOrEqualTo(SystemDefine.Message.maxWidth)
+                make.width.equalTo(SystemDefine.Message.maxWidth)
                 make.centerX.equalToSuperview()
             }
         }

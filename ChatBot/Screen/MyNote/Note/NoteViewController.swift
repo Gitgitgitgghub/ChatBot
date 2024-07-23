@@ -37,13 +37,22 @@ class NoteViewController: BaseUIViewController {
         views.tableView.register(cellType: NoteViews.NoteCell.self)
         views.tableView.register(cellType: NoteViews.CommentCell.self)
         views.addCommentButton.addTarget(self, action: #selector(addComment), for: .touchUpInside)
+        let dotItem = UIBarButtonItem(image: .init(systemName: "ellipsis"), style: .plain, target: self, action: #selector(rightItemButtonClick))
+        navigationItem.rightBarButtonItem = dotItem
+    }
+    
+    /// 點navigationBar右上方的點點
+    @objc private func rightItemButtonClick() {
+        let vc = UIAlertController(title: "你想要？", message: nil, preferredStyle: .actionSheet)
+        vc.addAction(.init(title: "刪除筆記", style: .default, handler: { action in
+            self.viewModel.transform(inputEvent: .deleteNote)
+        }))
+        vc.addAction(.init(title: "取消", style: .cancel))
+        present(vc, animated: true)
     }
     
     @objc private func addComment() {
         viewModel.transform(inputEvent: .addComment)
-        let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(attr: nil, delegate: self))
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
     }
     
     private func bind() {
@@ -66,9 +75,25 @@ class NoteViewController: BaseUIViewController {
                     if reload {
                         self.views.tableView.reloadData()
                     }
+                case .edit(attr: let attr):
+                    self.openEditorVc(editAttr: attr)
+                case .deleteNoteSuccess:
+                    self.showToast(message: "刪除成功，１秒後反回上一頁", autoDismiss: 1) { [weak self] in
+                        self?.navigationController?.popViewController(animated: true)
+                    }
+                case .deleteCommentSuccess:
+                    self.showToast(message: "刪除筆記成功", autoDismiss: 1)
+                    self.views.tableView.reloadSections(.init(integer: 1), with: .automatic)
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    /// 開啟編輯畫面
+    private func openEditorVc(editAttr: NSAttributedString?) {
+        let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(attr: editAttr, delegate: self))
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
 }
 
@@ -111,21 +136,26 @@ extension NoteViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        let attr: NSAttributedString?
         switch viewModel.sections[indexPath.section] {
         case .note:
             viewModel.transform(inputEvent: .editNote)
-            attr = viewModel.myNote.attributedString()
         case .comment:
             viewModel.transform(inputEvent: .editComment(indexPath: indexPath))
-            attr = viewModel.myNote.comments[indexPath.row].attributedString()
-            break
         }
-        guard let target = attr else { return }
-        let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(attr: target, delegate: self))
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
     }
     
+    /// 側滑動作，目前只開放comment刪除
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        switch viewModel.sections[indexPath.section] {
+        case .note:
+            return nil
+        case .comment:
+            let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { (action, view, completionHandler) in
+                self.viewModel.transform(inputEvent: .deleteComment(indexPath: indexPath))
+                completionHandler(true)
+            }
+            return .init(actions: [deleteAction])
+        }
+    }
     
 }

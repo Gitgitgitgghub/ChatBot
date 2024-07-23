@@ -114,6 +114,13 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
         self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
     }
     
+    init(htmlString: NSAttributedString) throws {
+        self.lastUpdate = .now
+        let documentType: NSAttributedString.DocumentType = .html
+        self.documentType = documentType.rawValue
+        self.attributedStringData = try htmlString.data(from: NSRange(location: 0, length: htmlString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+    }
+    
     func setAttributedString(attr: NSAttributedString, documentType: NSAttributedString.DocumentType? = nil) {
         do {
             let documentType: NSAttributedString.DocumentType = documentType ?? .init(rawValue: self.documentType)
