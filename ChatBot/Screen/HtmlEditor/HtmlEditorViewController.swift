@@ -46,6 +46,7 @@ class HtmlEditorViewController: BaseUIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        //observeKeyboard()
         loadWebView()
     }
     
@@ -70,6 +71,11 @@ class HtmlEditorViewController: BaseUIViewController {
         }
     }
     
+    private func observeKeyboard() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
     private func convertHTMLToAttributedString(html: String) -> NSAttributedString? {
         guard let data = html.data(using: .utf8) else { return nil}
         return try? NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
@@ -89,6 +95,24 @@ class HtmlEditorViewController: BaseUIViewController {
     
     @objc private func discard() {
         dismiss(animated: true)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let userInfo = notification.userInfo,
+           let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+            let keyboardHeight = keyboardFrame.height
+            webView.scrollView.contentInset.bottom = keyboardHeight
+            webView.scrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        webView.scrollView.contentInset.bottom = 0
+        webView.scrollView.verticalScrollIndicatorInsets.bottom = 0
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
