@@ -71,6 +71,7 @@
 		32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */; };
 		32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264312C1BDA8D0083EC63 /* OpenAIService.swift */; };
 		32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264332C1BE75C0083EC63 /* Extensions.swift */; };
+		942395EB2C56A95000E65150 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942395EA2C56A95000E65150 /* ImageManager.swift */; };
 		9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */; };
 		9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */; };
 		9455D80C2C4A3FCB007AC9C2 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 9455D8092C4A3FCB007AC9C2 /* index.html */; };
@@ -164,6 +165,7 @@
 		32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
 		32E264312C1BDA8D0083EC63 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		32E264332C1BE75C0083EC63 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		942395EA2C56A95000E65150 /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
 		9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViews.swift; sourceTree = "<group>"; };
 		9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViewModel.swift; sourceTree = "<group>"; };
 		9455D8092C4A3FCB007AC9C2 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
@@ -322,6 +324,7 @@
 				3241BE472C3F841E0047BB71 /* AccountManager.swift */,
 				946F7A392C466F38007DC7A8 /* NoteManager.swift */,
 				946F7A3B2C466FAA007DC7A8 /* ChatRoomManager.swift */,
+				942395EA2C56A95000E65150 /* ImageManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -678,6 +681,7 @@
 				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				3241BE552C4DF0C70047BB71 /* NoteViewModel.swift in Sources */,
+				942395EB2C56A95000E65150 /* ImageManager.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
 				323E88AC2C353DE800401F50 /* HistoryViewController.swift in Sources */,
 				32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */,

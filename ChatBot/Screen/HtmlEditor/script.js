@@ -5,7 +5,9 @@ let fontSizeRef = document.getElementById("fontSize");
 let writingArea = document.getElementById("text-input");
 let formatButtons = document.querySelectorAll(".format");
 let bottomButtons = document.querySelectorAll(".bottom-button");
-let showCodeButton = document.getElementById('show-code');
+let showCodeButton = document.getElementById("show-code");
+let addImageButton = document.getElementById("addImage");
+let addTableButton = document.getElementById("addTable");
 
 // List of font list
 let fontList = [
@@ -131,6 +133,29 @@ bottomButtons.forEach((button) => {
     });
 });
 
+addImageButton.addEventListener("click", () => {
+    postMessage(addImageButton.id);
+});
+
+addTableButton.addEventListener("click", () => {
+    // 創建一個新的表格
+    var table = document.createElement('table');
+    var header = table.insertRow();
+    header.insertCell().textContent = 'Header 1';
+    header.insertCell().textContent = 'Header 2';
+    header.insertCell().textContent = 'Header 3';
+    var row1 = table.insertRow();
+    row1.insertCell().textContent = 'Data 1';
+    row1.insertCell().textContent = 'Data 2';
+    row1.insertCell().textContent = 'Data 3';
+    var row2 = table.insertRow();
+    row2.insertCell().textContent = 'Data 4';
+    row2.insertCell().textContent = 'Data 5';
+    row2.insertCell().textContent = 'Data 6';
+    // 將表格新增到 content div 中
+    writingArea.appendChild(table);
+});
+
 let active = false;
 showCodeButton.addEventListener("click", () => {
 	showCodeButton.dataset.active = !active;
@@ -154,11 +179,23 @@ function postMessage(id) {
     }
 }
 
+function insertImage(url) {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = 'User provided image';
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    img.onerror = function() {
+        alert('加载失败，請檢查網址是否正確。');
+    };
+    const range = window.getSelection().getRangeAt(0);
+    range.insertNode(img);
+}
+
 function adjustInputHeight() {
     const container = document.querySelector('.container');
     const options = document.querySelector('.options');
     const textInput = document.getElementById('text-input');
-
     const containerRect = container.getBoundingClientRect();
     const optionsRect = options.getBoundingClientRect();
     const height = `calc(100vh - ${containerRect.top + optionsRect.height + 20}px)`;

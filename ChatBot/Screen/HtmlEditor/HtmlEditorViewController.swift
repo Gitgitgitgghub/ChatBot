@@ -7,10 +7,11 @@
 
 import Foundation
 import WebKit
+import Photos
 
 protocol HtmlEditorViewControllerDelegate: AnyObject {
     
-    func didSaveAttributedString(attributedString: NSAttributedString)
+    func didSaveAttributedString(innerHtml: String)
     
 }
 
@@ -21,8 +22,9 @@ class HtmlEditorViewController: BaseUIViewController {
             webView.translatesAutoresizingMaskIntoConstraints = false
             webView.configuration.userContentController = .init()
             webView.configuration.userContentController.add(self, name: "task")
+            webView.navigationDelegate = self
         }
-    var attr: NSAttributedString?
+    var content: Data?
     weak var delegate: HtmlEditorViewControllerDelegate?
     
     /// webview call
@@ -31,10 +33,12 @@ class HtmlEditorViewController: BaseUIViewController {
         case save
         /// 放棄
         case discard
+        /// 添加圖片
+        case addImage
     }
     
-    init(attr: NSAttributedString?, delegate: HtmlEditorViewControllerDelegate) {
-        self.attr = attr
+    init(content: Data?, delegate: HtmlEditorViewControllerDelegate) {
+        self.content = content
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
@@ -53,11 +57,7 @@ class HtmlEditorViewController: BaseUIViewController {
     private func loadWebView() {
         guard let htmlPath = Bundle.main.path(forResource: "index", ofType: "html") else { return }
         do {
-            var html = try String(contentsOfFile: htmlPath, encoding: .utf8)
-            if let htmlContent = attr?.toHTML() {
-                print("load: \(htmlContent)")
-                html = html.replacingOccurrences(of: "<div id=\"text-input\" contenteditable=\"true\"></div>", with: "<div id=\"text-input\" contenteditable=\"true\">\(htmlContent)</div>")
-            }
+            let html = try String(contentsOfFile: htmlPath, encoding: .utf8)
             webView.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
         } catch {
             print("Error loading HTML file: \(error)")
@@ -76,16 +76,11 @@ class HtmlEditorViewController: BaseUIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    private func convertHTMLToAttributedString(html: String) -> NSAttributedString? {
-        guard let data = html.data(using: .utf8) else { return nil}
-        return try? NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
-    }
-    
     @objc private func save() {
         webView.evaluateJavaScript("document.getElementById('text-input').innerHTML") { [weak self] result, error in
-            if let htmlContent = result as? String, let attr = self?.convertHTMLToAttributedString(html: htmlContent) {
+            if let htmlContent = result as? String {
                 print("save: \(htmlContent)")
-                self?.delegate?.didSaveAttributedString(attributedString: attr)
+                self?.delegate?.didSaveAttributedString(innerHtml: htmlContent)
             } else if let error = error {
                 print("[DEBUG]: \(#function) \(error.localizedDescription)")
             }
@@ -116,6 +111,25 @@ class HtmlEditorViewController: BaseUIViewController {
     }
 }
 
+extension HtmlEditorViewController: WKNavigationDelegate {
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        guard let content = self.content else { return }
+        // 将 Data 转换为字符串
+        if let dynamicData = String(data: content, encoding: .utf8) {
+            // 使用 JavaScript 将动态数据插入到指定容器中
+            let js = """
+                document.getElementById('text-input').innerHTML = `\(dynamicData)`;
+                """
+            webView.evaluateJavaScript(js) { (result, error) in
+                if let error = error {
+                    print("JavaScript evaluation error: \(error)")
+                }
+            }
+        }
+    }
+}
+
 //MARK: - WKScriptMessageHandler實作webview與vc溝通
 extension HtmlEditorViewController: WKScriptMessageHandler {
     
@@ -126,7 +140,65 @@ extension HtmlEditorViewController: WKScriptMessageHandler {
             save()
         case .discard:
             discard()
+        case .addImage:
+            showImageSelectionAlert()
         }
     }
     
+}
+
+//MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate 處理從本地選擇圖片
+extension HtmlEditorViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        guard let asset = info[.phAsset] as? PHAsset else { return }
+        ImageManager.shared.requestImage(for: asset)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] url in
+                guard let fileURL = url else { return }
+                // 插入圖片到 webView
+                let javascript = "insertImage('\(fileURL.absoluteString)')"
+                self?.webView.evaluateJavaScript(javascript, completionHandler: nil)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    /// 顯示插入圖片來源ＵＩ
+    private func showImageSelectionAlert() {
+        let alert = UIAlertController(title: "選擇圖片", message: "請選擇一種方式添加圖片", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "輸入網址", style: .default, handler: { _ in
+            self.promptForImageURL()
+        }))
+        alert.addAction(UIAlertAction(title: "從相簿選擇", style: .default, handler: { _ in
+            self.requestPhotoLibraryAccess { [weak self] in
+                self?.selectImageFromGallery()
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    /// 顯示輸入圖片網址ＵＩ
+    private func promptForImageURL() {
+        let alert = UIAlertController(title: "輸入圖片網址", message: nil, preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "圖片網址"
+        }
+        alert.addAction(UIAlertAction(title: "確定", style: .default, handler: { [weak alert] _ in
+            if let url = alert?.textFields?.first?.text {
+                self.webView.evaluateJavaScript("insertImage('\(url)')", completionHandler: nil)
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    /// 從相簿選擇
+    private func selectImageFromGallery() {
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .photoLibrary
+        self.present(imagePickerController, animated: true, completion: nil)
+    }
 }

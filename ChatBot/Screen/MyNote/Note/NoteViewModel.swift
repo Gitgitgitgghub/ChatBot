@@ -18,7 +18,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
         /// 新增自己的筆記
         case addComment
         /// 變更內容
-        case modifyNote(content: NSAttributedString)
+        case modifyNote(content: String)
         /// 刪除comment
         case deleteComment(indexPath: IndexPath)
         /// 刪除筆記
@@ -27,7 +27,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
     
     enum OutputEvent {
         case toast(message: String, reload: Bool)
-        case edit(attr: NSAttributedString?)
+        case edit(editData: Data?)
         case deleteNoteSuccess
         case deleteCommentSuccess
     }
@@ -99,25 +99,25 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
     /// 選擇要更改的字串並發送outputEvent
     private func chooseEditString() {
         guard let inputEvent = self.inputEvent else { return }
-        var editString: NSAttributedString?
+        var editData: Data?
         switch inputEvent {
         case .editNote:
-            editString = myNote.attributedString()
+            editData = myNote.attributedStringData
         case .editComment(let indexPath):
-            editString = myNote.comments[indexPath.row].attributedString()
+            editData = myNote.comments[indexPath.row].attributedStringData
         case .addComment:
-            editString = nil
+            editData = nil
         default: return
         }
-        outputSubject.send(.edit(attr: editString))
+        outputSubject.send(.edit(editData: editData))
     }
     
     /// 更改筆記內容包含comment
-    private func modifyNote(content: NSAttributedString) {
+    private func modifyNote(content: String) {
         guard let action = inputEvent else { return }
         switch action {
         case .editNote:
-            myNote.setAttributedString(attr: content)
+            myNote.setAttributedString(htmlString:content)
             noteManager.saveNote(myNote)
                 .receive(on: RunLoop.main)
                 .sink { [weak self] completion in
@@ -130,7 +130,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
                 .store(in: &subscriptions)
         case .editComment(let indexPath):
             guard let comment = myNote.comments.getOrNil(index: indexPath.row) else { return }
-            comment.setAttributedString(attr: content)
+            comment.setAttributedString(htmlString:content)
             noteManager.saveNote(myNote)
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
@@ -141,7 +141,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
             }
             .store(in: &self.subscriptions)
         case .addComment:
-            guard let comment = try? MyComment(htmlString: content) else { return }
+            guard let comment = MyComment(htmlString: content) else { return }
             myNote.comments.append(comment)
             noteManager.saveNote(myNote)
                 .sink { [weak self] completion in

@@ -103,3 +103,12 @@ input[type="color"]::-moz-color-swatch {
   background-color: red;
   color: white;
 }
+/* 表格 */
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+    text-align: left;
+}

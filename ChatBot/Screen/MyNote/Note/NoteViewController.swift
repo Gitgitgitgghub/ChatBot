@@ -75,8 +75,8 @@ class NoteViewController: BaseUIViewController {
                     if reload {
                         self.views.tableView.reloadData()
                     }
-                case .edit(attr: let attr):
-                    self.openEditorVc(editAttr: attr)
+                case .edit(editData: let editData):
+                    self.openHtmlEditorVc(editData: editData)
                 case .deleteNoteSuccess:
                     self.showToast(message: "刪除成功，１秒後反回上一頁", autoDismiss: 1) { [weak self] in
                         self?.navigationController?.popViewController(animated: true)
@@ -90,8 +90,8 @@ class NoteViewController: BaseUIViewController {
     }
     
     /// 開啟編輯畫面
-    private func openEditorVc(editAttr: NSAttributedString?) {
-        let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(attr: editAttr, delegate: self))
+    private func openHtmlEditorVc(editData: Data?) {
+        let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, delegate: self))
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
@@ -99,8 +99,8 @@ class NoteViewController: BaseUIViewController {
 
 extension NoteViewController: HtmlEditorViewControllerDelegate {
     
-    func didSaveAttributedString(attributedString: NSAttributedString) {
-        viewModel.transform(inputEvent: .modifyNote(content: attributedString))
+    func didSaveAttributedString(innerHtml: String) {
+        viewModel.transform(inputEvent: .modifyNote(content: innerHtml))
     }
     
 }

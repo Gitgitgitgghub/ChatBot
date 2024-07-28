@@ -28,7 +28,7 @@ class ScreenLoader {
         /// 我的筆記
         case myNote
         /// html 文字編輯
-        case HTMLEditor(attr: NSAttributedString?, delegate: HtmlEditorViewControllerDelegate)
+        case HTMLEditor(content: Data?, delegate: HtmlEditorViewControllerDelegate)
         /// 筆記畫面
         case note(myNote: MyNote)
     }
@@ -42,7 +42,7 @@ class ScreenLoader {
         case .history: return HistoryViewController()
         case .setting: return SettingViewController()
         case .myNote: return MyNoteViewController()
-        case .HTMLEditor(attr: let attr, delegate: let delegate): return HtmlEditorViewController(attr: attr, delegate: delegate)
+        case .HTMLEditor(content: let content, delegate: let delegate): return HtmlEditorViewController(content: content, delegate: delegate)
         case .note(myNote: let myNote): return NoteViewController(myNote: myNote)
         }
     }

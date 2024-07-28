@@ -7,6 +7,7 @@
 
 import Foundation
 import GRDB
+import UIKit
 
 class MyNote: Codable, FetchableRecord, PersistableRecord {
     
@@ -40,6 +41,29 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
         let documentType: NSAttributedString.DocumentType = .html
         self.documentType = documentType.rawValue
         self.attributedStringData = try htmlString.data(from: NSRange(location: 0, length: htmlString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+    }
+    
+    init?(title: String, htmlString: String) {
+        self.title = title
+        self.lastUpdate = .now
+        let documentType: NSAttributedString.DocumentType = .html
+        self.documentType = documentType.rawValue
+        guard let data = htmlString.data(using: .utf8) else {
+            print("Failed to convert HTML string to Data")
+            return nil
+        }
+        self.attributedStringData = data
+    }
+    
+    func setAttributedString(htmlString: String) {
+        self.lastUpdate = .now
+        let documentType: NSAttributedString.DocumentType = .html
+        self.documentType = documentType.rawValue
+        guard let data = htmlString.data(using: .utf8) else {
+            print("Failed to convert HTML string to Data")
+            return
+        }
+        self.attributedStringData = data
     }
     
     func setAttributedString(attr: NSAttributedString, documentType: NSAttributedString.DocumentType? = nil) {
@@ -121,6 +145,28 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
         self.attributedStringData = try htmlString.data(from: NSRange(location: 0, length: htmlString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
     }
     
+    init?(htmlString: String) {
+        self.lastUpdate = .now
+        let documentType: NSAttributedString.DocumentType = .html
+        self.documentType = documentType.rawValue
+        guard let data = htmlString.data(using: .utf8) else {
+            print("Failed to convert HTML string to Data")
+            return nil
+        }
+        self.attributedStringData = data
+    }
+    
+    func setAttributedString(htmlString: String) {
+        self.lastUpdate = .now
+        let documentType: NSAttributedString.DocumentType = .html
+        self.documentType = documentType.rawValue
+        guard let data = htmlString.data(using: .utf8) else {
+            print("Failed to convert HTML string to Data")
+            return
+        }
+        self.attributedStringData = data
+    }
+    
     func setAttributedString(attr: NSAttributedString, documentType: NSAttributedString.DocumentType? = nil) {
         do {
             let documentType: NSAttributedString.DocumentType = documentType ?? .init(rawValue: self.documentType)
@@ -130,15 +176,48 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
         }
     }
     
-    func attributedString() -> NSAttributedString? {
-        do {
-            return try NSAttributedString(data: attributedStringData, options: [.documentType: self.documentType, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
-        } catch {
-            print("Error unarchiving attributed string: \(error)")
-            return nil
+    func extractImageSrcs(from htmlString: String) -> [String] {
+        let regex = try! NSRegularExpression(pattern: "<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"]", options: [])
+        let matches = regex.matches(in: htmlString, range: NSRange(location: 0, length: htmlString.utf16.count))
+        var srcs = [String]()
+        for match in matches {
+            let range = Range(match.range(at: 1), in: htmlString)!
+            let src = String(htmlString[range])
+            srcs.append(src)
         }
+        return srcs
     }
     
+    func attributedString() -> NSAttributedString? {
+        // 定义 HTML 转换的选项
+        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
+        guard let mutableAttributedString = try? NSMutableAttributedString(
+            data: attributedStringData,
+            options: options,
+            documentAttributes: nil
+        ) else { return nil }
+        let htmlString = String(data: attributedStringData, encoding: .utf8) ?? ""
+        let imageUrls = extractImageSrcs(from: htmlString)
+        guard imageUrls.isNotEmpty else { return mutableAttributedString }
+        var i = 0
+        mutableAttributedString.enumerateAttribute(.attachment, in: NSRange(location: 0, length: mutableAttributedString.length), options: []) { (value, range, stop) in
+            // 獲取圖片 URL (如果需要)
+            if let urlString = imageUrls.getOrNil(index: i),
+               let imageURL = URL(string: urlString),
+               let newImageUrl = ImageManager.shared.replaceDirectoryInURL(originalURL: imageURL){
+                // 創建新的 RemoteImageTextAttachment
+                let newAttachment = RemoteImageTextAttachment(imageURL: newImageUrl, displaySize: .init(width: 300, height: 210))
+                newAttachment.bounds = CGRect(x: 0, y: 0, width: 300, height: 210)
+                // 替換 attachment
+                mutableAttributedString.replaceCharacters(in: range, with: NSAttributedString(attachment: newAttachment))
+                i += 1
+            }
+        }
+        return mutableAttributedString
+    }
     ///required init(row: Row)
     ///encode(to container: inout PersistenceContainer)兩個方法因為遵從codable可以不用實作，但是如果要新增不再row的變數就要實作告訴他怎麼初始化
     
