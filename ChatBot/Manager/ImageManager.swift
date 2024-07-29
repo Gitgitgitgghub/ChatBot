@@ -6,14 +6,11 @@ import Combine
 class ImageManager {
     
     static let shared = ImageManager()
+    /// 應用的 Documents 目錄
+    let documentsDirectory: URL
     
-    private init() {}
-    
-    /// 獲取應用的 Documents 目錄
-    /// - Returns: Documents 目錄的 URL
-    private func getDocumentsDirectory() -> URL {
-        let fileManager = FileManager.default
-        return fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    private init() {
+        documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
     /// 根據圖片和 localIdentifier 保存圖片到 Documents 目錄
@@ -23,10 +20,9 @@ class ImageManager {
     /// - Returns: 保存圖片的文件 URL，如果保存失敗則返回 nil
     func saveImageToDocumentsDirectory(image: UIImage, localIdentifier: String) -> AnyPublisher<URL?, Never> {
         let fileManager = FileManager.default
-        let documentsURL = getDocumentsDirectory()
         // 清理 localIdentifier，將無效字符替換為有效字符
         let cleanedIdentifier = cleanIdentifier(localIdentifier: localIdentifier)
-        let fileURL = documentsURL.appendingPathComponent(cleanedIdentifier).appendingPathExtension("jpg")
+        let fileURL = documentsDirectory.appendingPathComponent(cleanedIdentifier).appendingPathExtension("jpg")
         // 如果文件已經存在，直接返回 URL
         if fileManager.fileExists(atPath: fileURL.path) {
             print("[DEBUG]: \(#function) 文件已經存在，直接返回 URL: \(fileURL)")
@@ -100,10 +96,9 @@ class ImageManager {
     /// - Returns: 圖片的文件 URL，如果文件不存在則返回 nil
     func urlForImage(with localIdentifier: String) -> URL? {
         let fileManager = FileManager.default
-        let documentsURL = getDocumentsDirectory()
         // 清理 localIdentifier，將無效字符替換為有效字符
         let cleanedIdentifier = cleanIdentifier(localIdentifier: localIdentifier)
-        let fileURL = documentsURL.appendingPathComponent(cleanedIdentifier).appendingPathExtension("jpg")
+        let fileURL = documentsDirectory.appendingPathComponent(cleanedIdentifier).appendingPathExtension("jpg")
         return fileManager.fileExists(atPath: fileURL.path) ? fileURL : nil
     }
     
@@ -150,7 +145,12 @@ class ImageManager {
             return nil
         }
         // 創建新的 URL，使用新的目錄路徑和原始 URL 的文件名
-        let newURL = getDocumentsDirectory().appendingPathComponent(fileName)
+        let newURL = documentsDirectory.appendingPathComponent(fileName)
         return newURL
+    }
+    
+    // 获取新的图片 URL 字符串
+    func getNewImageURLString(from originalURL: URL) -> String? {
+        return replaceDirectoryInURL(originalURL: originalURL)?.absoluteString
     }
 }

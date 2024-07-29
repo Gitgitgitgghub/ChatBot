@@ -182,14 +182,15 @@ function postMessage(id) {
 function insertImage(url) {
     const img = document.createElement('img');
     img.src = url;
-    img.alt = 'User provided image';
     img.style.maxWidth = '100%';
     img.style.height = 'auto';
     img.onerror = function() {
         alert('加载失败，請檢查網址是否正確。');
     };
     const range = window.getSelection().getRangeAt(0);
-    range.insertNode(img);
+    const fragment = document.createDocumentFragment();
+    fragment.appendChild(img);
+    range.insertNode(fragment);
 }
 
 function adjustInputHeight() {

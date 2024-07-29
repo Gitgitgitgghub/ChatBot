@@ -44,6 +44,8 @@
 		326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 326F728D2C2A5CDE00B06DF8 /* SDWebImage */; };
 		326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F728F2C2E4C4F00B06DF8 /* Array+.swift */; };
 		326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */; };
+		327D28652C57314B00F6ED68 /* SharedGroupStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327D28642C57314B00F6ED68 /* SharedGroupStorage.swift */; };
+		327D28682C5739C300F6ED68 /* ZMarkupParser in Frameworks */ = {isa = PBXBuildFile; productRef = 327D28672C5739C300F6ED68 /* ZMarkupParser */; };
 		32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EE92C1C229500FE5786 /* LoginViewController.swift */; };
 		32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEC2C1C233D00FE5786 /* LogingViews.swift */; };
 		32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800EEE2C1C239300FE5786 /* ControllerView.swift */; };
@@ -135,6 +137,7 @@
 		326F728A2C29554B00B06DF8 /* UITextView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+.swift"; sourceTree = "<group>"; };
 		326F728F2C2E4C4F00B06DF8 /* Array+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+.swift"; sourceTree = "<group>"; };
 		326F72912C2E910C00B06DF8 /* NSAttributedString+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+.swift"; sourceTree = "<group>"; };
+		327D28642C57314B00F6ED68 /* SharedGroupStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedGroupStorage.swift; sourceTree = "<group>"; };
 		32800EE92C1C229500FE5786 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		32800EEC2C1C233D00FE5786 /* LogingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogingViews.swift; sourceTree = "<group>"; };
 		32800EEE2C1C239300FE5786 /* ControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerView.swift; sourceTree = "<group>"; };
@@ -185,6 +188,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				32800F072C22A45900FE5786 /* Kingfisher in Frameworks */,
+				327D28682C5739C300F6ED68 /* ZMarkupParser in Frameworks */,
 				323E88A62C35251000401F50 /* NVActivityIndicatorView in Frameworks */,
 				320421952C19331500D72203 /* OpenAI in Frameworks */,
 				3241BE4E2C44B1B90047BB71 /* GRDB in Frameworks */,
@@ -325,6 +329,7 @@
 				946F7A392C466F38007DC7A8 /* NoteManager.swift */,
 				946F7A3B2C466FAA007DC7A8 /* ChatRoomManager.swift */,
 				942395EA2C56A95000E65150 /* ImageManager.swift */,
+				327D28642C57314B00F6ED68 /* SharedGroupStorage.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -497,6 +502,7 @@
 				326F728D2C2A5CDE00B06DF8 /* SDWebImage */,
 				323E88A52C35251000401F50 /* NVActivityIndicatorView */,
 				3241BE4D2C44B1B90047BB71 /* GRDB */,
+				327D28672C5739C300F6ED68 /* ZMarkupParser */,
 			);
 			productName = ChatBot;
 			productReference = 32C77FC32C18504E00F335FE /* ChatBot.app */;
@@ -577,6 +583,8 @@
 				326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				323E88A42C35251000401F50 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				3241BE4C2C44B1B90047BB71 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				327D28662C5734BB00F6ED68 /* XCRemoteSwiftPackageReference "ZMarkupParser" */,
+				327D28692C5765A000F6ED68 /* XCRemoteSwiftPackageReference "GCDWebServer" */,
 			);
 			productRefGroup = 32C77FC42C18504E00F335FE /* Products */;
 			projectDirPath = "";
@@ -644,6 +652,7 @@
 				9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */,
 				9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
+				327D28652C57314B00F6ED68 /* SharedGroupStorage.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,
 				32800F022C21850A00FE5786 /* UploadImageSelectorViewController.swift in Sources */,
@@ -1050,6 +1059,22 @@
 				minimumVersion = 5.19.3;
 			};
 		};
+		327D28662C5734BB00F6ED68 /* XCRemoteSwiftPackageReference "ZMarkupParser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ZhgChgLi/ZMarkupParser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.10.0;
+			};
+		};
+		327D28692C5765A000F6ED68 /* XCRemoteSwiftPackageReference "GCDWebServer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swisspol/GCDWebServer.git";
+			requirement = {
+				kind = exactVersion;
+				version = 3.5.4;
+			};
+		};
 		32800F052C22A45900FE5786 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
@@ -1085,6 +1110,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 326F728C2C2A5CDE00B06DF8 /* XCRemoteSwiftPackageReference "SDWebImage" */;
 			productName = SDWebImage;
+		};
+		327D28672C5739C300F6ED68 /* ZMarkupParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 327D28662C5734BB00F6ED68 /* XCRemoteSwiftPackageReference "ZMarkupParser" */;
+			productName = ZMarkupParser;
 		};
 		32800F062C22A45900FE5786 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;

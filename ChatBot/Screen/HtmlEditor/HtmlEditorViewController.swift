@@ -115,6 +115,19 @@ class HtmlEditorViewController: BaseUIViewController {
 extension HtmlEditorViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        loadContent()
+        updateAllImageSrcs()
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print("WebView錯誤: \(error.localizedDescription)")
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print("WebView加載錯誤: \(error.localizedDescription)")
+    }
+    
+    private func loadContent() {
         guard let content = self.content else { return }
         // 将 Data 转换为字符串
         if let dynamicData = String(data: content, encoding: .utf8) {
@@ -130,12 +143,51 @@ extension HtmlEditorViewController: WKNavigationDelegate {
         }
     }
     
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print("WebView錯誤: \(error.localizedDescription)")
+    // 获取 HTML 内容中的所有图片 src，并逐一替换
+    func updateAllImageSrcs() {
+        let script = """
+           var srcs = [];
+           var images = document.getElementsByTagName('img');
+           for (var i = 0; i < images.length; i++) {
+               srcs.push(images[i].src);
+           }
+           srcs;
+           """
+        webView.evaluateJavaScript(script) { result, error in
+            if let error = error {
+                print("获取图片 src 失败: \(error)")
+                return
+            }
+            
+            guard let srcArray = result as? [String] else {
+                print("无法解析图片 src")
+                return
+            }
+            for src in srcArray {
+                if let oldURL = URL(string: src), let newSrc = ImageManager.shared.getNewImageURLString(from: oldURL) {
+                    self.replaceImageSrc(oldSrc: src, newSrc: newSrc)
+                }
+            }
+        }
     }
-
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print("WebView加載錯誤: \(error.localizedDescription)")
+    
+    // 替换特定图片的路径
+    func replaceImageSrc(oldSrc: String, newSrc: String) {
+        let script = """
+        var images = document.getElementsByTagName('img');
+        for (var i = 0; i < images.length; i++) {
+            if (images[i].src === '\(oldSrc)') {
+                images[i].src = '\(newSrc)';
+            }
+        }
+        """
+        webView.evaluateJavaScript(script) { result, error in
+            if let error = error {
+                print("JavaScript 执行失败: \(error)")
+            } else {
+                print("图片路径替换成功")
+            }
+        }
     }
 }
 
@@ -170,6 +222,7 @@ extension HtmlEditorViewController: UIImagePickerControllerDelegate, UINavigatio
             .sink { [weak self] url in
                 guard let fileURL = url else { return }
                 // 插入圖片到 webView
+                //let filePath = fileURL.path.replacingOccurrences(of: "file://", with: "")
                 let javascript = "insertImage('\(fileURL.absoluteString)')"
                 self?.webView.evaluateJavaScript(javascript, completionHandler: nil)
             }

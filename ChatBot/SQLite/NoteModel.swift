@@ -8,6 +8,8 @@
 import Foundation
 import GRDB
 import UIKit
+import ZMarkupParser
+import ZNSTextAttachment
 
 class MyNote: Codable, FetchableRecord, PersistableRecord {
     
@@ -188,32 +190,33 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
         return srcs
     }
     
+    //TODO: - 暫時寫這樣看起來還是得做catch
     func attributedString() -> NSAttributedString? {
         // 定义 HTML 转换的选项
         let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
             .documentType: NSAttributedString.DocumentType.html,
             .characterEncoding: String.Encoding.utf8.rawValue
         ]
-        guard let mutableAttributedString = try? NSMutableAttributedString(
-            data: attributedStringData,
-            options: options,
-            documentAttributes: nil
-        ) else { return nil }
         let htmlString = String(data: attributedStringData, encoding: .utf8) ?? ""
+        let parser = ZHTMLParserBuilder.initWithDefault().build()
+        let mutableAttributedString = parser.render(htmlString, forceDecodeHTMLEntities: false) as! NSMutableAttributedString
         let imageUrls = extractImageSrcs(from: htmlString)
         guard imageUrls.isNotEmpty else { return mutableAttributedString }
         var i = 0
         mutableAttributedString.enumerateAttribute(.attachment, in: NSRange(location: 0, length: mutableAttributedString.length), options: []) { (value, range, stop) in
             // 獲取圖片 URL (如果需要)
-            if let urlString = imageUrls.getOrNil(index: i),
-               let imageURL = URL(string: urlString),
-               let newImageUrl = ImageManager.shared.replaceDirectoryInURL(originalURL: imageURL){
-                // 創建新的 RemoteImageTextAttachment
-                let newAttachment = RemoteImageTextAttachment(imageURL: newImageUrl, displaySize: .init(width: 300, height: 210))
-                newAttachment.bounds = CGRect(x: 0, y: 0, width: 300, height: 210)
-                // 替換 attachment
-                mutableAttributedString.replaceCharacters(in: range, with: NSAttributedString(attachment: newAttachment))
-                i += 1
+            if value is NSTextAttachment {
+                if let urlString = imageUrls.getOrNil(index: i),
+                   let imageURL = URL(string: urlString),
+                   let newImageUrl = ImageManager.shared.replaceDirectoryInURL(originalURL: imageURL){
+                    // 創建新的 RemoteImageTextAttachment
+                    let newAttachment = RemoteImageTextAttachment(imageURL: newImageUrl, displaySize: .init(width: 300, height: 210))
+                    newAttachment.bounds = CGRect(x: 0, y: 0, width: 300, height: 210)
+                    // 替換 attachment
+                    mutableAttributedString.removeAttribute(.attachment, range: range)
+                    mutableAttributedString.addAttribute(.attachment, value: newAttachment, range: range)
+                    i += 1
+                }
             }
         }
         return mutableAttributedString
