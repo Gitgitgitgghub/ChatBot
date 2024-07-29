@@ -219,3 +219,18 @@ window.addEventListener('focusout', () => {
 });
 
 window.onload = initializer();
+
+// 顯示錯誤或console
+console.log = function(message) {
+    /// for iOS
+    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.consoleLog) {
+        window.webkit.messageHandlers.consoleLog.postMessage(message);
+    }
+};
+
+window.onerror = function(message, source, lineno, colno, error) {
+    /// for iOS
+    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.consoleLog) {
+        window.webkit.messageHandlers.consoleLog.postMessage("錯誤: " + message);
+    }
+};

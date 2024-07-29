@@ -22,6 +22,7 @@ class HtmlEditorViewController: BaseUIViewController {
             webView.translatesAutoresizingMaskIntoConstraints = false
             webView.configuration.userContentController = .init()
             webView.configuration.userContentController.add(self, name: "task")
+            webView.configuration.userContentController.add(self, name: "consoleLog")
             webView.navigationDelegate = self
         }
     var content: Data?
@@ -128,12 +129,23 @@ extension HtmlEditorViewController: WKNavigationDelegate {
             }
         }
     }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print("WebView錯誤: \(error.localizedDescription)")
+    }
+
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print("WebView加載錯誤: \(error.localizedDescription)")
+    }
 }
 
 //MARK: - WKScriptMessageHandler實作webview與vc溝通
 extension HtmlEditorViewController: WKScriptMessageHandler {
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        if message.name == "consoleLog" {
+            print("Console訊息: \(message.body)")
+        }
         guard let body = message.body as? String, let task = Task(rawValue: body) else { return }
         switch task {
         case .save:
