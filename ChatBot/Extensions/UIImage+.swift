@@ -46,6 +46,15 @@ extension UIImage {
         }
     }
     
+    func resizeToFitWidth(maxWidth: CGFloat) -> UIImage {
+        let aspectRatio = maxWidth / self.size.width
+        let newSize = CGSize(width: maxWidth, height: self.size.height * aspectRatio)
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.image { _ in
+            self.draw(in: CGRect(origin: .zero, size: newSize))
+        }
+    }
+    
     /// 壓縮圖片至小於Ｘ ＭＢ
     func compressLessThanXMB(mb: Int) throws -> UIImage {
         guard var pngData = pngData() else { throw NSError() }

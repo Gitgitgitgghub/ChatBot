@@ -7,10 +7,9 @@ class ImageManager {
     
     static let shared = ImageManager()
     /// 應用的 Documents 目錄
-    let documentsDirectory: URL
+    let documentsDirectory: URL = FileManager.documentsDirectory
     
     private init() {
-        documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
     /// 根據圖片和 localIdentifier 保存圖片到 Documents 目錄

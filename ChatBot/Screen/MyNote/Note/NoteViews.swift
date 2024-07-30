@@ -37,9 +37,15 @@ class NoteViews: ControllerView {
     
 }
 
+protocol NoteCellDelegate: AnyObject {
+    
+    func layoutDidChanged()
+    
+}
+
 extension NoteViews {
     
-    class NoteCell: UITableViewCell, UITextViewDelegate {
+    class NoteCell: UITableViewCell, UITextViewDelegate, NSLayoutManagerDelegate {
         
         let noteTextView = UITextView().apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -51,6 +57,7 @@ extension NoteViews {
             $0.isEditable = false
             $0.cornerRadius = 10
         }
+        weak var noteCellDelegate: NoteCellDelegate?
         
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -64,11 +71,12 @@ extension NoteViews {
         
         func initUI() {
             noteTextView.delegate = self
-            noteTextView.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.8)
+            noteTextView.layoutManager.delegate = self
+            noteTextView.backgroundColor = .systemBlue
             contentView.addSubview(noteTextView)
             noteTextView.snp.remakeConstraints { make in
                 make.top.bottom.equalToSuperview().inset(10)
-                make.width.equalTo(SystemDefine.Message.maxWidth)
+                make.leading.trailing.equalToSuperview().inset(10)
                 make.centerX.equalToSuperview()
             }
         }
@@ -82,9 +90,15 @@ extension NoteViews {
             UIApplication.shared.open(URL)
             return false // 返回 false，表示讓系統處理超連結的點擊事件
         }
+        
+        // 監聽字形範圍的佈局計算
+        func layoutManager(_ layoutManager: NSLayoutManager, didCompleteLayoutFor textContainer: NSTextContainer?, atEnd layoutFinishedFlag: Bool) {
+            noteCellDelegate?.layoutDidChanged()
+            
+        }
     }
     
-    class CommentCell: UITableViewCell, UITextViewDelegate {
+    class CommentCell: UITableViewCell, UITextViewDelegate, NSLayoutManagerDelegate {
         
         let noteTextView = UITextView().apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -96,6 +110,7 @@ extension NoteViews {
             $0.isEditable = false
             $0.cornerRadius = 10
         }
+        weak var noteCellDelegate: NoteCellDelegate?
         
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -109,17 +124,24 @@ extension NoteViews {
         
         func initUI() {
             noteTextView.delegate = self
-            noteTextView.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.8)
+            noteTextView.layoutManager.delegate = self
+            noteTextView.backgroundColor = .systemGreen
             contentView.addSubview(noteTextView)
             noteTextView.snp.remakeConstraints { make in
                 make.top.bottom.equalToSuperview().inset(10)
-                make.width.equalTo(SystemDefine.Message.maxWidth)
+                make.leading.trailing.equalToSuperview().inset(10)
                 make.centerX.equalToSuperview()
             }
         }
         
         func bindComment(comment: MyComment) {
             noteTextView.attributedText = comment.attributedString()
+        }
+        
+        // 監聽字形範圍的佈局計算
+        func layoutManager(_ layoutManager: NSLayoutManager, didCompleteLayoutFor textContainer: NSTextContainer?, atEnd layoutFinishedFlag: Bool) {
+            noteCellDelegate?.layoutDidChanged()
+            
         }
         
         //MARK: - UITextViewDelegate

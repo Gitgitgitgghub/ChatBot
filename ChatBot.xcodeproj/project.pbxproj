@@ -584,7 +584,6 @@
 				323E88A42C35251000401F50 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				3241BE4C2C44B1B90047BB71 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				327D28662C5734BB00F6ED68 /* XCRemoteSwiftPackageReference "ZMarkupParser" */,
-				327D28692C5765A000F6ED68 /* XCRemoteSwiftPackageReference "GCDWebServer" */,
 			);
 			productRefGroup = 32C77FC42C18504E00F335FE /* Products */;
 			projectDirPath = "";
@@ -1065,14 +1064,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.10.0;
-			};
-		};
-		327D28692C5765A000F6ED68 /* XCRemoteSwiftPackageReference "GCDWebServer" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/swisspol/GCDWebServer.git";
-			requirement = {
-				kind = exactVersion;
-				version = 3.5.4;
 			};
 		};
 		32800F052C22A45900FE5786 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {

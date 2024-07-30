@@ -49,6 +49,7 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
             .sink { _ in
                 
             } receiveValue: { [weak self] _ in
+                self?.myNotes.removeAll(where: { $0.id == id })
                 self?.outputSubject.send(.toast(message: "刪除成功 ！", reload: true))
             }
             .store(in: &subscriptions)

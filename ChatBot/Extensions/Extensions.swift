@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 func delay(delay: Double, block: @escaping () -> ()) {
     DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: block)
@@ -50,3 +51,25 @@ extension String {
         return false
     }
 }
+
+extension FileManager {
+    
+    static var documentsDirectory: URL {
+        return `default`.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+    
+}
+
+extension UIColor {
+    
+    var hexColor: String {
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        self.getRed(&r, green: &g, blue: &b, alpha: &a)
+        let rgb: Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+        return String(format:"#%06x", rgb)
+    }
+}
+

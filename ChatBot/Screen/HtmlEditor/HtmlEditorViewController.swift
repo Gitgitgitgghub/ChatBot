@@ -8,6 +8,7 @@
 import Foundation
 import WebKit
 import Photos
+import ZMarkupParser
 
 protocol HtmlEditorViewControllerDelegate: AnyObject {
     
@@ -19,6 +20,9 @@ class HtmlEditorViewController: BaseUIViewController {
     
     lazy var webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
         .apply { webView in
+            webView.scrollView.isScrollEnabled = false
+            webView.scrollView.bounces = false
+            webView.scrollView.bouncesZoom = false
             webView.translatesAutoresizingMaskIntoConstraints = false
             webView.configuration.userContentController = .init()
             webView.configuration.userContentController.add(self, name: "task")
@@ -26,6 +30,7 @@ class HtmlEditorViewController: BaseUIViewController {
             webView.navigationDelegate = self
         }
     var content: Data?
+    var inputBackgroundColor: UIColor
     weak var delegate: HtmlEditorViewControllerDelegate?
     
     /// webview call
@@ -38,9 +43,10 @@ class HtmlEditorViewController: BaseUIViewController {
         case addImage
     }
     
-    init(content: Data?, delegate: HtmlEditorViewControllerDelegate) {
+    init(content: Data?, inputBackgroundColor: UIColor, delegate: HtmlEditorViewControllerDelegate) {
         self.content = content
         self.delegate = delegate
+        self.inputBackgroundColor = inputBackgroundColor
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -112,11 +118,14 @@ class HtmlEditorViewController: BaseUIViewController {
     }
 }
 
+//MARK: - WKNavigationDelegate
 extension HtmlEditorViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         loadContent()
         updateAllImageSrcs()
+        replaceTextInputBackgroundColor()
+        replaceFontStyle()
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -144,7 +153,7 @@ extension HtmlEditorViewController: WKNavigationDelegate {
     }
     
     // 获取 HTML 内容中的所有图片 src，并逐一替换
-    func updateAllImageSrcs() {
+    private func updateAllImageSrcs() {
         let script = """
            var srcs = [];
            var images = document.getElementsByTagName('img');
@@ -171,8 +180,8 @@ extension HtmlEditorViewController: WKNavigationDelegate {
         }
     }
     
-    // 替换特定图片的路径
-    func replaceImageSrc(oldSrc: String, newSrc: String) {
+    /// 替换特定图片的路径
+    private func replaceImageSrc(oldSrc: String, newSrc: String) {
         let script = """
         var images = document.getElementsByTagName('img');
         for (var i = 0; i < images.length; i++) {
@@ -189,6 +198,66 @@ extension HtmlEditorViewController: WKNavigationDelegate {
             }
         }
     }
+    
+    /// 更改輸入區域的背景顏色
+    func replaceTextInputBackgroundColor() {
+        let color = inputBackgroundColor.hexColor
+        let cssString = "#text-input { background-color: \(color); }"
+        injectCSS(cssString: cssString)
+    }
+    
+    /// 替換有關字型的css
+    func replaceFontStyle() {
+        var fontSize = "3"
+        var fontColor = "#ffffff"
+        var face = "Arial"
+        if let content = self.content, let htmlString = String(data: content, encoding: .utf8) {
+            let selector = ZHTMLParserBuilder.initWithDefault().build().selector(htmlString)
+            if let font = selector.first(.font)?.get() as? [String:Any],
+               let attributes = font["attributes"] as? [String:Any] {
+                fontSize = attributes["size"] as? String ?? "3"
+                fontColor = attributes["color"] as? String ?? "#ffffff"
+                face = attributes["color"] as? String ?? "Arial"
+            }
+        }
+        replaceFontSize(size: fontSize)
+        replaceFontColor(fontColor: fontColor)
+        replaceFontName(face: face)
+    }
+    
+    /// 替換預設字體大小
+    func replaceFontSize(size: String) {
+        let jsString = """
+        fontSizeRef.value = \(size);
+        """
+        webView.evaluateJavaScript(jsString, completionHandler: nil)
+    }
+    
+    /// 替換預設字體顏色
+    func replaceFontColor(fontColor: String) {
+        let jsString = """
+                var colorInput = document.getElementById('foreColor');
+                if (colorInput) {
+                    colorInput.value = '\(fontColor)';
+                }
+                """
+        webView.evaluateJavaScript(jsString, completionHandler: nil)
+    }
+    
+    /// 替換字型
+    func replaceFontName(face: String) {
+        let jsString = """
+                var options = fontName.getElementsByTagName('option');
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value === '\(face)') {
+                        fontName.value = options[i].value;
+                        break;
+                    }
+                }
+                """
+        webView.evaluateJavaScript(jsString, completionHandler: nil)
+    }
+    
 }
 
 //MARK: - WKScriptMessageHandler實作webview與vc溝通
@@ -207,6 +276,16 @@ extension HtmlEditorViewController: WKScriptMessageHandler {
         case .addImage:
             showImageSelectionAlert()
         }
+    }
+    
+    /// 注入css
+    func injectCSS(cssString: String) {
+        let jsString = """
+        var style = document.createElement('style');
+        style.innerHTML = '\(cssString)';
+        document.head.appendChild(style);
+        """
+        webView.evaluateJavaScript(jsString, completionHandler: nil)
     }
     
 }

@@ -7,7 +7,7 @@ let formatButtons = document.querySelectorAll(".format");
 let bottomButtons = document.querySelectorAll(".bottom-button");
 let showCodeButton = document.getElementById("show-code");
 let addImageButton = document.getElementById("addImage");
-let addTableButton = document.getElementById("addTable");
+//let addTableButton = document.getElementById("addTable");
 
 // List of font list
 let fontList = [
@@ -63,68 +63,33 @@ advancedOptionButton.forEach((button) => {
 
 // Highlight clicked button
 function highlighter(className, needsRemoval) {
-    className.forEach((button) => {
-        button.addEventListener("click", () => {
-            // needsRemoval = true means only one button should be highlight and other would be normal
-            if (needsRemoval) {
-                let alreadyActive = false;
-                // If currently clicked button is already active
-                if (button.classList.contains("active")) {
-                    alreadyActive = true;
-                }
-                // Remove highlight from other buttons
-                highlighterRemover(className);
-                if (!alreadyActive) {
-                    // Highlight clicked button
-                    button.classList.add("active");
-                }
-            } else {
-                // If other buttons can be highlighted
-                button.classList.toggle("active");
-            }
-        });
-    });
+//    className.forEach((button) => {
+//        button.addEventListener("click", () => {
+//            // needsRemoval = true means only one button should be highlight and other would be normal
+//            if (needsRemoval) {
+//                let alreadyActive = false;
+//                // If currently clicked button is already active
+//                if (button.classList.contains("active")) {
+//                    alreadyActive = true;
+//                }
+//                // Remove highlight from other buttons
+//                highlighterRemover(className);
+//                if (!alreadyActive) {
+//                    // Highlight clicked button
+//                    button.classList.add("active");
+//                }
+//            } else {
+//                // If other buttons can be highlighted
+//                button.classList.toggle("active");
+//            }
+//        });
+//    });
 }
 
 function highlighterRemover(className) {
     className.forEach((button) => {
         button.classList.remove("active");
     });
-}
-
-// Function to convert image URLs in <a> tags to <img> tags (不正常)
-function convertLinksToImages() {
-    let textInput = document.getElementById("text-input");
-    // Define regex pattern to find image URLs
-    const imagePattern = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif))/i;
-    // Find all <a> tags within the #text-input element
-    let links = textInput.querySelectorAll("a");
-    links.forEach(link => {
-        let url = link.href;
-        // Check if the href matches the image pattern
-        if (imagePattern.test(url)) {
-            // Create a new <img> element
-            let imgTag = document.createElement("img");
-            imgTag.src = url;
-            imgTag.alt = "Image";
-            imgTag.style.maxWidth = "100%";
-            imgTag.style.height = "auto";
-            // Replace the link with the image
-            link.parentNode.replaceChild(imgTag, link);
-        }
-    });
-    // Optionally, set the cursor to the end of the content
-    setCursorToEnd(textInput);
-}
-
-// Function to set cursor to the end of the content
-function setCursorToEnd(element) {
-    let range = document.createRange();
-    let sel = window.getSelection();
-    range.selectNodeContents(element);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
 }
 
 bottomButtons.forEach((button) => {
@@ -137,24 +102,24 @@ addImageButton.addEventListener("click", () => {
     postMessage(addImageButton.id);
 });
 
-addTableButton.addEventListener("click", () => {
-    // 創建一個新的表格
-    var table = document.createElement('table');
-    var header = table.insertRow();
-    header.insertCell().textContent = 'Header 1';
-    header.insertCell().textContent = 'Header 2';
-    header.insertCell().textContent = 'Header 3';
-    var row1 = table.insertRow();
-    row1.insertCell().textContent = 'Data 1';
-    row1.insertCell().textContent = 'Data 2';
-    row1.insertCell().textContent = 'Data 3';
-    var row2 = table.insertRow();
-    row2.insertCell().textContent = 'Data 4';
-    row2.insertCell().textContent = 'Data 5';
-    row2.insertCell().textContent = 'Data 6';
-    // 將表格新增到 content div 中
-    writingArea.appendChild(table);
-});
+//addTableButton.addEventListener("click", () => {
+//    // 創建一個新的表格
+//    var table = document.createElement('table');
+//    var header = table.insertRow();
+//    header.insertCell().textContent = 'Header 1';
+//    header.insertCell().textContent = 'Header 2';
+//    header.insertCell().textContent = 'Header 3';
+//    var row1 = table.insertRow();
+//    row1.insertCell().textContent = 'Data 1';
+//    row1.insertCell().textContent = 'Data 2';
+//    row1.insertCell().textContent = 'Data 3';
+//    var row2 = table.insertRow();
+//    row2.insertCell().textContent = 'Data 4';
+//    row2.insertCell().textContent = 'Data 5';
+//    row2.insertCell().textContent = 'Data 6';
+//    // 將表格新增到 content div 中
+//    writingArea.appendChild(table);
+//});
 
 let active = false;
 showCodeButton.addEventListener("click", () => {

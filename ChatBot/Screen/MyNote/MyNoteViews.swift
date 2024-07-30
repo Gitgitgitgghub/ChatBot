@@ -37,9 +37,11 @@ extension MyNoteViews {
             label.numberOfLines = 1
             label.textColor = .darkGray
         }
-        private var messageLabel = UILabel().apply { label in
+        private var messageLabel = PaddingLabel(withInsets: .init(top: 10, left: 8, bottom: 10, right: 8)).apply { label in
             label.numberOfLines = 3
             label.textColor = .darkGray.withAlphaComponent(0.8)
+            label.cornerRadius = 10
+            label.backgroundColor = .systemBlue
         }
         private var lastUpdateLabel = UILabel().apply { label in
             label.numberOfLines = 1

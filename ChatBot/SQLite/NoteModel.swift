@@ -192,14 +192,16 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
     
     //TODO: - 暫時寫這樣看起來還是得做catch
     func attributedString() -> NSAttributedString? {
-        // 定义 HTML 转换的选项
+        let htmlString = String(data: attributedStringData, encoding: .utf8) ?? ""
         let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
             .documentType: NSAttributedString.DocumentType.html,
             .characterEncoding: String.Encoding.utf8.rawValue
         ]
-        let htmlString = String(data: attributedStringData, encoding: .utf8) ?? ""
-        let parser = ZHTMLParserBuilder.initWithDefault().build()
-        let mutableAttributedString = parser.render(htmlString, forceDecodeHTMLEntities: false) as! NSMutableAttributedString
+        guard let mutableAttributedString = try? NSMutableAttributedString(
+            data: attributedStringData,
+            options: options,
+            documentAttributes: nil
+        ) else { return nil }
         let imageUrls = extractImageSrcs(from: htmlString)
         guard imageUrls.isNotEmpty else { return mutableAttributedString }
         var i = 0
@@ -207,11 +209,12 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
             // 獲取圖片 URL (如果需要)
             if value is NSTextAttachment {
                 if let urlString = imageUrls.getOrNil(index: i),
-                   let imageURL = URL(string: urlString),
-                   let newImageUrl = ImageManager.shared.replaceDirectoryInURL(originalURL: imageURL){
+                   let imageURL = URL(string: urlString) {
                     // 創建新的 RemoteImageTextAttachment
-                    let newAttachment = RemoteImageTextAttachment(imageURL: newImageUrl, displaySize: .init(width: 300, height: 210))
-                    newAttachment.bounds = CGRect(x: 0, y: 0, width: 300, height: 210)
+                    let width = UIScreen.main.bounds.width - 10 * 2 - 8 * 2
+                    let newAttachment = RemoteImageTextAttachment(imageURL: imageURL, displaySize: .init(width: width, height: width / 4 * 3))
+                    //let newAttachment = RemoteImageTextAttachment(imageURL: imageURL, displaySize: .init(width: width, height: 100))
+                    newAttachment.bounds = CGRect(x: 0, y: 0, width: width, height: width / 4 * 3)
                     // 替換 attachment
                     mutableAttributedString.removeAttribute(.attachment, range: range)
                     mutableAttributedString.addAttribute(.attachment, value: newAttachment, range: range)

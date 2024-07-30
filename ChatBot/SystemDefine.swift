@@ -60,7 +60,9 @@ extension SystemDefine {
         /// 訊息最小寬度
         static let minimumWidth: CGFloat = 150
         /// 字體顏色
-        static let textColor: UIColor = .systemGray2
+        static let textColor: UIColor = .white
+        /// 預設字體
+        static let defaultTextFont: UIFont = .init(name: "Arial", size: 16)!
     }
     
     

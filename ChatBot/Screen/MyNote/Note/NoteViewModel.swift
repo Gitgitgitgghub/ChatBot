@@ -27,7 +27,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
     
     enum OutputEvent {
         case toast(message: String, reload: Bool)
-        case edit(editData: Data?)
+        case edit(editData: Data?, isNote: Bool)
         case deleteNoteSuccess
         case deleteCommentSuccess
     }
@@ -100,16 +100,18 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
     private func chooseEditString() {
         guard let inputEvent = self.inputEvent else { return }
         var editData: Data?
+        var isEditNote: Bool = false
         switch inputEvent {
         case .editNote:
             editData = myNote.attributedStringData
+            isEditNote = true
         case .editComment(let indexPath):
             editData = myNote.comments[indexPath.row].attributedStringData
         case .addComment:
             editData = nil
         default: return
         }
-        outputSubject.send(.edit(editData: editData))
+        outputSubject.send(.edit(editData: editData, isNote: isEditNote))
     }
     
     /// 更改筆記內容包含comment

@@ -121,7 +121,7 @@ extension ChatViews {
         
         func initUI() {
             messageTextView.delegate = self
-            messageTextView.backgroundColor = UIColor.blue.withAlphaComponent(0.8)
+            messageTextView.backgroundColor = .systemBlue
             messageTextView.attributedText = defaultAttr
             contentView.addSubview(messageTextView)
             contentView.addSubview(blurView)
@@ -206,7 +206,7 @@ extension ChatViews {
                 make.width.lessThanOrEqualTo(SystemDefine.Message.maxWidth)
                 make.trailing.equalToSuperview().inset(10)
             }
-            messageTextView.backgroundColor = .green.withAlphaComponent(0.8)
+            messageTextView.backgroundColor = .systemGreen
         }
     }
     

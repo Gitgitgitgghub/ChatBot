@@ -75,8 +75,8 @@ class NoteViewController: BaseUIViewController {
                     if reload {
                         self.views.tableView.reloadData()
                     }
-                case .edit(editData: let editData):
-                    self.openHtmlEditorVc(editData: editData)
+                case .edit(editData: let editData, let isEditNote):
+                    self.openHtmlEditorVc(editData: editData, isEditNote: isEditNote)
                 case .deleteNoteSuccess:
                     self.showToast(message: "刪除成功，１秒後反回上一頁", autoDismiss: 1) { [weak self] in
                         self?.navigationController?.popViewController(animated: true)
@@ -90,8 +90,8 @@ class NoteViewController: BaseUIViewController {
     }
     
     /// 開啟編輯畫面
-    private func openHtmlEditorVc(editData: Data?) {
-        let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, delegate: self))
+    private func openHtmlEditorVc(editData: Data?, isEditNote: Bool) {
+        let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen, delegate: self))
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
@@ -126,10 +126,12 @@ extension NoteViewController: UITableViewDataSource, UITableViewDelegate {
         case .note:
             let cell = tableView.dequeueReusableCell(with: NoteViews.NoteCell.self, for: indexPath)
             cell.bindNote(note: viewModel.myNote)
+            cell.noteCellDelegate = self
             return cell
         case .comment:
             let cell = tableView.dequeueReusableCell(with: NoteViews.CommentCell.self, for: indexPath)
             cell.bindComment(comment: viewModel.myNote.comments[indexPath.row])
+            cell.noteCellDelegate = self
             return cell
         }
     }
@@ -157,5 +159,14 @@ extension NoteViewController: UITableViewDataSource, UITableViewDelegate {
             return .init(actions: [deleteAction])
         }
     }
+    
+}
+
+extension NoteViewController: NoteCellDelegate {
+    
+    func layoutDidChanged() {
+        
+    }
+    
     
 }

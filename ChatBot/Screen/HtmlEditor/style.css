@@ -8,14 +8,15 @@ body {
 }
 .container {
   background-color: #ffffff;
-  width: 90vmin;
-  padding: 50px 30px;
+  width: 100vmin;
+  padding-left: 10px;
+  padding-right: 10px;
   position: absolute;
   transform: translate(-50%, -50%);
   left: 50%;
   top: 50%;
-  border-radius: 10px;
-  box-shadow: 0 25px 50px rgba(7, 20, 35, 0.2);
+/*  border-radius: 10px;*/
+/*  box-shadow: 0 25px 50px rgba(7, 20, 35, 0.2);*/
 }
 .options {
   display: flex;
@@ -68,12 +69,17 @@ input[type="color"]::-moz-color-swatch {
 }
 #text-input {
   margin-top: 10px;
-  border: 1px solid #dddddd;
-  padding: 20px;
+  background-color: #e0e9ff;
+  padding: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 10px;
   height: 50vh;
   outline: none;
   overflow: auto;
-  word-wrap: break-word; /* 自动换行 */
+  word-wrap: break-word;/* 自动换行 */
+  word-break: normal;
+  caret-color: #ffffff;
 }
 #text-input img {
     max-width: 100%; /* 确保图片不会超出编辑器区域 */

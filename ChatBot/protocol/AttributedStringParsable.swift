@@ -43,7 +43,7 @@ class AttributedStringParser: AttributedStringParsable {
     
     func createAttributedString(string: String) throws -> NSAttributedString {
         let attributedString = NSMutableAttributedString(string: string)
-        attributedString.addAttributes([.font : UIFont.systemFont(ofSize: 16),
+        attributedString.addAttributes([.font : SystemDefine.Message.defaultTextFont,
                                         .foregroundColor : SystemDefine.Message.textColor], range: NSRange(location: 0, length: string.count))
         do {
             try self.matchTitleTexts(string: string, attributedString: attributedString)

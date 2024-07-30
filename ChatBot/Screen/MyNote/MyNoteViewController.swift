@@ -38,6 +38,16 @@ class MyNoteViewController: BaseUIViewController {
                 self.views.tableView.reloadData()
             }
             .store(in: &subscriptions)
+        viewModel.outputSubject
+            .receive(on: RunLoop.main)
+            .sink { [weak self] event in
+                guard let `self` = self else { return }
+                switch event {
+                case .toast(message: let message, reload: let reload):
+                    self.showToast(message: message)
+                }
+            }
+            .store(in: &subscriptions)
     }
 
 }

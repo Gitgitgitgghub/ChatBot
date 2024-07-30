@@ -14,7 +14,7 @@ public class RemoteImageTextAttachment: NSTextAttachment {
     // The size to display the image. If nil, the image's size will be used
     public var displaySize: CGSize?
     public var downloadQueue: DispatchQueue?
-    public let imageUrl: URL
+    public var imageUrl: URL
     private weak var textContainer: NSTextContainer?
     private var isDownloading = false
     
@@ -46,7 +46,11 @@ public class RemoteImageTextAttachment: NSTextAttachment {
         self.textContainer = textContainer
         guard !isDownloading else { return nil }
         isDownloading = true
-        let imageUrl = self.imageUrl
+        // 這邊主要是把檔案相對路徑指向沙盒最新路徑
+        if imageUrl.absoluteString.hasPrefix("file:/") {
+            let fileName = imageUrl.lastPathComponent
+            imageUrl = FileManager.documentsDirectory.appending(path: fileName)
+        }
         SDWebImageManager.shared.loadImage(
             with: imageUrl,
             options: [.highPriority],
@@ -75,6 +79,7 @@ public class RemoteImageTextAttachment: NSTextAttachment {
 }
 
 public extension NSLayoutManager {
+    
     func rangesForAttachment(_ attachment: NSTextAttachment) -> [NSRange]? {
         guard let textStorage = textStorage else {
             return nil
