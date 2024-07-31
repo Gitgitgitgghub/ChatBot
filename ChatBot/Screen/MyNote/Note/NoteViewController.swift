@@ -76,7 +76,7 @@ class NoteViewController: BaseUIViewController {
                         self.views.tableView.reloadData()
                     }
                 case .edit(editData: let editData, let isEditNote):
-                    self.openHtmlEditorVc(editData: editData, isEditNote: isEditNote)
+                    self.openEditorVc(editData: editData, isEditNote: isEditNote)
                 case .deleteNoteSuccess:
                     self.showToast(message: "刪除成功，１秒後反回上一頁", autoDismiss: 1) { [weak self] in
                         self?.navigationController?.popViewController(animated: true)
@@ -90,10 +90,15 @@ class NoteViewController: BaseUIViewController {
     }
     
     /// 開啟編輯畫面
-    private func openHtmlEditorVc(editData: Data?, isEditNote: Bool) {
-        let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen, delegate: self))
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
+    private func openEditorVc(editData: Data?, isEditNote: Bool) {
+        if let editData = editData {
+            let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen, delegate: self))
+            vc.modalPresentationStyle = .fullScreen
+            present(vc, animated: true)
+        }else {
+            let vc = ScreenLoader.loadScreen(screen: .textEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen))
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
 

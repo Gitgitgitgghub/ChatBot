@@ -19,6 +19,12 @@ extension UITextView {
         }
     }
     
+    func textRangeToNSRange(_ textRange: UITextRange) -> NSRange {
+        let location = offset(from: beginningOfDocument, to: textRange.start)
+        let length = offset(from: textRange.start, to: textRange.end)
+        return NSRange(location: location, length: length)
+    }
+    
 }
 
 

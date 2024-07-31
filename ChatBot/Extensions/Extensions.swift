@@ -73,3 +73,28 @@ extension UIColor {
     }
 }
 
+extension UIFont{
+    
+    func withTraits(_ traits:UIFontDescriptor.SymbolicTraits...) -> UIFont {
+        let descriptor = fontDescriptor
+            .withSymbolicTraits(UIFontDescriptor.SymbolicTraits())
+        return UIFont(descriptor: descriptor!, size: 0)
+    }
+    
+    func bold() -> UIFont {
+        return withTraits(.traitBold)
+    }
+    
+    func italic() -> UIFont {
+        return withTraits(.traitItalic)
+    }
+    
+    var isBold: Bool {
+        return fontDescriptor.symbolicTraits.contains(.traitBold)
+    }
+    
+    var isItalic: Bool {
+        return fontDescriptor.symbolicTraits.contains(.traitItalic)
+    }
+}
+

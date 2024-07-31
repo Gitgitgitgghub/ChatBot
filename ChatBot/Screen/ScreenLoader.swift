@@ -27,10 +27,12 @@ class ScreenLoader {
         case setting
         /// 我的筆記
         case myNote
-        /// html 文字編輯
-        case HTMLEditor(content: Data?, inputBackgroundColor:UIColor, delegate: HtmlEditorViewControllerDelegate)
+        /// html富文本編輯器
+        case HTMLEditor(content: Data?, inputBackgroundColor: UIColor, delegate: HtmlEditorViewControllerDelegate)
         /// 筆記畫面
         case note(myNote: MyNote)
+        /// 富文本編輯器
+        case textEditor(content: Data?,inputBackgroundColor: UIColor)
     }
     
     static func loadScreen(screen: Screen) -> UIViewController {
@@ -42,8 +44,11 @@ class ScreenLoader {
         case .history: return HistoryViewController()
         case .setting: return SettingViewController()
         case .myNote: return MyNoteViewController()
-        case .HTMLEditor(content: let content, let color, delegate: let delegate): return HtmlEditorViewController(content: content, inputBackgroundColor: color, delegate: delegate)
+        case .HTMLEditor(content: let content, let color, delegate: let delegate): 
+            return HtmlEditorViewController(content: content, inputBackgroundColor: color, delegate: delegate)
         case .note(myNote: let myNote): return NoteViewController(myNote: myNote)
+        case .textEditor(content: let content, inputBackgroundColor: let inputBackgroundColor):
+            return TextEditorViewController(content: content, inputBackgroundColor: inputBackgroundColor)
         }
     }
 }
