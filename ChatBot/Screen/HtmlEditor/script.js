@@ -39,6 +39,11 @@ function initializer() {
     }
     // Default size
     fontSizeRef.value = 3;
+    writingArea.focus();
+    // 移除零宽度空格
+    if (writingArea.innerHTML === '&nbsp;') {
+        writingArea.innerHTML = '';
+    }
 }
 
 // Main logic
@@ -57,7 +62,11 @@ optionsButtons.forEach((button) => {
 // Options that require value parameter (e.g colors, fonts)
 advancedOptionButton.forEach((button) => {
     button.addEventListener("change", () => {
+        console.log("change")
         modifyText(button.id, false, button.value);
+        if (button.id === "foreColor") {
+            setCursorColor(button.value);
+        }
     });
 });
 
@@ -101,6 +110,13 @@ bottomButtons.forEach((button) => {
 addImageButton.addEventListener("click", () => {
     postMessage(addImageButton.id);
 });
+
+// 设置光标颜色的函数
+function setCursorColor(color) {
+    let style = document.createElement('style');
+    style.innerHTML = `#text-input:focus { caret-color: ${color}; }`;
+    document.head.appendChild(style);
+}
 
 //addTableButton.addEventListener("click", () => {
 //    // 創建一個新的表格

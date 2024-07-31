@@ -81,6 +81,10 @@ input[type="color"]::-moz-color-swatch {
   word-break: normal;
   caret-color: #ffffff;
 }
+/* 设置光标颜色 */
+#text-input:focus {
+    caret-color: #ffffff; 
+}
 #text-input img {
     max-width: 100%; /* 确保图片不会超出编辑器区域 */
     height: auto;

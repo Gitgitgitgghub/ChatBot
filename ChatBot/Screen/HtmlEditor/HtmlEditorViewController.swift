@@ -239,6 +239,8 @@ extension HtmlEditorViewController: WKNavigationDelegate {
                 var colorInput = document.getElementById('foreColor');
                 if (colorInput) {
                     colorInput.value = '\(fontColor)';
+                    var event = new Event('change');
+                    colorInput.dispatchEvent(event);
                 }
                 """
         webView.evaluateJavaScript(jsString, completionHandler: nil)

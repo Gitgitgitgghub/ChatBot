@@ -193,15 +193,7 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
     //TODO: - 暫時寫這樣看起來還是得做catch
     func attributedString() -> NSAttributedString? {
         let htmlString = String(data: attributedStringData, encoding: .utf8) ?? ""
-        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-            .documentType: NSAttributedString.DocumentType.html,
-            .characterEncoding: String.Encoding.utf8.rawValue
-        ]
-        guard let mutableAttributedString = try? NSMutableAttributedString(
-            data: attributedStringData,
-            options: options,
-            documentAttributes: nil
-        ) else { return nil }
+        guard let mutableAttributedString = NSMutableAttributedString(htmlString: htmlString) else { return nil }
         let imageUrls = extractImageSrcs(from: htmlString)
         guard imageUrls.isNotEmpty else { return mutableAttributedString }
         var i = 0
