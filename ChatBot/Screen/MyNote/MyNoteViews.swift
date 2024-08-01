@@ -18,11 +18,22 @@ class MyNoteViews: ControllerView {
         tableView.separatorStyle = .singleLine
         tableView.rowHeight = UITableView.automaticDimension
     }
+    var addNoteButton = UIButton(type: .custom).apply {
+        $0.cornerRadius = 25
+        $0.setImage(.init(systemName: "plus"), for: .normal)
+        $0.layer.borderColor = UIColor.lightGray.cgColor
+        $0.layer.borderWidth = 1
+    }
     
     override func initUI() {
         view.addSubview(tableView)
+        view.addSubview(addNoteButton)
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        addNoteButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 50, height: 50))
+            make.trailing.bottom.equalToSuperview().inset(15)
         }
     }
     

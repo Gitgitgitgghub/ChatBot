@@ -77,7 +77,7 @@ extension UIFont{
     
     func withTraits(_ traits:UIFontDescriptor.SymbolicTraits...) -> UIFont {
         let descriptor = fontDescriptor
-            .withSymbolicTraits(UIFontDescriptor.SymbolicTraits())
+            .withSymbolicTraits(UIFontDescriptor.SymbolicTraits(traits))
         return UIFont(descriptor: descriptor!, size: 0)
     }
     
@@ -87,6 +87,10 @@ extension UIFont{
     
     func italic() -> UIFont {
         return withTraits(.traitItalic)
+    }
+    
+    func boldItalic() -> UIFont {
+        return withTraits([.traitBold, .traitItalic])
     }
     
     var isBold: Bool {

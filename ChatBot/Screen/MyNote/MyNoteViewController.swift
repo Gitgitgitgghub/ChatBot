@@ -28,6 +28,7 @@ class MyNoteViewController: BaseUIViewController {
         views.tableView.delegate = self
         views.tableView.dataSource = self
         views.tableView.register(cellType: MyNoteViews.NoteCell.self)
+        views.addNoteButton.addTarget(self, action: #selector(addNote), for: .touchUpInside)
     }
     
     private func bind() {
@@ -43,11 +44,16 @@ class MyNoteViewController: BaseUIViewController {
             .sink { [weak self] event in
                 guard let `self` = self else { return }
                 switch event {
-                case .toast(message: let message, reload: let reload):
+                case .toast(message: let message, reload: _):
                     self.showToast(message: message)
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    @objc private func addNote() {
+        let vc = ScreenLoader.loadScreen(screen: .textEditor(content: nil, inputBackgroundColor: .systemBlue))
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 }
