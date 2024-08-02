@@ -63,6 +63,16 @@ extension SystemDefine {
         static let textColor: UIColor = .white
         /// 預設字體
         static let defaultTextFont: UIFont = .init(name: "Arial", size: 16)!
+        /// 支援的font
+        static let fontList = [
+                "Arial",
+                "Verdana",
+                "Times New Roman",
+                "Garamond",
+                "Georgia",
+                "Courier New",
+                "cursive"
+            ]
     }
     
     

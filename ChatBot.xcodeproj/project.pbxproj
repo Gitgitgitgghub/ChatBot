@@ -76,6 +76,8 @@
 		32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264312C1BDA8D0083EC63 /* OpenAIService.swift */; };
 		32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264332C1BE75C0083EC63 /* Extensions.swift */; };
 		942395EB2C56A95000E65150 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942395EA2C56A95000E65150 /* ImageManager.swift */; };
+		943CFF912C5CBE7E00B96812 /* TextEditorViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943CFF902C5CBE7E00B96812 /* TextEditorViews.swift */; };
+		943CFF932C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943CFF922C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift */; };
 		9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */; };
 		9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */; };
 		9455D80C2C4A3FCB007AC9C2 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 9455D8092C4A3FCB007AC9C2 /* index.html */; };
@@ -173,6 +175,8 @@
 		32E264312C1BDA8D0083EC63 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		32E264332C1BE75C0083EC63 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		942395EA2C56A95000E65150 /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
+		943CFF902C5CBE7E00B96812 /* TextEditorViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorViews.swift; sourceTree = "<group>"; };
+		943CFF922C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewLeftAlignedLayout.swift; sourceTree = "<group>"; };
 		9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViews.swift; sourceTree = "<group>"; };
 		9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNoteViewModel.swift; sourceTree = "<group>"; };
 		9455D8092C4A3FCB007AC9C2 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
@@ -359,6 +363,7 @@
 			isa = PBXGroup;
 			children = (
 				327D286C2C59E39200F6ED68 /* TextEditorViewController.swift */,
+				943CFF902C5CBE7E00B96812 /* TextEditorViews.swift */,
 			);
 			path = TextViewEditor;
 			sourceTree = "<group>";
@@ -411,6 +416,7 @@
 			children = (
 				32800F112C251E5400FE5786 /* AttributedStringParsable.swift */,
 				32690FC52C3CE62A00700192 /* ImageFileHandler.swift */,
+				943CFF922C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift */,
 			);
 			path = protocol;
 			sourceTree = "<group>";
@@ -661,6 +667,7 @@
 				946F7A382C464EC4007DC7A8 /* NoteModel.swift in Sources */,
 				326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
+				943CFF932C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift in Sources */,
 				3241BE532C4DEAAA0047BB71 /* NoteViewController.swift in Sources */,
 				32690FD42C3E766300700192 /* VoicePickerViewController.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
@@ -709,6 +716,7 @@
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,
 				3241BE502C44B3FC0047BB71 /* DatabaseManager.swift in Sources */,
+				943CFF912C5CBE7E00B96812 /* TextEditorViews.swift in Sources */,
 				326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */,
 				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
