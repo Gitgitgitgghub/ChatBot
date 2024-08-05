@@ -68,10 +68,8 @@ extension SystemDefine {
                 "Arial",
                 "Verdana",
                 "Times New Roman",
-                "Garamond",
                 "Georgia",
-                "Courier New",
-                "cursive"
+                "Courier New"
             ]
     }
     

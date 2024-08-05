@@ -19,6 +19,8 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
         case addComment
         /// 變更內容
         case modifyNote(content: String)
+        /// 變更內容
+        case modifyNoteByNSAttributedString(attr: NSAttributedString?)
         /// 刪除comment
         case deleteComment(indexPath: IndexPath)
         /// 刪除筆記
@@ -54,6 +56,8 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
                 switch event {
                 case .modifyNote(content: let content):
                     self?.modifyNote(content: content)
+                case .modifyNoteByNSAttributedString(attr: let attr):
+                    self?.modifyNoteByNSAttributedString(attr: attr)
                 case .deleteNote:
                     self?.deleteNote()
                 case .deleteComment(indexPath: let indexPath):
@@ -64,10 +68,6 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
                 }
             }
             .store(in: &subscriptions)
-    }
-    
-    func transform(inputEvent: InputEvent) {
-        inputSubject.send(inputEvent)
     }
     
     private func deleteNote() {
@@ -156,6 +156,10 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
                 .store(in: &self.subscriptions)
         default: break
         }
+    }
+    
+    private func modifyNoteByNSAttributedString(attr: NSAttributedString?) {
+        
     }
     
 }

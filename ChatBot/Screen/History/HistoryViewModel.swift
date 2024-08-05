@@ -41,10 +41,6 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
             .store(in: &subscriptions)
     }
     
-    func transform(inputEvent: InputEvent) {
-        inputSubject.send(inputEvent)
-    }
-    
     private func deleteChatRoom(indexPath: IndexPath) {
         guard let id = chatRooms.getOrNil(index: indexPath.row)?.id else { return }
         ChatRoomManager.shared

@@ -65,6 +65,8 @@
 		32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */; };
 		32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0C2C2405EC00FE5786 /* UIImage+.swift */; };
 		32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F112C251E5400FE5786 /* AttributedStringParsable.swift */; };
+		32B7E6A22C607E200032ABFD /* UICollectionView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A12C607E200032ABFD /* UICollectionView+.swift */; };
+		32B7E6A42C607F500032ABFD /* TextEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
 		32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32C77FCF2C18504F00F335FE /* Assets.xcassets */; };
@@ -160,6 +162,8 @@
 		32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenAIProtocol+ ImageFileHandler.swift"; sourceTree = "<group>"; };
 		32800F0C2C2405EC00FE5786 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
 		32800F112C251E5400FE5786 /* AttributedStringParsable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedStringParsable.swift; sourceTree = "<group>"; };
+		32B7E6A12C607E200032ABFD /* UICollectionView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+.swift"; sourceTree = "<group>"; };
+		32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorViewModel.swift; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32C77FC82C18504E00F335FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -240,6 +244,7 @@
 			children = (
 				3241BE422C3F81BE0047BB71 /* UserDefault */,
 				322A2CFE2C194A65007A8075 /* NSObject+.swift */,
+				32B7E6A12C607E200032ABFD /* UICollectionView+.swift */,
 				322A2D002C194C88007A8075 /* UITableView+.swift */,
 				32E264332C1BE75C0083EC63 /* Extensions.swift */,
 				32800EF82C202F8800FE5786 /* UIView+.swift */,
@@ -364,6 +369,7 @@
 			children = (
 				327D286C2C59E39200F6ED68 /* TextEditorViewController.swift */,
 				943CFF902C5CBE7E00B96812 /* TextEditorViews.swift */,
+				32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */,
 			);
 			path = TextViewEditor;
 			sourceTree = "<group>";
@@ -687,6 +693,7 @@
 				32800F022C21850A00FE5786 /* UploadImageSelectorViewController.swift in Sources */,
 				32690FD12C3E679200700192 /* SpeechVoiceManager.swift in Sources */,
 				946F7A3A2C466F38007DC7A8 /* NoteManager.swift in Sources */,
+				32B7E6A42C607F500032ABFD /* TextEditorViewModel.swift in Sources */,
 				3241BE482C3F841E0047BB71 /* AccountManager.swift in Sources */,
 				32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */,
 				32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */,
@@ -718,6 +725,7 @@
 				3241BE502C44B3FC0047BB71 /* DatabaseManager.swift in Sources */,
 				943CFF912C5CBE7E00B96812 /* TextEditorViews.swift in Sources */,
 				326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */,
+				32B7E6A22C607E200032ABFD /* UICollectionView+.swift in Sources */,
 				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				3241BE552C4DF0C70047BB71 /* NoteViewModel.swift in Sources */,

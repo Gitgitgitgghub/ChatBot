@@ -52,10 +52,19 @@ class MyNoteViewController: BaseUIViewController {
     }
     
     @objc private func addNote() {
-        let vc = ScreenLoader.loadScreen(screen: .textEditor(content: nil, inputBackgroundColor: .systemBlue))
+        let vc = ScreenLoader.loadScreen(screen: .textEditor(content: nil, inputBackgroundColor: .systemBlue, delegate: self))
         navigationController?.pushViewController(vc, animated: true)
     }
 
+}
+
+extension MyNoteViewController: TextEditorViewControllerDelegate {
+    
+    func onSave(attributedString: NSAttributedString?) {
+        print("onSave---\(attributedString)")
+        viewModel.transform(inputEvent: .addNote(attributedString: attributedString))
+    }
+    
 }
 
 //MARK: - UITableViewDataSource, UITabBarDelegate

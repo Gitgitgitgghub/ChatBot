@@ -11,7 +11,9 @@ import UIKit
 
 protocol TextEditorViewsProtocol: AnyObject {
     
-    func onActionButtonClick(action: TextEditorViewController.Action)
+    func getActionDataSource() -> [TextEditorViewController.Action]
+    
+    func onActionButtonClick(action: TextEditorViewController.Action, indexPath: IndexPath)
 }
 
 class TextEditorViews: ControllerView {
@@ -33,7 +35,9 @@ class TextEditorViews: ControllerView {
         $0.delegate = self
         $0.textColor = .white
     }
-    lazy var actions: [TextEditorViewController.Action] = TextEditorViewController.Action.allCases
+    var actions: [TextEditorViewController.Action] {
+        return delegate?.getActionDataSource() ?? []
+    }
     weak var delegate: TextEditorViewsProtocol?
     
     override func initUI() {
@@ -51,37 +55,7 @@ class TextEditorViews: ControllerView {
         }
         actionCollectionView.dataSource = self
         actionCollectionView.delegate = self
-        actionCollectionView.register(ActionCell.self, forCellWithReuseIdentifier: ActionCell.className)
-    }
-    
-    func getCellButton(action: TextEditorViewController.Action) -> UIButton? {
-        guard let cell = actionCollectionView.cellForItem(at: .init(item: action.rawValue, section: 0)) as? ActionCell else { return nil }
-        return cell.button
-    }
-    
-    func toggleActionButton(action: TextEditorViewController.Action) {
-        guard let button =  getCellButton(action: action) else { return }
-        guard action.enableSelected() else { return }
-        switch action {
-            // 這三顆按鈕互斥
-        case .textAlignLeft, .textAlignCenter, .textAlignRight:
-            let alignActions: [TextEditorViewController.Action] = [.textAlignLeft, .textAlignCenter, .textAlignRight]
-            alignActions.forEach { alignAction in
-                if alignAction != action {
-                    guard let otherButton = getCellButton(action: alignAction) else { return }
-                    otherButton.isSelected = false
-                    otherButton.tintColor = .systemGray
-                    otherButton.backgroundColor = .white
-                }
-            }
-            button.isSelected = true
-            button.tintColor = .white
-            button.backgroundColor = .systemGray
-        default:
-            button.isSelected.toggle()
-            button.tintColor = button.isSelected ? .white : .systemGray
-            button.backgroundColor = button.isSelected ? .systemGray : .white
-        }
+        actionCollectionView.register(cellType: ActionCell.self)
     }
     
 }
@@ -95,33 +69,20 @@ extension TextEditorViews: UICollectionViewDelegateFlowLayout, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let action = TextEditorViewController.Action.init(rawValue: indexPath.item) else { return UICollectionViewCell() }
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ActionCell.className, for: indexPath)
-        as! ActionCell
-        cell.tag = action.rawValue
-        switch action {
-        case .fontColor:
-            cell.setColor(title: "Text Color", color: .white)
-        case .highlightColor:
-            cell.setColor(title: "Highlight", color: .clear)
-        case .fontSize:
-            cell.setFontSize(size: 16)
-        case .font:
-            cell.setFontName(name: "Arial")
-        default:
-            cell.setButton(image: action.image)
-        }
+        let action = actions[indexPath.item]
+        let cell = collectionView.dequeueReusableCell(with: ActionCell.self, for: indexPath)
+        cell.tag = indexPath.item
+        cell.bindAction(action: action)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let action = TextEditorViewController.Action.init(rawValue: indexPath.item) else { return }
-        toggleActionButton(action: action)
-        delegate?.onActionButtonClick(action: action)
+        let action = actions[indexPath.item]
+        delegate?.onActionButtonClick(action: action, indexPath: indexPath)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        guard let action = TextEditorViewController.Action.init(rawValue: indexPath.item) else { return .zero }
+        let action = actions[indexPath.item]
         switch action {
         case .fontColor:
             return CGSize(width: 110, height: 30)
@@ -129,7 +90,7 @@ extension TextEditorViews: UICollectionViewDelegateFlowLayout, UICollectionViewD
             return CGSize(width: 110, height: 30)
         case .fontSize:
             return CGSize(width: 110, height: 30)
-        case .font:
+        case .fontName:
             return CGSize(width: actionCollectionView.frame.width, height: 30)
         default: return CGSize(width: 30, height: 30)
         }
@@ -153,6 +114,7 @@ extension TextEditorViews {
             let button = UIButton(type: .custom)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.isUserInteractionEnabled = false
+            button.isVisible = false
             return button
         }()
         lazy var label: UILabel = {
@@ -174,6 +136,7 @@ extension TextEditorViews {
             view.isVisible = false
             return view
         }()
+        var action: TextEditorViewController.Action?
         
         override init(frame: CGRect) {
             super.init(frame: frame)
@@ -202,34 +165,62 @@ extension TextEditorViews {
             }
         }
         
-        func setButton(image: UIImage?) {
-            button.isVisible = true
-            button.tintColor = .systemGray
-            button.setImage(image, for: .normal)
+        func bindAction(action: TextEditorViewController.Action) {
+            self.action = action
+            switch action {
+            case .bold(let isSeleted), .italic(let isSeleted), .underline(let isSeleted), .strikethrough(let isSeleted), .textAlignLeft(let isSeleted), .textAlignCenter(let isSeleted), .textAlignRight(let isSeleted):
+                setButton(isSeleted: isSeleted)
+            case .insertImage, .link:
+                setButton(isSeleted: false)
+            case .fontColor(let color), .highlightColor(let color):
+                setColor(color: color)
+            case .fontSize(let size):
+                setFontSize(size: size)
+            case .fontName(let foneName):
+                setFontName(name: foneName)
+            }
         }
         
-        func setColor(title: String, color: UIColor) {
+        private func setButton(isSeleted: Bool) {
+            guard let action = self.action else { return }
+            button.isVisible = true
+            label.isVisible = false
+            colorView.isVisible = false
+            button.setImage(action.image, for: .normal)
+            if action.enableToggle() {
+                button.tintColor = isSeleted ? .white : .systemGray
+                button.backgroundColor = !isSeleted ? .white : .systemGray
+            }else {
+                button.backgroundColor = .white
+                button.tintColor = .systemGray
+            }
+        }
+        
+        private func setColor(color: UIColor) {
+            guard let action = self.action else { return }
             button.isVisible = false
             label.isVisible = true
             colorView.isVisible = true
-            label.text = title
+            label.text = action.actionName
             colorView.backgroundColor = color
         }
         
-        func setFontName(name: String) {
+        private func setFontName(name: String) {
+            guard let action = self.action else { return }
             button.isVisible = false
             label.isVisible = true
             colorView.isVisible = false
             label.font = UIFont(name: name, size: 16)
-            label.text = "字型：\(name)"
+            label.text = "\(action.actionName)：\(name)"
         }
         
-        func setFontSize(size: CGFloat) {
+        private func setFontSize(size: CGFloat) {
+            guard let action = self.action else { return }
             button.isVisible = false
             label.isVisible = true
             colorView.isVisible = false
             let size = Int(size)
-            label.text = "文字大小：\(size)"
+            label.text = "\(action.actionName)：\(size)"
         }
         
     }

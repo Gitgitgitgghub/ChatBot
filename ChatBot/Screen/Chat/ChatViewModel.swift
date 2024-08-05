@@ -319,10 +319,6 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             .eraseToAnyPublisher()
     }
     
-    func transform(inputEvent: InputEvent) {
-        inputSubject.send(inputEvent)
-    }
-    
     /// 儲存聊天訊息
     private func saveMessages() {
         guard displayMessages.isNotEmpty else {

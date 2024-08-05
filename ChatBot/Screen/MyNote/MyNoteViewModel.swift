@@ -13,6 +13,7 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
     enum InputEvent {
         case fetchAllNote
         case deleteNote(indexPath: IndexPath)
+        case addNote(attributedString: NSAttributedString?)
     }
     
     enum OutputEvent {
@@ -31,13 +32,28 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
                     self.fetchAllNote()
                 case .deleteNote(indexPath: let indexPath):
                     self.deleteNote(indexPath: indexPath)
+                case .addNote(attributedString: let attributedString):
+                    self.addNote(attributedString: attributedString)
                 }
             }
             .store(in: &subscriptions)
     }
     
-    func transform(inputEvent: InputEvent) {
-        inputSubject.send(inputEvent)
+    private func addNote(attributedString: NSAttributedString?) {
+        guard let attributedString = attributedString else { return }
+        guard let note = try? MyNote(title: "我的筆記", attributedString: attributedString) else { return }
+        NoteManager.shared.saveNote(note)
+            .sink { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    self?.outputSubject.send(.toast(message: "新增筆記失敗：\(error.localizedDescription)", reload: false))
+                case .finished: break
+                }
+                
+            } receiveValue: { [weak self] _ in
+                self?.outputSubject.send(.toast(message: "新增筆記成功", reload: false))
+            }
+            .store(in: &subscriptions)
     }
     
     /// 刪除筆記

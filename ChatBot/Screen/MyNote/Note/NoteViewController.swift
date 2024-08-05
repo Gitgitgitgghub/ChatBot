@@ -91,15 +91,25 @@ class NoteViewController: BaseUIViewController {
     
     /// 開啟編輯畫面
     private func openEditorVc(editData: Data?, isEditNote: Bool) {
-        if let editData = editData {
-            let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen, delegate: self))
-            vc.modalPresentationStyle = .fullScreen
-            present(vc, animated: true)
-        }else {
-            let vc = ScreenLoader.loadScreen(screen: .textEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen))
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        let vc = ScreenLoader.loadScreen(screen: .textEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen, delegate: self))
+        navigationController?.pushViewController(vc, animated: true)
+//        if let editData = editData {
+//            let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen, delegate: self))
+//            vc.modalPresentationStyle = .fullScreen
+//            present(vc, animated: true)
+//        }else {
+//            let vc = ScreenLoader.loadScreen(screen: .textEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen, delegate: self))
+//            navigationController?.pushViewController(vc, animated: true)
+//        }
     }
+}
+
+extension NoteViewController: TextEditorViewControllerDelegate {
+    
+    func onSave(attributedString: NSAttributedString?) {
+        viewModel.transform(inputEvent: .modifyNoteByNSAttributedString(attr: attributedString))
+    }
+    
 }
 
 extension NoteViewController: HtmlEditorViewControllerDelegate {

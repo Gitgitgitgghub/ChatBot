@@ -93,6 +93,10 @@ extension UIFont{
         return withTraits([.traitBold, .traitItalic])
     }
     
+    func withoutTraits() -> UIFont {
+        return withTraits([])
+    }
+    
     var isBold: Bool {
         return fontDescriptor.symbolicTraits.contains(.traitBold)
     }

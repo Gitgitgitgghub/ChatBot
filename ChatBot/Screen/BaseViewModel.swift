@@ -17,6 +17,8 @@ protocol ViewModelProtocol {
     associatedtype Output
     var inputSubject: PassthroughSubject<Input, Never> { get }
     var outputSubject: PassthroughSubject<Output, Never> { get }
+    
+    func transform(inputEvent: Input)
 }
 
 /// BaseViewModel
@@ -32,6 +34,10 @@ class BaseViewModel<I, O>: NSObject, ViewModelProtocol {
     }
     var outputSubject: PassthroughSubject<O, Never> {
         return _outputSubject
+    }
+    
+    func transform(inputEvent: I) {
+        inputSubject.send(inputEvent)
     }
     
     deinit {

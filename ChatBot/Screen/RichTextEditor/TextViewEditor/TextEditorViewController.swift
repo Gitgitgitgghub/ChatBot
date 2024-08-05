@@ -8,30 +8,31 @@
 import Foundation
 import UIKit
 
+protocol TextEditorViewControllerDelegate: AnyObject {
+    
+    func onSave(attributedString: NSAttributedString?)
+    
+}
+
 
 class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
     
-    enum Action: Int, CaseIterable {
-        case bold,
-             italic,
-             underline,
-             strikethrough,
-             textAlignLeft,
-             textAlignCenter,
-             textAlignRight,
-             insertImage,
-             link,
-             fontColor,
-             highlightColor,
-             fontSize,
-             font
+    
+    enum Action: Equatable {
         
-        func enableSelected() -> Bool {
-            switch self {
-            case .insertImage, .link, .fontColor, .fontSize, .highlightColor, .font: return false
-            default: return true
-            }
-        }
+        case bold(isSeleted: Bool)
+        case italic(isSeleted: Bool)
+        case underline(isSeleted: Bool)
+        case strikethrough(isSeleted: Bool)
+        case textAlignLeft(isSeleted: Bool)
+        case textAlignCenter(isSeleted: Bool)
+        case textAlignRight(isSeleted: Bool)
+        case insertImage
+        case link
+        case fontColor(color: UIColor)
+        case highlightColor(color: UIColor)
+        case fontSize(size: CGFloat)
+        case fontName(foneName: String)
         
         var image: UIImage? {
             switch self {
@@ -44,35 +45,95 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
             case .textAlignRight: return.init(systemName: "text.alignright")
             case .insertImage: return.init(systemName: "photo")
             case .link: return.init(systemName: "link")
-            case .fontColor:
-                return .init(systemName: "textformat.size.larger")
-            case .highlightColor:
-                return .init(systemName: "highlighter")
-            default: return .init(systemName: "textformat.size.larger")
+            default: return nil
+            }
+        }
+        
+        var actionName: String {
+            switch self {
+            case .bold(_): return "粗體"
+            case .italic(_): return "斜體"
+            case .underline(_): return "底線"
+            case .strikethrough(_): return "刪除線"
+            case .textAlignLeft(_): return "靠左對齊"
+            case .textAlignCenter(_): return "靠中對齊"
+            case .textAlignRight(_): return "靠右對齊"
+            case .insertImage: return "插入圖片"
+            case .link: return "插入連結"
+            case .fontColor(_): return "字體顏色"
+            case .highlightColor(_): return "背景顏色"
+            case .fontSize(_): return "字體大小"
+            case .fontName(_): return "字型"
+            }
+        }
+        
+        func enableToggle() -> Bool {
+            switch self {
+            case .insertImage, .link, .fontColor, .fontSize, .highlightColor, .fontName: return false
+            default: return true
+            }
+        }
+        
+        func setSelected(_ isSelected: Bool) -> Action {
+            switch self {
+            case .bold:
+                return .bold(isSeleted: isSelected)
+            case .italic:
+                return .italic(isSeleted: isSelected)
+            case .underline:
+                return .underline(isSeleted: isSelected)
+            case .strikethrough:
+                return .strikethrough(isSeleted: isSelected)
+            case .textAlignLeft:
+                return .textAlignLeft(isSeleted: isSelected)
+            case .textAlignCenter:
+                return .textAlignCenter(isSeleted: isSelected)
+            case .textAlignRight:
+                return .textAlignRight(isSeleted: isSelected)
+            default:
+                return self
+            }
+        }
+        
+        // 新增方法來處理文字對齊的互斥性
+        static func updateTextAlignment(_ currentAlignment: Action) -> [Action] {
+            let alignments: [Action] = [
+                .textAlignLeft(isSeleted: false),
+                .textAlignCenter(isSeleted: false),
+                .textAlignRight(isSeleted: false)
+            ]
+            
+            return alignments.map { alignment in
+                switch (alignment, currentAlignment) {
+                case (.textAlignLeft, .textAlignLeft),
+                    (.textAlignCenter, .textAlignCenter),
+                    (.textAlignRight, .textAlignRight):
+                    return currentAlignment
+                default:
+                    return alignment
+                }
             }
         }
     }
+    
     let content: Data?
     let inputBackgroundColor: UIColor
+    weak var delegate: TextEditorViewControllerDelegate?
+    let viewModel = TextEditorViewModel()
     var attr: NSMutableAttributedString?
     lazy var views = TextEditorViews(view: self.view)
-    var typingAttributes: [NSAttributedString.Key : Any] = [.font : SystemDefine.Message.defaultTextFont,
-                                                            .foregroundColor : SystemDefine.Message.textColor]
+    
     var textView: UITextView {
         return views.textView
     }
-    var font: UIFont {
-        if let font = self.typingAttributes[.font] as? UIFont {
-            return font
-        }
-        return .systemFont(ofSize: 16)
-    }
-    /// 觸發顏色選擇器的Action目前只有:fontColor,highlightColor
-    var colorPickerAction: Action = .fontColor
     
-    init(content: Data?, inputBackgroundColor: UIColor) {
+    /// 觸發顏色選擇器的Action目前只有:fontColor,highlightColor
+    var colorPickerAction: Action = .fontColor(color: .clear)
+    
+    init(content: Data?, inputBackgroundColor: UIColor, delegate: TextEditorViewControllerDelegate) {
         self.content = content
         self.inputBackgroundColor = inputBackgroundColor
+        self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -83,11 +144,28 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        bind()
     }
     
     private func initUI() {
         views.delegate = self
         setupTextView()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "保存", style: .plain, target: self, action: #selector(save))
+    }
+    
+    private func bind() {
+        viewModel.bindInputEvent()
+        viewModel.outputSubject
+            .sink { [weak self] event in
+                guard let `self` = self else { return }
+                switch event {
+                case .typingAttributesChange(let typingAttributes):
+                    self.textView.typingAttributes = typingAttributes
+                case .actionUIChange:
+                    self.views.actionCollectionView.reloadData()
+                }
+            }
+            .store(in: &subscriptions)
     }
     
     private func setupTextView() {
@@ -103,14 +181,24 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
         }
         textView.backgroundColor = inputBackgroundColor
         textView.attributedText = attr
-        textView.typingAttributes = typingAttributes
-        textView.linkTextAttributes = [.font: UIFont(name: "Arial", size: 16) ?? UIFont.systemFont(ofSize: 16),
+        textView.linkTextAttributes = [.font: SystemDefine.Message.defaultTextFont,
                                        .foregroundColor: UIColor.systemRed,
                                        .underlineColor: UIColor.systemRed,
                                        .underlineStyle: NSUnderlineStyle.single.rawValue]
+        textView.typingAttributes = viewModel.typingAttributes
     }
     
-    func onActionButtonClick(action: Action) {
+    @objc private func save() {
+        delegate?.onSave(attributedString: textView.attributedText)
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func getActionDataSource() -> [Action] {
+        return viewModel.actions
+    }
+    
+    func onActionButtonClick(action: Action, indexPath: IndexPath) {
+        viewModel.transform(inputEvent: .toggleActionButton(indexPath: indexPath))
         switch action {
         case .bold:
             makeBold()
@@ -136,8 +224,8 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
             changeHighlightColor()
         case .fontSize:
             changeFontSize()
-        case .font:
-            changeFont()
+        case .fontName:
+            changeFontName()
         }
     }
     
@@ -246,30 +334,6 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
         self.present(alert, animated: true, completion: nil)
     }
     
-    /// 取得該顯示的字型
-    func selecteFont() -> UIFont {
-        let actions: [Action] = [.bold, .italic]
-        var isBold = false
-        var isItalic = false
-        actions.forEach { action in
-            if let button = views.getCellButton(action: action) {
-                switch action {
-                case .bold: isBold = button.isSelected
-                case .italic: isItalic = button.isSelected
-                default: return
-                }
-            }
-        }
-        if isBold && isItalic {
-            return font.boldItalic()
-        }else if isBold {
-            return font.bold()
-        }else if isItalic {
-            return font.italic()
-        }else {
-            return font
-        }
-    }
     
 }
 
@@ -285,11 +349,11 @@ extension TextEditorViewController: UITextViewDelegate {
 extension TextEditorViewController {
     
     func makeBold() {
-        applyAttribute(.font, value: selecteFont())
+        applyAttribute(.font, value: viewModel.getFont())
     }
     
     func makeItalic() {
-        applyAttribute(.font, value: selecteFont())
+        applyAttribute(.font, value: viewModel.getFont())
     }
     
     func makeUnderline() {
@@ -330,7 +394,7 @@ extension TextEditorViewController {
             self.textView.textStorage.replaceCharacters(in: selectedRange, with: attributedString)
             /// 這邊要重新設定不然後續輸入的文字也會成為超連結的一部分
             self.textView.selectedRange = NSRange(location: selectedRange.location + linkText.count, length: 0)
-            self.reapplyTypingAttributes()
+            self.viewModel.transform(inputEvent: .reapplyTypingAttributes)
         }
     }
     
@@ -342,19 +406,19 @@ extension TextEditorViewController {
     }
     
     func changeFontColor() {
-        colorPickerAction = .fontColor
+        colorPickerAction = .fontColor(color: .clear)
         showColorPickerVC()
     }
     
     func changeHighlightColor() {
-        colorPickerAction = .highlightColor
+        colorPickerAction = .highlightColor(color: .clear)
         showColorPickerVC()
     }
     
-    func changeFont() {
+    func changeFontName() {
         showFontSelectorVc { [weak self] fontName in
             guard let `self` = self else { return }
-            let currentFont = self.typingAttributes[.font] as? UIFont ?? UIFont.systemFont(ofSize: 16)
+            let currentFont = viewModel.font
             guard let newFont = UIFont(name: fontName, size: currentFont.pointSize) else { return }
             self.applyAttribute(.font, value: newFont)
         }
@@ -363,7 +427,7 @@ extension TextEditorViewController {
     func changeFontSize() {
         showFontSizeInputVc { [weak self] size in
             guard let `self` = self else { return }
-            let currentFont = self.typingAttributes[.font] as? UIFont ?? UIFont.systemFont(ofSize: 16)
+            let currentFont = viewModel.font
             guard let newFont = UIFont(name: currentFont.fontName, size: size) else { return }
             self.applyAttribute(.font, value: newFont)
         }
@@ -373,12 +437,11 @@ extension TextEditorViewController {
         guard let range = textView.selectedTextRange else { return }
         let nsRange = textView.textRangeToNSRange(range)
         textView.textStorage.beginEditing()
-        textView.textStorage.enumerateAttribute(.paragraphStyle, in: nsRange, options: []) { value, range, _ in
-            let style = (value as? NSMutableParagraphStyle) ?? NSMutableParagraphStyle()
-            modifier(style)
-            textView.textStorage.addAttribute(.paragraphStyle, value: style, range: range)
-            updateTypingAttributes(attribute: .paragraphStyle, value: style)
-        }
+        // 创建一个新的 NSMutableParagraphStyle 对象并应用修改器
+        let newParagraphStyle = NSMutableParagraphStyle()
+        modifier(newParagraphStyle)
+        // 在选中范围内应用新的段落样式
+        textView.textStorage.addAttribute(.paragraphStyle, value: newParagraphStyle, range: nsRange)
         textView.textStorage.endEditing()
     }
     
@@ -396,18 +459,7 @@ extension TextEditorViewController {
                 textView.textStorage.addAttribute(attribute, value: value, range: nsRange)
             }
         }
-        updateTypingAttributes(attribute: attribute, value: value)
-    }
-    
-    func reapplyTypingAttributes() {
-        updateTypingAttributes(attribute: nil, value: nil)
-    }
-
-    func updateTypingAttributes(attribute: NSAttributedString.Key?, value: Any?) {
-        if let attribute = attribute {
-            typingAttributes[attribute] = value
-        }
-        textView.typingAttributes = typingAttributes
+        viewModel.transform(inputEvent: .addAttribute(key: attribute, value: value))
     }
 }
 
@@ -416,11 +468,15 @@ extension TextEditorViewController: UIColorPickerViewControllerDelegate {
     
     func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
         let selectedColor = viewController.selectedColor
-        guard let range = textView.selectedTextRange else { return }
-        let attribute:  NSAttributedString.Key = (colorPickerAction == .fontColor) ? .foregroundColor : .backgroundColor
-        let nsRange = textView.textRangeToNSRange(range)
-        textView.textStorage.addAttribute(attribute, value: selectedColor, range: nsRange)
-        updateTypingAttributes(attribute: attribute, value: selectedColor)
+        let attribute:  NSAttributedString.Key
+        switch colorPickerAction {
+        case .fontColor:
+            attribute = .foregroundColor
+        case .highlightColor:
+            attribute = .backgroundColor
+        default: return
+        }
+        applyAttribute(attribute, value: selectedColor)
     }
 }
 
@@ -438,7 +494,7 @@ extension TextEditorViewController: UIImagePickerControllerDelegate, UINavigatio
             textView.textStorage.insert(attributedString, at: selectedRange.location)
             // 更新选择范围以防止光标位置错误
             textView.selectedRange = NSRange(location: selectedRange.location + 1, length: 0)
-            reapplyTypingAttributes()
+            viewModel.transform(inputEvent: .reapplyTypingAttributes)
         }
         picker.dismiss(animated: true, completion: nil)
     }
