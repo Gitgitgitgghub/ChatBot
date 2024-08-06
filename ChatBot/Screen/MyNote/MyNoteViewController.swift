@@ -61,7 +61,6 @@ class MyNoteViewController: BaseUIViewController {
 extension MyNoteViewController: TextEditorViewControllerDelegate {
     
     func onSave(attributedString: NSAttributedString?) {
-        print("onSave---\(attributedString)")
         viewModel.transform(inputEvent: .addNote(attributedString: attributedString))
     }
     

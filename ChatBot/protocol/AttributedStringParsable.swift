@@ -10,10 +10,28 @@ protocol AttributedStringParsable {
     func convertStringToAttributedString(string: String) -> AnyPublisher<NSAttributedString, Error>
     /// string array轉AttributedString array
     func convertStringsToAttributedStrings(stringWithTags: [(tag: Int, string: String)]) -> AnyPublisher<(tag: Int, attr: NSAttributedString), Error>
+    /// data轉AttributedString
+    func convertDataToAttributedString(data: Data) -> AnyPublisher<NSAttributedString?, Error>
 }
 
 class AttributedStringParser: AttributedStringParsable {
-        
+    
+    func convertDataToAttributedString(data: Data) -> AnyPublisher<NSAttributedString?, any Error> {
+        return Future { promise in
+            self.backgroundQueue.async {
+                do {
+                    let attributedString = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: data)
+                    promise(.success(attributedString))
+                } catch {
+                    print("error: \(error)")
+                    promise(.failure(error))
+                }
+            }
+        }
+        .receive(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
+    }
+    
     func convertStringsToAttributedStrings(stringWithTags: [(tag: Int, string: String)]) -> AnyPublisher<(tag: Int, attr: NSAttributedString), Error> {
         let publishers = stringWithTags.map { (tag, string) in
             convertStringToAttributedString(string: string)

@@ -29,34 +29,6 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
         self.documentType = documentType
     }
     
-    init(title: String, attributedString: NSAttributedString) throws {
-        self.title = title
-        self.lastUpdate = .now
-        let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
-        self.documentType = documentType.rawValue
-        self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
-    }
-    
-    init(title: String, htmlString: NSAttributedString) throws {
-        self.title = title
-        self.lastUpdate = .now
-        let documentType: NSAttributedString.DocumentType = .html
-        self.documentType = documentType.rawValue
-        self.attributedStringData = try htmlString.data(from: NSRange(location: 0, length: htmlString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
-    }
-    
-    init?(title: String, htmlString: String) {
-        self.title = title
-        self.lastUpdate = .now
-        let documentType: NSAttributedString.DocumentType = .html
-        self.documentType = documentType.rawValue
-        guard let data = htmlString.data(using: .utf8) else {
-            print("Failed to convert HTML string to Data")
-            return nil
-        }
-        self.attributedStringData = data
-    }
-    
     func setAttributedString(htmlString: String) {
         self.lastUpdate = .now
         let documentType: NSAttributedString.DocumentType = .html
@@ -78,12 +50,18 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
     }
     
     func attributedString() -> NSAttributedString? {
+//        do {
+//            return try NSAttributedString(data: attributedStringData, options: [.documentType: self.documentType, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
+//        } catch {
+//            print("Error unarchiving attributed string: \(error)")
+//            return nil
+//        }
         do {
-            return try NSAttributedString(data: attributedStringData, options: [.documentType: self.documentType, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
+            return try NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: attributedStringData)
         } catch {
-            print("Error unarchiving attributed string: \(error)")
-            return nil
+            print("error: \(error)")
         }
+        return nil
     }
     
     func didInsert(_ inserted: InsertionSuccess) {
@@ -108,12 +86,44 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
     }
 }
 
+//MARK: - 我的筆記 initializer
 extension MyNote {
     /// tableName
     static let databaseTableName = "myNotes"
     static let comments = hasMany(MyComment.self)
     var commentsRequest: QueryInterfaceRequest<MyComment> {
         request(for: MyNote.comments)
+    }
+    
+    convenience init?(title: String, attributedString: NSAttributedString) {
+        do {
+            let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
+            let attributedStringData = try attributedString.encodeToData()
+            self.init(id: 0, title: title, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
+        }catch {
+            print("MyNote init error : \(error.localizedDescription)")
+        }
+        return nil
+    }
+    
+    convenience init?(title: String, htmlString: NSAttributedString) {
+        do {
+            let documentType: NSAttributedString.DocumentType = .html
+            let attributedStringData = try htmlString.data(from: NSRange(location: 0, length: htmlString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+            self.init(id: 0, title: title, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
+        }catch {
+            print("MyNote init error : \(error.localizedDescription)")
+        }
+        return nil
+    }
+    
+    convenience init?(title: String, htmlString: String) {
+        let documentType: NSAttributedString.DocumentType = .html
+        guard let data = htmlString.data(using: .utf8) else {
+            print("MyNote init error: Failed to convert HTML string to Data")
+            return nil
+        }
+        self.init(id: 0, title: title, lastUpdate: .now, attributedStringData: data, documentType: documentType.rawValue)
     }
 }
 
@@ -131,31 +141,6 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
         self.lastUpdate = lastUpdate
         self.attributedStringData = attributedStringData
         self.documentType = documentType
-    }
-    
-    init(attributedString: NSAttributedString) throws {
-        self.lastUpdate = .now
-        let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
-        self.documentType = documentType.rawValue
-        self.attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
-    }
-    
-    init(htmlString: NSAttributedString) throws {
-        self.lastUpdate = .now
-        let documentType: NSAttributedString.DocumentType = .html
-        self.documentType = documentType.rawValue
-        self.attributedStringData = try htmlString.data(from: NSRange(location: 0, length: htmlString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
-    }
-    
-    init?(htmlString: String) {
-        self.lastUpdate = .now
-        let documentType: NSAttributedString.DocumentType = .html
-        self.documentType = documentType.rawValue
-        guard let data = htmlString.data(using: .utf8) else {
-            print("Failed to convert HTML string to Data")
-            return nil
-        }
-        self.attributedStringData = data
     }
     
     func setAttributedString(htmlString: String) {
@@ -224,11 +209,43 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
     }
 }
 
+//MARK: - 筆記評論 initializer
 extension MyComment {
     /// tableName
     static let databaseTableName = "myComments"
     static let myNote = belongsTo(MyNote.self)
     var myNote: QueryInterfaceRequest<MyNote> {
         request(for: MyComment.myNote)
+    }
+    
+    convenience init?(attributedString: NSAttributedString) {
+        do {
+            let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
+            let attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+            self.init(id: nil, myNoteId: 0, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
+        }catch {
+            print("MyComment init error: \(error.localizedDescription)")
+        }
+        return nil
+    }
+    
+    convenience init?(htmlString: NSAttributedString) {
+        do {
+            let documentType: NSAttributedString.DocumentType = .html
+            let attributedStringData = try htmlString.data(from: NSRange(location: 0, length: htmlString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+            self.init(id: nil, myNoteId: 0, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
+        }catch {
+            print("MyComment init error: \(error.localizedDescription)")
+        }
+        return nil
+    }
+    
+    convenience init?(htmlString: String) {
+        let documentType: NSAttributedString.DocumentType = .html
+        guard let data = htmlString.data(using: .utf8) else {
+            print("MyComment init error: Failed to convert HTML string to Data")
+            return nil
+        }
+        self.init(id: nil, myNoteId: 0, lastUpdate: .now, attributedStringData: data, documentType: documentType.rawValue)
     }
 }

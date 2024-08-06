@@ -41,7 +41,7 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
     
     private func addNote(attributedString: NSAttributedString?) {
         guard let attributedString = attributedString else { return }
-        guard let note = try? MyNote(title: "我的筆記", attributedString: attributedString) else { return }
+        guard let note = MyNote(title: "我的筆記", attributedString: attributedString) else { return }
         NoteManager.shared.saveNote(note)
             .sink { [weak self] completion in
                 switch completion {

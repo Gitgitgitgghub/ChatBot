@@ -17,6 +17,9 @@ public class RemoteImageTextAttachment: NSTextAttachment {
     public var imageUrl: URL
     private weak var textContainer: NSTextContainer?
     private var isDownloading = false
+    public override class var supportsSecureCoding: Bool {
+        return true
+    }
     
     public init(imageURL: URL, displaySize: CGSize? = nil) {
         self.imageUrl = imageURL
@@ -25,7 +28,23 @@ public class RemoteImageTextAttachment: NSTextAttachment {
     }
     
     required init?(coder: NSCoder) {
-        fatalError()
+        guard let imageUrl = coder.decodeObject(forKey: "imageUrl") as? URL else {
+            return nil
+        }
+        self.imageUrl = imageUrl
+        //self.displaySize = coder.decodeObject(forKey: "displaySize") as? CGSize
+        if let sizeString = coder.decodeObject(forKey: "displaySize") as? String {
+            self.displaySize = NSCoder.cgSize(for: sizeString)
+        } else {
+            self.displaySize = .zero
+        }
+        super.init(data: nil, ofType: nil)
+    }
+    
+    public override func encode(with coder: NSCoder) {
+        coder.encode(imageUrl, forKey: "imageUrl")
+        //coder.encode(displaySize, forKey: "displaySize")
+        coder.encode(NSCoder.string(for: displaySize ?? .zero), forKey: "displaySize")
     }
     
     override public func attachmentBounds(for textContainer: NSTextContainer?, proposedLineFragment lineFrag: CGRect, glyphPosition position: CGPoint, characterIndex charIndex: Int) -> CGRect {

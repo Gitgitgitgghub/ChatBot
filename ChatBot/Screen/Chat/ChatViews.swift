@@ -159,11 +159,11 @@ extension ChatViews {
         
         func setupUI() {
             guard let messageModel = self.chatMessage else { return }
-            guard let indexPath = self.indexPath else { return }
+            //guard let indexPath = self.indexPath else { return }
             if let attr = self.attr {
                 messageTextView.attributedText = attr
             }else {
-                messageTextView.text = messageModel.message ?? ""
+                messageTextView.text = messageModel.message
             }
             //blurView.isVisible = messageTextView.attributedText == defaultAttr
         }
