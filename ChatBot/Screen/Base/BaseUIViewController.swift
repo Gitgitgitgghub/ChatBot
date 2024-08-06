@@ -15,8 +15,24 @@ class BaseUIViewController: UIViewController {
     
     var subscriptions = Set<AnyCancellable>()
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    /// 觀察鍵盤顯示與否
+    func observeKeyboard() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardShow(_ notification: Notification) { }
+    
+    @objc func keyboardHide(_ notification: Notification) { }
+    
     deinit {
         subscriptions.removeAll()
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
         print("ViewController: \(className) had been deinited")
     }
     

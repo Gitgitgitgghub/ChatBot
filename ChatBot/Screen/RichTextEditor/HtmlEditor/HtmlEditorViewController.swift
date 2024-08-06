@@ -61,6 +61,20 @@ class HtmlEditorViewController: BaseUIViewController {
         loadWebView()
     }
     
+    override func keyboardShow(_ notification: Notification) {
+        if let userInfo = notification.userInfo,
+           let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+            let keyboardHeight = keyboardFrame.height
+            webView.scrollView.contentInset.bottom = keyboardHeight
+            webView.scrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
+        }
+    }
+    
+    override func keyboardHide(_ notification: Notification) {
+        webView.scrollView.contentInset.bottom = 0
+        webView.scrollView.verticalScrollIndicatorInsets.bottom = 0
+    }
+    
     private func loadWebView() {
         guard let htmlPath = Bundle.main.path(forResource: "index", ofType: "html") else { return }
         do {
@@ -78,11 +92,6 @@ class HtmlEditorViewController: BaseUIViewController {
         }
     }
     
-    private func observeKeyboard() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
     @objc private func save() {
         webView.evaluateJavaScript("document.getElementById('text-input').innerHTML") { [weak self] result, error in
             if let htmlContent = result as? String {
@@ -97,20 +106,6 @@ class HtmlEditorViewController: BaseUIViewController {
     
     @objc private func discard() {
         dismiss(animated: true)
-    }
-    
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let userInfo = notification.userInfo,
-           let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-            let keyboardHeight = keyboardFrame.height
-            webView.scrollView.contentInset.bottom = keyboardHeight
-            webView.scrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
-        }
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        webView.scrollView.contentInset.bottom = 0
-        webView.scrollView.verticalScrollIndicatorInsets.bottom = 0
     }
     
     deinit {

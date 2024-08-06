@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Photos
 
 protocol TextEditorViewControllerDelegate: AnyObject {
     
@@ -17,104 +18,7 @@ protocol TextEditorViewControllerDelegate: AnyObject {
 
 class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
     
-    
-    enum Action: Equatable {
-        
-        case bold(isSeleted: Bool)
-        case italic(isSeleted: Bool)
-        case underline(isSeleted: Bool)
-        case strikethrough(isSeleted: Bool)
-        case textAlignLeft(isSeleted: Bool)
-        case textAlignCenter(isSeleted: Bool)
-        case textAlignRight(isSeleted: Bool)
-        case insertImage
-        case link
-        case fontColor(color: UIColor)
-        case highlightColor(color: UIColor)
-        case fontSize(size: CGFloat)
-        case fontName(foneName: String)
-        
-        var image: UIImage? {
-            switch self {
-            case .bold: return.init(systemName: "bold")
-            case .italic: return.init(systemName: "italic")
-            case .underline: return.init(systemName: "underline")
-            case .strikethrough: return.init(systemName: "strikethrough")
-            case .textAlignLeft: return.init(systemName: "text.alignleft")
-            case .textAlignCenter: return.init(systemName: "text.aligncenter")
-            case .textAlignRight: return.init(systemName: "text.alignright")
-            case .insertImage: return.init(systemName: "photo")
-            case .link: return.init(systemName: "link")
-            default: return nil
-            }
-        }
-        
-        var actionName: String {
-            switch self {
-            case .bold(_): return "粗體"
-            case .italic(_): return "斜體"
-            case .underline(_): return "底線"
-            case .strikethrough(_): return "刪除線"
-            case .textAlignLeft(_): return "靠左對齊"
-            case .textAlignCenter(_): return "靠中對齊"
-            case .textAlignRight(_): return "靠右對齊"
-            case .insertImage: return "插入圖片"
-            case .link: return "插入連結"
-            case .fontColor(_): return "字體顏色"
-            case .highlightColor(_): return "背景顏色"
-            case .fontSize(_): return "字體大小"
-            case .fontName(_): return "字型"
-            }
-        }
-        
-        func enableToggle() -> Bool {
-            switch self {
-            case .insertImage, .link, .fontColor, .fontSize, .highlightColor, .fontName: return false
-            default: return true
-            }
-        }
-        
-        func setSelected(_ isSelected: Bool) -> Action {
-            switch self {
-            case .bold:
-                return .bold(isSeleted: isSelected)
-            case .italic:
-                return .italic(isSeleted: isSelected)
-            case .underline:
-                return .underline(isSeleted: isSelected)
-            case .strikethrough:
-                return .strikethrough(isSeleted: isSelected)
-            case .textAlignLeft:
-                return .textAlignLeft(isSeleted: isSelected)
-            case .textAlignCenter:
-                return .textAlignCenter(isSeleted: isSelected)
-            case .textAlignRight:
-                return .textAlignRight(isSeleted: isSelected)
-            default:
-                return self
-            }
-        }
-        
-        // 新增方法來處理文字對齊的互斥性
-        static func updateTextAlignment(_ currentAlignment: Action) -> [Action] {
-            let alignments: [Action] = [
-                .textAlignLeft(isSeleted: false),
-                .textAlignCenter(isSeleted: false),
-                .textAlignRight(isSeleted: false)
-            ]
-            
-            return alignments.map { alignment in
-                switch (alignment, currentAlignment) {
-                case (.textAlignLeft, .textAlignLeft),
-                    (.textAlignCenter, .textAlignCenter),
-                    (.textAlignRight, .textAlignRight):
-                    return currentAlignment
-                default:
-                    return alignment
-                }
-            }
-        }
-    }
+    typealias Action = ActionUIStatusModel.Action
     
     let content: Data?
     let inputBackgroundColor: UIColor
@@ -128,7 +32,7 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
     }
     
     /// 觸發顏色選擇器的Action目前只有:fontColor,highlightColor
-    var colorPickerAction: Action = .fontColor(color: .clear)
+    var colorPickerAction: Action = .fontColor
     
     init(content: Data?, inputBackgroundColor: UIColor, delegate: TextEditorViewControllerDelegate) {
         self.content = content
@@ -145,6 +49,17 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
         super.viewDidLoad()
         initUI()
         bind()
+        observeKeyboard()
+    }
+    
+    override func keyboardHide(_ notification: Notification) {
+        views.updateTextViewBottomConstraint(keyboardHeight: 0)
+    }
+    
+    override func keyboardShow(_ notification: Notification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        let keyboardHeight = keyboardFrame.height
+        views.updateTextViewBottomConstraint(keyboardHeight: keyboardHeight)
     }
     
     private func initUI() {
@@ -186,6 +101,7 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
                                        .underlineColor: UIColor.systemRed,
                                        .underlineStyle: NSUnderlineStyle.single.rawValue]
         textView.typingAttributes = viewModel.typingAttributes
+        textView.tintColor = .white
     }
     
     @objc private func save() {
@@ -193,7 +109,11 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
         navigationController?.popViewController(animated: true)
     }
     
-    func getActionDataSource() -> [Action] {
+    func getActionUIStatus() -> ActionUIStatusModel {
+        return viewModel.actionUIStatusModel
+    }
+    
+    func getActions() -> [Action] {
         return viewModel.actions
     }
     
@@ -357,29 +277,23 @@ extension TextEditorViewController {
     }
     
     func makeUnderline() {
-        applyAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue)
+        applyAttribute(.underlineStyle, value: viewModel.actionUIStatusModel.underlineStyle)
     }
     
     func makeStrikethrough() {
-        applyAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue)
+        applyAttribute(.strikethroughStyle, value: viewModel.actionUIStatusModel.strikethroughLineStyle)
     }
 
     func alignLeft() {
-        applyParagraphStyle { style in
-            style.alignment = .left
-        }
+        applyParagraphStyle(alignment: .left)
     }
 
     func alignCenter() {
-        applyParagraphStyle { style in
-            style.alignment = .center
-        }
+        applyParagraphStyle(alignment: .center)
     }
 
     func alignRight() {
-        applyParagraphStyle { style in
-            style.alignment = .right
-        }
+        applyParagraphStyle(alignment: .right)
     }
     
     func insertLink() {
@@ -399,19 +313,20 @@ extension TextEditorViewController {
     }
     
     func insertImage() {
-        showImageSelectionAlert { urlString in
+        showImageSelectionAlert { [weak self] urlString in
             guard let urlString = urlString, urlString.isNotEmpty else { return }
             guard let url = URL(string: urlString) else { return }
+            self?.addImage(url: url)
         }
     }
     
     func changeFontColor() {
-        colorPickerAction = .fontColor(color: .clear)
+        colorPickerAction = .fontColor
         showColorPickerVC()
     }
     
     func changeHighlightColor() {
-        colorPickerAction = .highlightColor(color: .clear)
+        colorPickerAction = .highlightColor
         showColorPickerVC()
     }
     
@@ -433,21 +348,38 @@ extension TextEditorViewController {
         }
     }
 
-    func applyParagraphStyle(modifier: (NSMutableParagraphStyle) -> Void) {
+    func applyParagraphStyle(alignment: NSTextAlignment) {
+        let newParagraphStyle = NSMutableParagraphStyle()
+        newParagraphStyle.alignment = alignment
+        applyAttribute(.paragraphStyle, value: newParagraphStyle)
+        //alignCursor(to: alignment)
+    }
+    
+    func alignCursor(to: NSTextAlignment) {
         guard let range = textView.selectedTextRange else { return }
         let nsRange = textView.textRangeToNSRange(range)
-        textView.textStorage.beginEditing()
-        // 创建一个新的 NSMutableParagraphStyle 对象并应用修改器
-        let newParagraphStyle = NSMutableParagraphStyle()
-        modifier(newParagraphStyle)
-        // 在选中范围内应用新的段落样式
-        textView.textStorage.addAttribute(.paragraphStyle, value: newParagraphStyle, range: nsRange)
-        textView.textStorage.endEditing()
+        if nsRange.length == 0 {
+            let position: UITextPosition?
+            switch to {
+            case .left:
+                position = textView.beginningOfDocument
+            case .center:
+                position = textView.position(from: textView.beginningOfDocument, offset: textView.text.count / 2)
+            case .right:
+                position = textView.endOfDocument
+            default:
+                position = nil
+            }
+            if let position = position {
+                textView.selectedTextRange = textView.textRange(from: position, to: position)
+            }
+        }
     }
     
     func applyAttribute(_ attribute: NSAttributedString.Key, value: Any) {
         guard let range = textView.selectedTextRange else { return }
         let nsRange = textView.textRangeToNSRange(range)
+        textView.textStorage.beginEditing()
         if nsRange.length > 0 {
             let existValue = textView.textStorage.attribute(attribute, at: nsRange.location, longestEffectiveRange: nil, in: nsRange) as AnyObject
             if existValue.isEqual(value) {
@@ -459,6 +391,7 @@ extension TextEditorViewController {
                 textView.textStorage.addAttribute(attribute, value: value, range: nsRange)
             }
         }
+        textView.textStorage.endEditing()
         viewModel.transform(inputEvent: .addAttribute(key: attribute, value: value))
     }
 }
@@ -467,6 +400,7 @@ extension TextEditorViewController {
 extension TextEditorViewController: UIColorPickerViewControllerDelegate {
     
     func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
+        viewController.dismiss(animated: true)
         let selectedColor = viewController.selectedColor
         let attribute:  NSAttributedString.Key
         switch colorPickerAction {
@@ -484,19 +418,27 @@ extension TextEditorViewController: UIColorPickerViewControllerDelegate {
 extension TextEditorViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let image = info[.originalImage] as? UIImage {
-            let attachment = NSTextAttachment()
-            let resizeImage = image.resizeToFitWidth(maxWidth: UIScreen.main.bounds.width - 36)
-            attachment.image = resizeImage
-            attachment.bounds = .init(origin: .zero, size: resizeImage.size)
-            let attributedString = NSAttributedString(attachment: attachment)
-            let selectedRange = textView.selectedRange
-            textView.textStorage.insert(attributedString, at: selectedRange.location)
-            // 更新选择范围以防止光标位置错误
-            textView.selectedRange = NSRange(location: selectedRange.location + 1, length: 0)
-            viewModel.transform(inputEvent: .reapplyTypingAttributes)
-        }
+        guard let asset = info[.phAsset] as? PHAsset else { return }
+        ImageManager.shared.requestImage(for: asset)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] url in
+                guard let fileURL = url else { return }
+                self?.addImage(url: fileURL)
+            }
+            .store(in: &subscriptions)
         picker.dismiss(animated: true, completion: nil)
+    }
+    
+    func addImage(url: URL) {
+        let attachment = RemoteImageTextAttachment(imageURL: url, displaySize: .init(width: UIScreen.main.bounds.width - 36, height: 210))
+        let selectedRange = textView.selectedRange
+        let attachmentString = NSAttributedString(attachment: attachment)
+        textView.textStorage.beginEditing()
+        textView.textStorage.insert(attachmentString, at: selectedRange.location)
+        let newRange = NSRange(location: selectedRange.location, length: attachmentString.length)
+        textView.textStorage.addAttributes(viewModel.typingAttributes, range: newRange)
+        textView.textStorage.endEditing()
+        textView.moveCursorToEnd()
     }
 }
 

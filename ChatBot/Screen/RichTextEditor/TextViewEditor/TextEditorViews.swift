@@ -7,16 +7,21 @@
 
 import Foundation
 import UIKit
+import SnapKit
 
 
 protocol TextEditorViewsProtocol: AnyObject {
     
-    func getActionDataSource() -> [TextEditorViewController.Action]
+    func getActionUIStatus() -> ActionUIStatusModel
+    
+    func getActions() -> [TextEditorViewController.Action]
     
     func onActionButtonClick(action: TextEditorViewController.Action, indexPath: IndexPath)
 }
 
 class TextEditorViews: ControllerView {
+    
+    typealias Action = ActionUIStatusModel.Action
     
     lazy var actionCollectionView: UICollectionView = {
         let layout = CollectionViewLeftAlignedLayout()
@@ -35,27 +40,38 @@ class TextEditorViews: ControllerView {
         $0.delegate = self
         $0.textColor = .white
     }
-    var actions: [TextEditorViewController.Action] {
-        return delegate?.getActionDataSource() ?? []
+    var actions: [Action] {
+        return delegate?.getActions() ?? []
+    }
+    var actionUIStatus: ActionUIStatusModel? {
+        return delegate?.getActionUIStatus()
     }
     weak var delegate: TextEditorViewsProtocol?
+    private var textViewBottomConstraint: Constraint?
     
     override func initUI() {
         view.addSubview(actionCollectionView)
         view.addSubview(textView)
         actionCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(50)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.leading.trailing.equalToSuperview().inset(10)
             make.height.equalTo(150)
         }
         textView.snp.makeConstraints { make in
+            make.top.equalTo(actionCollectionView.snp.bottom).offset(10)
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(10)
-            make.height.greaterThanOrEqualTo(300)
-            make.centerY.equalToSuperview()
+            textViewBottomConstraint = make.bottom.equalTo(view.safeAreaLayoutGuide).inset(10).constraint
         }
         actionCollectionView.dataSource = self
         actionCollectionView.delegate = self
         actionCollectionView.register(cellType: ActionCell.self)
+    }
+    
+    func updateTextViewBottomConstraint(keyboardHeight: CGFloat) {
+        textViewBottomConstraint?.update(offset: -keyboardHeight)
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
     }
     
 }
@@ -69,10 +85,11 @@ extension TextEditorViews: UICollectionViewDelegateFlowLayout, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let action = actions[indexPath.item]
         let cell = collectionView.dequeueReusableCell(with: ActionCell.self, for: indexPath)
         cell.tag = indexPath.item
-        cell.bindAction(action: action)
+        let action = actions[indexPath.item]
+        guard let actionUIStatus = self.actionUIStatus else { return cell }
+        cell.bindAction(action: action, actionUIStatus: actionUIStatus)
         return cell
     }
     
@@ -137,6 +154,7 @@ extension TextEditorViews {
             return view
         }()
         var action: TextEditorViewController.Action?
+        var actionUIStatus: ActionUIStatusModel?
         
         override init(frame: CGRect) {
             super.init(frame: frame)
@@ -165,19 +183,34 @@ extension TextEditorViews {
             }
         }
         
-        func bindAction(action: TextEditorViewController.Action) {
+        func bindAction(action: TextEditorViewController.Action, actionUIStatus: ActionUIStatusModel) {
             self.action = action
+            self.actionUIStatus = actionUIStatus
             switch action {
-            case .bold(let isSeleted), .italic(let isSeleted), .underline(let isSeleted), .strikethrough(let isSeleted), .textAlignLeft(let isSeleted), .textAlignCenter(let isSeleted), .textAlignRight(let isSeleted):
-                setButton(isSeleted: isSeleted)
+            case .bold:
+                setButton(isSeleted: actionUIStatus.bold)
+            case .italic:
+                setButton(isSeleted: actionUIStatus.italic)
+            case .underline:
+                setButton(isSeleted: actionUIStatus.underline)
+            case .strikethrough:
+                setButton(isSeleted: actionUIStatus.strikethrough)
+            case .textAlignLeft:
+                setButton(isSeleted: actionUIStatus.textAlignLeft)
+            case .textAlignCenter:
+                setButton(isSeleted: actionUIStatus.textAlignCenter)
+            case .textAlignRight:
+                setButton(isSeleted: actionUIStatus.textAlignRight)
             case .insertImage, .link:
                 setButton(isSeleted: false)
-            case .fontColor(let color), .highlightColor(let color):
-                setColor(color: color)
-            case .fontSize(let size):
-                setFontSize(size: size)
-            case .fontName(let foneName):
-                setFontName(name: foneName)
+            case .fontColor:
+                setColor(color: actionUIStatus.fontColor)
+            case .highlightColor:
+                setColor(color: actionUIStatus.highlightColor)
+            case .fontSize:
+                setFontSize(size: actionUIStatus.fontSize)
+            case .fontName:
+                setFontName(name: actionUIStatus.fontName)
             }
         }
         

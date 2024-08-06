@@ -25,6 +25,14 @@ extension UITextView {
         return NSRange(location: location, length: length)
     }
     
+    /// 移動光標到最後方
+    func moveCursorToEnd() {
+        let endPosition = self.endOfDocument
+        if let newTextRange = self.textRange(from: endPosition, to: endPosition) {
+            self.selectedTextRange = newTextRange
+        }
+    }
+    
 }
 
 

@@ -57,7 +57,7 @@ public class RemoteImageTextAttachment: NSTextAttachment {
             progress: nil) { [weak self] image, data, error, cacheType, finished, imageUrl in
                 guard let self = self else { return }
                 if let image = image, error == nil {
-                    let resizeImage = image.resizeToFit(maxWidth: imageBounds.width, maxHeight: imageBounds.height)
+                    let resizeImage = image.resizeToFitWidth(maxWidth: imageBounds.width)
                     DispatchQueue.main.async {
                         self.bounds = .init(origin: .zero, size: resizeImage.size)
                         self.image = resizeImage

@@ -49,11 +49,6 @@ class ChatViewController: BaseUIViewController {
         }
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
@@ -90,12 +85,6 @@ class ChatViewController: BaseUIViewController {
 //                }
 //            }
 //            .store(in: &subscriptions)
-    }
-    
-    /// 觀察鍵盤顯示與否
-    private func observeKeyboard() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     /// 執行一些綁定動作
@@ -211,13 +200,13 @@ class ChatViewController: BaseUIViewController {
         view.endEditing(true)
     }
     
-    @objc private func keyboardShow(_ notification: Notification) {
+    @objc override func keyboardShow(_ notification: Notification) {
         let userInfo = notification.userInfo!
         let keyboardHeight = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.height
         views.textFieldDidBeginEditing(keyboardHeight: keyboardHeight)
     }
     
-    @objc private func keyboardHide(_ notification: Notification) {
+    @objc override func keyboardHide(_ notification: Notification) {
         views.textFieldDidEndEditing()
     }
     
