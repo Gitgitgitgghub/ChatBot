@@ -13,7 +13,7 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
     enum InputEvent {
         case fetchAllNote
         case deleteNote(indexPath: IndexPath)
-        case addNote(attributedString: NSAttributedString?)
+        case addNote(title: String?, attributedString: NSAttributedString?)
     }
     
     enum OutputEvent {
@@ -32,16 +32,16 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
                     self.fetchAllNote()
                 case .deleteNote(indexPath: let indexPath):
                     self.deleteNote(indexPath: indexPath)
-                case .addNote(attributedString: let attributedString):
-                    self.addNote(attributedString: attributedString)
+                case .addNote(let title, attributedString: let attributedString):
+                    self.addNote(title: title, attributedString: attributedString)
                 }
             }
             .store(in: &subscriptions)
     }
     
-    private func addNote(attributedString: NSAttributedString?) {
+    private func addNote(title: String?, attributedString: NSAttributedString?) {
         guard let attributedString = attributedString else { return }
-        guard let note = MyNote(title: "我的筆記", attributedString: attributedString) else { return }
+        guard let note = MyNote(title: title ?? "我的筆記", attributedString: attributedString) else { return }
         NoteManager.shared.saveNote(note)
             .sink { [weak self] completion in
                 switch completion {

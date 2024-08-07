@@ -11,7 +11,7 @@ import Photos
 
 protocol TextEditorViewControllerDelegate: AnyObject {
     
-    func onSave(attributedString: NSAttributedString?)
+    func onSave(title: String?,attributedString: NSAttributedString?)
     
 }
 
@@ -84,18 +84,14 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
     }
     
     private func setupTextView() {
+        var attr: NSAttributedString?
         if let content = self.content {
-            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-                .documentType: NSAttributedString.DocumentType.rtfd,
-                .characterEncoding: String.Encoding.utf8.rawValue
-            ]
-            attr = try? .init(data: content, options: options, documentAttributes: nil)
-        }
-        if attr == nil {
+            attr = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: content)
+        }else {
             attr = .init(string: "", attributes: nil)
         }
-        textView.backgroundColor = inputBackgroundColor
         textView.attributedText = attr
+        textView.backgroundColor = inputBackgroundColor
         textView.linkTextAttributes = [.font: SystemDefine.Message.defaultTextFont,
                                        .foregroundColor: UIColor.systemRed,
                                        .underlineColor: UIColor.systemRed,
@@ -105,8 +101,17 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
     }
     
     @objc private func save() {
-        delegate?.onSave(attributedString: textView.attributedText)
-        navigationController?.popViewController(animated: true)
+        // 如果content是nil代表是新增筆記需要一個title
+        if content == nil {
+            showNoteTitleInputView { [weak self] noteTitle in
+                guard let `self` = self else { return }
+                self.delegate?.onSave(title: noteTitle, attributedString: self.textView.attributedText)
+                self.navigationController?.popViewController(animated: true)
+            }
+        }else {
+            delegate?.onSave(title: nil, attributedString: self.textView.attributedText)
+            navigationController?.popViewController(animated: true)
+        }
     }
     
     func getActionUIStatus() -> ActionUIStatusModel {
@@ -254,7 +259,18 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
         self.present(alert, animated: true, completion: nil)
     }
     
-    
+    /// 顯示儲存筆記輸入title的alertVC
+    private func showNoteTitleInputView(completion: @escaping (_ noteTitle: String?) -> ()) {
+        let vc = UIAlertController(title: "儲存筆記", message: "請輸入標題", preferredStyle: .alert)
+        vc.addTextField { textField in
+            textField.text = "我的筆記"
+        }
+        vc.addAction(.init(title: "保存", style: .default, handler: { action in
+            completion(vc.textFields?.first?.text)
+        }))
+        vc.addAction(.init(title: "取消", style: .cancel))
+        present(vc, animated: true)
+    }
 }
 
 extension TextEditorViewController: UITextViewDelegate {

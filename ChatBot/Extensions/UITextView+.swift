@@ -33,6 +33,23 @@ extension UITextView {
         }
     }
     
+    // 移動光標到指定位置
+    func setCursorPosition(_ position: Int) {
+        if position <= self.text.count {
+            self.selectedRange = NSRange(location: position, length: 0)
+        }
+    }
+    
+    // 在光標當前位置插入换行符
+    func insertNewLine() {
+        if let selectedRange = self.selectedTextRange {
+            self.replace(selectedRange, withText: "\n")
+            if let newPosition = self.position(from: selectedRange.start, offset: 1) {
+                self.selectedTextRange = self.textRange(from: newPosition, to: newPosition)
+            }
+        }
+    }
+    
 }
 
 

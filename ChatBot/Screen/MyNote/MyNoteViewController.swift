@@ -60,8 +60,8 @@ class MyNoteViewController: BaseUIViewController {
 
 extension MyNoteViewController: TextEditorViewControllerDelegate {
     
-    func onSave(attributedString: NSAttributedString?) {
-        viewModel.transform(inputEvent: .addNote(attributedString: attributedString))
+    func onSave(title: String?, attributedString: NSAttributedString?) {
+        viewModel.transform(inputEvent: .addNote(title: title, attributedString: attributedString))
     }
     
 }

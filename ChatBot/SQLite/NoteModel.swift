@@ -40,28 +40,15 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
         self.attributedStringData = data
     }
     
-    func setAttributedString(attr: NSAttributedString, documentType: NSAttributedString.DocumentType? = nil) {
+    func setAttributedString(attr: NSAttributedString) {
         do {
-            let documentType: NSAttributedString.DocumentType = documentType ?? .init(rawValue: self.documentType)
-            self.attributedStringData = try attr.data(from: NSRange(location: 0, length: attr.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+            let documentType: NSAttributedString.DocumentType = .rtfd
+            self.lastUpdate = .now
+            self.attributedStringData = try attr.archivedData()
+            self.documentType = documentType.rawValue
         }catch {
             print("setAttributedString error: \(error.localizedDescription)")
         }
-    }
-    
-    func attributedString() -> NSAttributedString? {
-//        do {
-//            return try NSAttributedString(data: attributedStringData, options: [.documentType: self.documentType, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
-//        } catch {
-//            print("Error unarchiving attributed string: \(error)")
-//            return nil
-//        }
-        do {
-            return try NSKeyedUnarchiver.unarchivedObject(ofClass: NSAttributedString.self, from: attributedStringData)
-        } catch {
-            print("error: \(error)")
-        }
-        return nil
     }
     
     func didInsert(_ inserted: InsertionSuccess) {
@@ -98,23 +85,23 @@ extension MyNote {
     convenience init?(title: String, attributedString: NSAttributedString) {
         do {
             let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
-            let attributedStringData = try attributedString.encodeToData()
-            self.init(id: 0, title: title, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
+            let attributedStringData = try attributedString.archivedData()
+            self.init(id: nil, title: title, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
         }catch {
             print("MyNote init error : \(error.localizedDescription)")
+            return nil
         }
-        return nil
     }
     
     convenience init?(title: String, htmlString: NSAttributedString) {
         do {
             let documentType: NSAttributedString.DocumentType = .html
             let attributedStringData = try htmlString.data(from: NSRange(location: 0, length: htmlString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
-            self.init(id: 0, title: title, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
+            self.init(id: nil, title: title, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
         }catch {
             print("MyNote init error : \(error.localizedDescription)")
+            return nil
         }
-        return nil
     }
     
     convenience init?(title: String, htmlString: String) {
@@ -123,7 +110,7 @@ extension MyNote {
             print("MyNote init error: Failed to convert HTML string to Data")
             return nil
         }
-        self.init(id: 0, title: title, lastUpdate: .now, attributedStringData: data, documentType: documentType.rawValue)
+        self.init(id: nil, title: title, lastUpdate: .now, attributedStringData: data, documentType: documentType.rawValue)
     }
 }
 
@@ -154,52 +141,15 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
         self.attributedStringData = data
     }
     
-    func setAttributedString(attr: NSAttributedString, documentType: NSAttributedString.DocumentType? = nil) {
+    func setAttributedString(attr: NSAttributedString) {
         do {
-            let documentType: NSAttributedString.DocumentType = documentType ?? .init(rawValue: self.documentType)
-            self.attributedStringData = try attr.data(from: NSRange(location: 0, length: attr.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+            let documentType: NSAttributedString.DocumentType = .rtfd
+            self.lastUpdate = .now
+            self.attributedStringData = try attr.archivedData()
+            self.documentType = documentType.rawValue
         }catch {
             print("setAttributedString error: \(error.localizedDescription)")
         }
-    }
-    
-    func extractImageSrcs(from htmlString: String) -> [String] {
-        let regex = try! NSRegularExpression(pattern: "<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"]", options: [])
-        let matches = regex.matches(in: htmlString, range: NSRange(location: 0, length: htmlString.utf16.count))
-        var srcs = [String]()
-        for match in matches {
-            let range = Range(match.range(at: 1), in: htmlString)!
-            let src = String(htmlString[range])
-            srcs.append(src)
-        }
-        return srcs
-    }
-    
-    //TODO: - 暫時寫這樣看起來還是得做catch
-    func attributedString() -> NSAttributedString? {
-        let htmlString = String(data: attributedStringData, encoding: .utf8) ?? ""
-        guard let mutableAttributedString = NSMutableAttributedString(htmlString: htmlString) else { return nil }
-        let imageUrls = extractImageSrcs(from: htmlString)
-        guard imageUrls.isNotEmpty else { return mutableAttributedString }
-        var i = 0
-        mutableAttributedString.enumerateAttribute(.attachment, in: NSRange(location: 0, length: mutableAttributedString.length), options: []) { (value, range, stop) in
-            // 獲取圖片 URL (如果需要)
-            if value is NSTextAttachment {
-                if let urlString = imageUrls.getOrNil(index: i),
-                   let imageURL = URL(string: urlString) {
-                    // 創建新的 RemoteImageTextAttachment
-                    let width = UIScreen.main.bounds.width - 10 * 2 - 8 * 2
-                    let newAttachment = RemoteImageTextAttachment(imageURL: imageURL, displaySize: .init(width: width, height: width / 4 * 3))
-                    //let newAttachment = RemoteImageTextAttachment(imageURL: imageURL, displaySize: .init(width: width, height: 100))
-                    newAttachment.bounds = CGRect(x: 0, y: 0, width: width, height: width / 4 * 3)
-                    // 替換 attachment
-                    mutableAttributedString.removeAttribute(.attachment, range: range)
-                    mutableAttributedString.addAttribute(.attachment, value: newAttachment, range: range)
-                    i += 1
-                }
-            }
-        }
-        return mutableAttributedString
     }
     ///required init(row: Row)
     ///encode(to container: inout PersistenceContainer)兩個方法因為遵從codable可以不用實作，但是如果要新增不再row的變數就要實作告訴他怎麼初始化
@@ -221,12 +171,12 @@ extension MyComment {
     convenience init?(attributedString: NSAttributedString) {
         do {
             let documentType: NSAttributedString.DocumentType = attributedString.containsAttachments(in: NSRange.init(location: 0, length: attributedString.length)) ? .rtfd : .rtf
-            let attributedStringData = try attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+            let attributedStringData = try attributedString.archivedData()
             self.init(id: nil, myNoteId: 0, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
         }catch {
             print("MyComment init error: \(error.localizedDescription)")
+            return nil
         }
-        return nil
     }
     
     convenience init?(htmlString: NSAttributedString) {
@@ -236,8 +186,8 @@ extension MyComment {
             self.init(id: nil, myNoteId: 0, lastUpdate: .now, attributedStringData: attributedStringData, documentType: documentType.rawValue)
         }catch {
             print("MyComment init error: \(error.localizedDescription)")
+            return nil
         }
-        return nil
     }
     
     convenience init?(htmlString: String) {
@@ -249,3 +199,20 @@ extension MyComment {
         self.init(id: nil, myNoteId: 0, lastUpdate: .now, attributedStringData: data, documentType: documentType.rawValue)
     }
 }
+
+//MRRK: - confirm DataToAttributedString protocol
+extension MyComment: DataToAttributedString {
+    
+    var stringDocumentType: NSAttributedString.DocumentType {
+        return .init(self.documentType)
+    }
+}
+
+extension MyNote: DataToAttributedString {
+    
+    var stringDocumentType: NSAttributedString.DocumentType {
+        return .init(self.documentType)
+    }
+}
+
+

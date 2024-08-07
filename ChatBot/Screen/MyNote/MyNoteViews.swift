@@ -21,6 +21,7 @@ class MyNoteViews: ControllerView {
     var addNoteButton = UIButton(type: .custom).apply {
         $0.cornerRadius = 25
         $0.setImage(.init(systemName: "plus"), for: .normal)
+        $0.backgroundColor = .white
         $0.layer.borderColor = UIColor.lightGray.cgColor
         $0.layer.borderWidth = 1
     }
@@ -48,23 +49,25 @@ extension MyNoteViews {
             label.numberOfLines = 1
             label.textColor = .darkGray
         }
-        private var messageLabel = PaddingLabel(withInsets: .init(top: 10, left: 8, bottom: 10, right: 8)).apply { label in
-            label.numberOfLines = 3
-            label.textColor = .darkGray.withAlphaComponent(0.8)
-            label.cornerRadius = 10
-            label.backgroundColor = .systemBlue
+        private lazy var textView = UITextView().apply {
+            $0.textColor = .darkGray.withAlphaComponent(0.8)
+            $0.cornerRadius = 10
+            $0.backgroundColor = .systemBlue
+            $0.isUserInteractionEnabled = false
+            $0.isScrollEnabled = true
         }
         private var lastUpdateLabel = UILabel().apply { label in
             label.numberOfLines = 1
-            label.textColor = .red.withAlphaComponent(0.8)
+            label.textColor = .systemRed
+            label.font = .preferredFont(forTextStyle: .title3).withSize(14)
         }
-        lazy var commentImageView: UIImageView = {
+        private lazy var commentImageView: UIImageView = {
             let imageView = UIImageView()
             imageView.translatesAutoresizingMaskIntoConstraints = false
-            imageView.image = .init(systemName: "rectangle.and.pencil.and.ellipsis")
+            imageView.image = .init(systemName: "rectangle.and.pencil.and.ellipsis")?.withRenderingMode(.alwaysOriginal).withTintColor(.darkGray)
             return imageView
         }()
-        lazy var commentCountLabel: UILabel = {
+        private lazy var commentCountLabel: UILabel = {
             let label = UILabel()
             label.translatesAutoresizingMaskIntoConstraints = false
             label.text = ": 0"
@@ -89,7 +92,7 @@ extension MyNoteViews {
         
         private func initUI() {
             contentView.addSubview(titleLabel)
-            contentView.addSubview(messageLabel)
+            contentView.addSubview(textView)
             contentView.addSubview(lastUpdateLabel)
             contentView.addSubview(commentCountLabel)
             contentView.addSubview(commentImageView)
@@ -97,14 +100,14 @@ extension MyNoteViews {
                 make.top.leading.trailing.equalToSuperview().inset(10)
                 make.height.equalTo(20)
             }
-            messageLabel.snp.makeConstraints { make in
+            textView.snp.makeConstraints { make in
                 make.leading.trailing.equalToSuperview().inset(10)
                 make.top.equalTo(titleLabel.snp.bottom).offset(3)
-                make.height.greaterThanOrEqualTo(20)
+                make.height.greaterThanOrEqualTo(100)
                 make.height.lessThanOrEqualTo(100)
             }
             lastUpdateLabel.snp.makeConstraints { make in
-                make.top.equalTo(messageLabel.snp.bottom).offset(5)
+                make.top.equalTo(textView.snp.bottom).offset(5)
                 make.bottom.trailing.equalToSuperview().inset(10)
                 make.height.equalTo(20)
             }
@@ -129,7 +132,7 @@ extension MyNoteViews {
             guard let myNote = self.myNote else { return }
             titleLabel.text = myNote.title
             lastUpdateLabel.text = dateFormatter.string(from: myNote.lastUpdate)
-            messageLabel.attributedText = myNote.attributedString()
+            textView.attributedText = myNote.attributedString()
             commentCountLabel.text = ": \(myNote.comments.count)"
         }
     }

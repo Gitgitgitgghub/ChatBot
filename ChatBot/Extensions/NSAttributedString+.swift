@@ -56,8 +56,16 @@ extension NSAttributedString {
         return estimatedHeight
     }
     
-    func encodeToData() throws -> Data  {
+    /// 使用NSKeyedArchiver方式轉換成Data
+    func archivedData() throws -> Data  {
         return try NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: true)
+    }
+    
+    /// 計算 NSAttributedString 的高度
+    func height(containerWidth: CGFloat) -> CGFloat {
+        let size = CGSize(width: containerWidth, height: .greatestFiniteMagnitude)
+        let boundingRect = self.boundingRect(with: size, options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil)
+        return ceil(boundingRect.height)
     }
     
 }
