@@ -15,6 +15,7 @@ class MainTabBarController: UITabBarController {
         case History
         case MyNote
         case Setting
+        case MyVocabulary
         
         var viewController: UIViewController {
             let vc: UIViewController
@@ -27,6 +28,8 @@ class MainTabBarController: UITabBarController {
                 vc = ScreenLoader.loadScreen(screen: .myNote)
             case .Setting:
                 vc = ScreenLoader.loadScreen(screen: .setting)
+            case .MyVocabulary:
+                vc = ScreenLoader.loadScreen(screen: .MyVocabulary)
             }
             vc.tabBarItem = self.tabBarItem
             // 這邊是讓tabvc的子vc的view從tabbar上方開始
@@ -38,17 +41,19 @@ class MainTabBarController: UITabBarController {
             switch self {
             case .Home:
                 return UITabBarItem(title: "首頁", image: .init(systemName: "house"), tag: 0)
+            case .MyVocabulary:
+                return UITabBarItem(title: "單字", image: .init(systemName: "textformat.abc"), tag: 1)
             case .History:
-                return UITabBarItem(title: "聊天記錄", image: .init(systemName: "clock.fill"), tag: 1)
+                return UITabBarItem(title: "聊天記錄", image: .init(systemName: "clock.fill"), tag: 2)
             case .MyNote:
-                return UITabBarItem(title: "我的筆記", image: .init(systemName: "note.text"), tag: 2)
+                return UITabBarItem(title: "我的筆記", image: .init(systemName: "note.text"), tag: 3)
             case .Setting:
-                return UITabBarItem(title: "設定", image: .init(systemName: "gear"), tag: 3)
+                return UITabBarItem(title: "設定", image: .init(systemName: "gear"), tag: 4)
             }
         }
     }
     
-    private let tabs: [Tab] = [.Home, .History, .MyNote, .Setting]
+    private let tabs: [Tab] = [.Home, .MyVocabulary, .History, .MyNote, .Setting]
     private lazy var tabViewControllers = self.tabs.map({ $0.viewController })
 
     override func viewDidLoad() {

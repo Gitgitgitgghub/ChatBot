@@ -69,6 +69,14 @@
 		32B7E6A42C607F500032ABFD /* TextEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */; };
 		32B7E6A62C60E4C10032ABFD /* ActionUIStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */; };
 		32B7E6A82C637C010032ABFD /* DataToAttributedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A72C637C010032ABFD /* DataToAttributedString.swift */; };
+		32B7E6AB2C69C24F0032ABFD /* TOEICWord.json in Resources */ = {isa = PBXBuildFile; fileRef = 32B7E6AA2C69C24F0032ABFD /* TOEICWord.json */; };
+		32B7E6AD2C69C2C10032ABFD /* TOEICWordDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6AC2C69C2C10032ABFD /* TOEICWordDecoder.swift */; };
+		32B7E6AF2C69C3650032ABFD /* WordModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6AE2C69C3650032ABFD /* WordModels.swift */; };
+		32B7E6B12C69CF040032ABFD /* MyVocabularyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6B02C69CF040032ABFD /* MyVocabularyViewController.swift */; };
+		32B7E6B32C69CF360032ABFD /* MyVocabularyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6B22C69CF360032ABFD /* MyVocabularyViewModel.swift */; };
+		32B7E6B52C69DBD50032ABFD /* VocabularyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6B42C69DBD50032ABFD /* VocabularyModel.swift */; };
+		32B7E6B72C69DD090032ABFD /* VocabularyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */; };
+		32B7E6B92C69E5610032ABFD /* MyVocabularyViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6B82C69E5610032ABFD /* MyVocabularyViews.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
 		32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32C77FCF2C18504F00F335FE /* Assets.xcassets */; };
@@ -168,6 +176,14 @@
 		32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorViewModel.swift; sourceTree = "<group>"; };
 		32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionUIStatusModel.swift; sourceTree = "<group>"; };
 		32B7E6A72C637C010032ABFD /* DataToAttributedString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataToAttributedString.swift; sourceTree = "<group>"; };
+		32B7E6AA2C69C24F0032ABFD /* TOEICWord.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = TOEICWord.json; sourceTree = "<group>"; };
+		32B7E6AC2C69C2C10032ABFD /* TOEICWordDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOEICWordDecoder.swift; sourceTree = "<group>"; };
+		32B7E6AE2C69C3650032ABFD /* WordModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordModels.swift; sourceTree = "<group>"; };
+		32B7E6B02C69CF040032ABFD /* MyVocabularyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyVocabularyViewController.swift; sourceTree = "<group>"; };
+		32B7E6B22C69CF360032ABFD /* MyVocabularyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyVocabularyViewModel.swift; sourceTree = "<group>"; };
+		32B7E6B42C69DBD50032ABFD /* VocabularyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyModel.swift; sourceTree = "<group>"; };
+		32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyManager.swift; sourceTree = "<group>"; };
+		32B7E6B82C69E5610032ABFD /* MyVocabularyViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyVocabularyViews.swift; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32C77FC82C18504E00F335FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -294,6 +310,7 @@
 			children = (
 				3241BE4A2C44B01A0047BB71 /* ChatModel.swift */,
 				946F7A372C464EC4007DC7A8 /* NoteModel.swift */,
+				32B7E6B42C69DBD50032ABFD /* VocabularyModel.swift */,
 			);
 			path = SQLite;
 			sourceTree = "<group>";
@@ -347,6 +364,7 @@
 				946F7A3B2C466FAA007DC7A8 /* ChatRoomManager.swift */,
 				942395EA2C56A95000E65150 /* ImageManager.swift */,
 				327D28642C57314B00F6ED68 /* SharedGroupStorage.swift */,
+				32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -382,6 +400,7 @@
 		32800EE82C1C225500FE5786 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
+				32B7E6A92C69C1840032ABFD /* MyVocabulary */,
 				327D286A2C59E0C700F6ED68 /* RichTextEditor */,
 				32690FD22C3E763100700192 /* VoicePicker */,
 				32690FC82C3D0F7000700192 /* MyNote */,
@@ -431,6 +450,19 @@
 				32B7E6A72C637C010032ABFD /* DataToAttributedString.swift */,
 			);
 			path = protocol;
+			sourceTree = "<group>";
+		};
+		32B7E6A92C69C1840032ABFD /* MyVocabulary */ = {
+			isa = PBXGroup;
+			children = (
+				32B7E6AA2C69C24F0032ABFD /* TOEICWord.json */,
+				32B7E6AC2C69C2C10032ABFD /* TOEICWordDecoder.swift */,
+				32B7E6AE2C69C3650032ABFD /* WordModels.swift */,
+				32B7E6B02C69CF040032ABFD /* MyVocabularyViewController.swift */,
+				32B7E6B22C69CF360032ABFD /* MyVocabularyViewModel.swift */,
+				32B7E6B82C69E5610032ABFD /* MyVocabularyViews.swift */,
+			);
+			path = MyVocabulary;
 			sourceTree = "<group>";
 		};
 		32C77FBA2C18504E00F335FE = {
@@ -642,6 +674,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9455D80D2C4A3FCB007AC9C2 /* script.js in Resources */,
+				32B7E6AB2C69C24F0032ABFD /* TOEICWord.json in Resources */,
 				9455D80E2C4A3FCB007AC9C2 /* style.css in Resources */,
 				32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */,
 				9455D80C2C4A3FCB007AC9C2 /* index.html in Resources */,
@@ -674,6 +707,7 @@
 				32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */,
 				94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */,
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
+				32B7E6B12C69CF040032ABFD /* MyVocabularyViewController.swift in Sources */,
 				32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */,
 				323E88B22C354BA200401F50 /* HomeViews.swift in Sources */,
 				946F7A382C464EC4007DC7A8 /* NoteModel.swift in Sources */,
@@ -684,18 +718,22 @@
 				32690FD42C3E766300700192 /* VoicePickerViewController.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
 				32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */,
+				32B7E6AF2C69C3650032ABFD /* WordModels.swift in Sources */,
 				327D286F2C5A10DC00F6ED68 /* NoActionTextView.swift in Sources */,
 				320421972C1933EC00D72203 /* SystemDefine.swift in Sources */,
 				3204219B2C193B4100D72203 /* ChatViews.swift in Sources */,
 				94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */,
+				32B7E6AD2C69C2C10032ABFD /* TOEICWordDecoder.swift in Sources */,
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */,
 				9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */,
 				9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */,
+				32B7E6B92C69E5610032ABFD /* MyVocabularyViews.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
 				327D28652C57314B00F6ED68 /* SharedGroupStorage.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,
+				32B7E6B52C69DBD50032ABFD /* VocabularyModel.swift in Sources */,
 				32800F022C21850A00FE5786 /* UploadImageSelectorViewController.swift in Sources */,
 				32690FD12C3E679200700192 /* SpeechVoiceManager.swift in Sources */,
 				946F7A3A2C466F38007DC7A8 /* NoteManager.swift in Sources */,
@@ -704,8 +742,10 @@
 				32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */,
 				32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */,
 				326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */,
+				32B7E6B72C69DD090032ABFD /* VocabularyManager.swift in Sources */,
 				323E88A82C353D2200401F50 /* MainTabBarController.swift in Sources */,
 				32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */,
+				32B7E6B32C69CF360032ABFD /* MyVocabularyViewModel.swift in Sources */,
 				322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */,
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,

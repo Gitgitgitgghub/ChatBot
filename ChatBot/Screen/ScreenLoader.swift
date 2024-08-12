@@ -33,6 +33,8 @@ class ScreenLoader {
         case note(myNote: MyNote)
         /// 富文本編輯器
         case textEditor(content: Data?,inputBackgroundColor: UIColor, delegate: TextEditorViewControllerDelegate)
+        /// 我的單字頁面
+        case MyVocabulary
     }
     
     static func loadScreen(screen: Screen) -> UIViewController {
@@ -49,6 +51,7 @@ class ScreenLoader {
         case .note(myNote: let myNote): return NoteViewController(myNote: myNote)
         case .textEditor(content: let content, inputBackgroundColor: let inputBackgroundColor, let delegate):
             return TextEditorViewController(content: content, inputBackgroundColor: inputBackgroundColor, delegate: delegate)
+        case .MyVocabulary: return MyVocabularyViewController()
         }
     }
 }
