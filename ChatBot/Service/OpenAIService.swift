@@ -13,13 +13,13 @@ import UIKit
 class OpenAIService: OpenAIProtocol {
     
     
-    let openai = OpenAI(apiToken: AccountManager.shared.apiKey)
+    let openAI = OpenAI(apiToken: AccountManager.shared.apiKey)
     let loadingStatusSubject = CurrentValueSubject<LoadingStatus, Never>(.none)
     
     func chatQuery(messages: [ChatMessage], model: Model = .gpt3_5Turbo) -> AnyPublisher<ChatResult, Error> {
         let queryMessages = messages.toChatCompletionMessageParam()
         let query = ChatQuery(messages: queryMessages, model: model)
-        let publisher = openai.chats(query: query)
+        let publisher = openAI.chats(query: query)
             .eraseToAnyPublisher()
         return performAPICall(publisher)
             .print("chatQuery")
@@ -30,7 +30,7 @@ class OpenAIService: OpenAIProtocol {
     
     func createImage(prompt: String, size: ImagesQuery.Size) -> AnyPublisher<ImagesResult, any Error> {
         let query = ImagesQuery(prompt: prompt, size: size)
-        return openai.images(query: query)
+        return openAI.images(query: query)
             .handleEvents(receiveSubscription: { _ in
                 print("receiveSubscription")
             }, receiveOutput: { _ in
@@ -52,7 +52,7 @@ class OpenAIService: OpenAIProtocol {
         do {
             let image = try getImageFromInfo(info: info).compressLessThanXMB(mb: 4)
             let query = ImageEditsQuery(image: image.pngData()!, prompt: prompt)
-            return openai.imageEdits(query: query)
+            return openAI.imageEdits(query: query)
                 .subscribe(on: DispatchSerialQueue.global())
                 .receive(on: DispatchSerialQueue.main)
                 .eraseToAnyPublisher()

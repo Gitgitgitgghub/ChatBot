@@ -77,6 +77,18 @@
 		32B7E6B52C69DBD50032ABFD /* VocabularyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6B42C69DBD50032ABFD /* VocabularyModel.swift */; };
 		32B7E6B72C69DD090032ABFD /* VocabularyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */; };
 		32B7E6B92C69E5610032ABFD /* MyVocabularyViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6B82C69E5610032ABFD /* MyVocabularyViews.swift */; };
+		32B7E6BC2C6B25E30032ABFD /* VocabularyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6BB2C6B25E30032ABFD /* VocabularyViewController.swift */; };
+		32B7E6BE2C6B27750032ABFD /* VocabularyViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6BD2C6B27750032ABFD /* VocabularyViews.swift */; };
+		32B7E6C02C6B277E0032ABFD /* VocabularyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6BF2C6B277E0032ABFD /* VocabularyViewModel.swift */; };
+		32B7E6D72C6B31FE0032ABFD /* FSPageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6CD2C6B31FE0032ABFD /* FSPageControl.swift */; };
+		32B7E6D82C6B31FE0032ABFD /* FSPagerCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6CE2C6B31FE0032ABFD /* FSPagerCollectionView.swift */; };
+		32B7E6D92C6B31FE0032ABFD /* FSPagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6CF2C6B31FE0032ABFD /* FSPagerView.swift */; };
+		32B7E6DA2C6B31FE0032ABFD /* FSPagerViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D02C6B31FE0032ABFD /* FSPagerViewCell.swift */; };
+		32B7E6DB2C6B31FE0032ABFD /* FSPagerViewLayoutAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D12C6B31FE0032ABFD /* FSPagerViewLayoutAttributes.swift */; };
+		32B7E6DC2C6B31FE0032ABFD /* FSPagerViewObjcCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D32C6B31FE0032ABFD /* FSPagerViewObjcCompat.m */; };
+		32B7E6DD2C6B31FE0032ABFD /* FSPageViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D42C6B31FE0032ABFD /* FSPageViewLayout.swift */; };
+		32B7E6DE2C6B31FE0032ABFD /* FSPageViewTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D52C6B31FE0032ABFD /* FSPageViewTransformer.swift */; };
+		32B7E6E02C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6DF2C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
 		32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32C77FCF2C18504F00F335FE /* Assets.xcassets */; };
@@ -104,6 +116,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		32B7E6CA2C6B2F500032ABFD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 32B7E6C52C6B2F500032ABFD /* FSPagerView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F9580B761E5D9F0600C5B267;
+			remoteInfo = FSPagerView;
+		};
 		32C77FDA2C18504F00F335FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 32C77FBB2C18504E00F335FE /* Project object */;
@@ -184,6 +203,20 @@
 		32B7E6B42C69DBD50032ABFD /* VocabularyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyModel.swift; sourceTree = "<group>"; };
 		32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyManager.swift; sourceTree = "<group>"; };
 		32B7E6B82C69E5610032ABFD /* MyVocabularyViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyVocabularyViews.swift; sourceTree = "<group>"; };
+		32B7E6BB2C6B25E30032ABFD /* VocabularyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyViewController.swift; sourceTree = "<group>"; };
+		32B7E6BD2C6B27750032ABFD /* VocabularyViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyViews.swift; sourceTree = "<group>"; };
+		32B7E6BF2C6B277E0032ABFD /* VocabularyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyViewModel.swift; sourceTree = "<group>"; };
+		32B7E6C52C6B2F500032ABFD /* FSPagerView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = FSPagerView.xcodeproj; sourceTree = "<group>"; };
+		32B7E6CD2C6B31FE0032ABFD /* FSPageControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPageControl.swift; sourceTree = "<group>"; };
+		32B7E6CE2C6B31FE0032ABFD /* FSPagerCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPagerCollectionView.swift; sourceTree = "<group>"; };
+		32B7E6CF2C6B31FE0032ABFD /* FSPagerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPagerView.swift; sourceTree = "<group>"; };
+		32B7E6D02C6B31FE0032ABFD /* FSPagerViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPagerViewCell.swift; sourceTree = "<group>"; };
+		32B7E6D12C6B31FE0032ABFD /* FSPagerViewLayoutAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPagerViewLayoutAttributes.swift; sourceTree = "<group>"; };
+		32B7E6D22C6B31FE0032ABFD /* FSPagerViewObjcCompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSPagerViewObjcCompat.h; sourceTree = "<group>"; };
+		32B7E6D32C6B31FE0032ABFD /* FSPagerViewObjcCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPagerViewObjcCompat.m; sourceTree = "<group>"; };
+		32B7E6D42C6B31FE0032ABFD /* FSPageViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPageViewLayout.swift; sourceTree = "<group>"; };
+		32B7E6D52C6B31FE0032ABFD /* FSPageViewTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPageViewTransformer.swift; sourceTree = "<group>"; };
+		32B7E6DF2C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenAIService+FunctionCall.swift"; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32C77FC82C18504E00F335FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -455,6 +488,7 @@
 		32B7E6A92C69C1840032ABFD /* MyVocabulary */ = {
 			isa = PBXGroup;
 			children = (
+				32B7E6BA2C6B25C90032ABFD /* VocabularyViewController */,
 				32B7E6AA2C69C24F0032ABFD /* TOEICWord.json */,
 				32B7E6AC2C69C2C10032ABFD /* TOEICWordDecoder.swift */,
 				32B7E6AE2C69C3650032ABFD /* WordModels.swift */,
@@ -463,6 +497,57 @@
 				32B7E6B82C69E5610032ABFD /* MyVocabularyViews.swift */,
 			);
 			path = MyVocabulary;
+			sourceTree = "<group>";
+		};
+		32B7E6BA2C6B25C90032ABFD /* VocabularyViewController */ = {
+			isa = PBXGroup;
+			children = (
+				32B7E6BB2C6B25E30032ABFD /* VocabularyViewController.swift */,
+				32B7E6BD2C6B27750032ABFD /* VocabularyViews.swift */,
+				32B7E6BF2C6B277E0032ABFD /* VocabularyViewModel.swift */,
+			);
+			path = VocabularyViewController;
+			sourceTree = "<group>";
+		};
+		32B7E6C12C6B2F1E0032ABFD /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				32B7E6C62C6B2F500032ABFD /* FSPagerView */,
+			);
+			path = ThirdParty;
+			sourceTree = "<group>";
+		};
+		32B7E6C62C6B2F500032ABFD /* FSPagerView */ = {
+			isa = PBXGroup;
+			children = (
+				32B7E6D62C6B31FE0032ABFD /* Sources */,
+				32B7E6C52C6B2F500032ABFD /* FSPagerView.xcodeproj */,
+			);
+			path = FSPagerView;
+			sourceTree = "<group>";
+		};
+		32B7E6C72C6B2F500032ABFD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				32B7E6CB2C6B2F500032ABFD /* FSPagerView.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		32B7E6D62C6B31FE0032ABFD /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32B7E6CD2C6B31FE0032ABFD /* FSPageControl.swift */,
+				32B7E6CE2C6B31FE0032ABFD /* FSPagerCollectionView.swift */,
+				32B7E6CF2C6B31FE0032ABFD /* FSPagerView.swift */,
+				32B7E6D02C6B31FE0032ABFD /* FSPagerViewCell.swift */,
+				32B7E6D12C6B31FE0032ABFD /* FSPagerViewLayoutAttributes.swift */,
+				32B7E6D22C6B31FE0032ABFD /* FSPagerViewObjcCompat.h */,
+				32B7E6D32C6B31FE0032ABFD /* FSPagerViewObjcCompat.m */,
+				32B7E6D42C6B31FE0032ABFD /* FSPageViewLayout.swift */,
+				32B7E6D52C6B31FE0032ABFD /* FSPageViewTransformer.swift */,
+			);
+			path = Sources;
 			sourceTree = "<group>";
 		};
 		32C77FBA2C18504E00F335FE = {
@@ -497,6 +582,7 @@
 				32E2642D2C1AA9B50083EC63 /* CustomView */,
 				322A2CFD2C1949ED007A8075 /* Extensions */,
 				32C77FCF2C18504F00F335FE /* Assets.xcassets */,
+				32B7E6C12C6B2F1E0032ABFD /* ThirdParty */,
 				32C77FD42C18504F00F335FE /* Info.plist */,
 			);
 			path = ChatBot;
@@ -536,6 +622,7 @@
 				322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */,
 				32E264312C1BDA8D0083EC63 /* OpenAIService.swift */,
 				32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */,
+				32B7E6DF2C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -659,6 +746,12 @@
 			);
 			productRefGroup = 32C77FC42C18504E00F335FE /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 32B7E6C72C6B2F500032ABFD /* Products */;
+					ProjectRef = 32B7E6C52C6B2F500032ABFD /* FSPagerView.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				32C77FC22C18504E00F335FE /* ChatBot */,
@@ -667,6 +760,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		32B7E6CB2C6B2F500032ABFD /* FSPagerView.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = FSPagerView.framework;
+			remoteRef = 32B7E6CA2C6B2F500032ABFD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		32C77FC12C18504E00F335FE /* Resources */ = {
@@ -705,6 +808,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */,
+				32B7E6D72C6B31FE0032ABFD /* FSPageControl.swift in Sources */,
+				32B7E6DB2C6B31FE0032ABFD /* FSPagerViewLayoutAttributes.swift in Sources */,
 				94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */,
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
 				32B7E6B12C69CF040032ABFD /* MyVocabularyViewController.swift in Sources */,
@@ -714,16 +819,19 @@
 				326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
 				943CFF932C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift in Sources */,
+				32B7E6DA2C6B31FE0032ABFD /* FSPagerViewCell.swift in Sources */,
 				3241BE532C4DEAAA0047BB71 /* NoteViewController.swift in Sources */,
 				32690FD42C3E766300700192 /* VoicePickerViewController.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
 				32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */,
+				32B7E6DC2C6B31FE0032ABFD /* FSPagerViewObjcCompat.m in Sources */,
 				32B7E6AF2C69C3650032ABFD /* WordModels.swift in Sources */,
 				327D286F2C5A10DC00F6ED68 /* NoActionTextView.swift in Sources */,
 				320421972C1933EC00D72203 /* SystemDefine.swift in Sources */,
 				3204219B2C193B4100D72203 /* ChatViews.swift in Sources */,
 				94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */,
 				32B7E6AD2C69C2C10032ABFD /* TOEICWordDecoder.swift in Sources */,
+				32B7E6D82C6B31FE0032ABFD /* FSPagerCollectionView.swift in Sources */,
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */,
 				9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */,
@@ -744,10 +852,14 @@
 				326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */,
 				32B7E6B72C69DD090032ABFD /* VocabularyManager.swift in Sources */,
 				323E88A82C353D2200401F50 /* MainTabBarController.swift in Sources */,
+				32B7E6C02C6B277E0032ABFD /* VocabularyViewModel.swift in Sources */,
+				32B7E6BE2C6B27750032ABFD /* VocabularyViews.swift in Sources */,
 				32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */,
 				32B7E6B32C69CF360032ABFD /* MyVocabularyViewModel.swift in Sources */,
 				322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */,
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
+				32B7E6DD2C6B31FE0032ABFD /* FSPageViewLayout.swift in Sources */,
+				32B7E6E02C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift in Sources */,
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				3241BE442C3F81D80047BB71 /* UserDefault+.swift in Sources */,
@@ -760,6 +872,7 @@
 				323E88AE2C353DFA00401F50 /* HomeViewController.swift in Sources */,
 				3241BE572C4DF1AA0047BB71 /* NoteViews.swift in Sources */,
 				327D286D2C59E39200F6ED68 /* TextEditorViewController.swift in Sources */,
+				32B7E6BC2C6B25E30032ABFD /* VocabularyViewController.swift in Sources */,
 				323E88B42C3B761800401F50 /* HistoryViews.swift in Sources */,
 				323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */,
 				32B7E6A62C60E4C10032ABFD /* ActionUIStatusModel.swift in Sources */,
@@ -775,7 +888,9 @@
 				326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */,
 				32B7E6A22C607E200032ABFD /* UICollectionView+.swift in Sources */,
 				32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */,
+				32B7E6D92C6B31FE0032ABFD /* FSPagerView.swift in Sources */,
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
+				32B7E6DE2C6B31FE0032ABFD /* FSPageViewTransformer.swift in Sources */,
 				3241BE552C4DF0C70047BB71 /* NoteViewModel.swift in Sources */,
 				942395EB2C56A95000E65150 /* ImageManager.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,

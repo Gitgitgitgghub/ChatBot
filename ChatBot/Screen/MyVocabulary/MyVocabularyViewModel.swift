@@ -27,7 +27,7 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
     
     struct SectionData {
         var title: String
-        var vocabularys: [VocabularyModel]
+        var vocabularies: [VocabularyModel]
         var isExpanding = false
     }
     
@@ -55,12 +55,12 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
     }
     
     func speakWord(indexPath: IndexPath) {
-        guard let word = sectionDatas.getOrNil(index: indexPath.section)?.vocabularys.getOrNil(index: indexPath.row)?.wordEntry.word else { return }
+        guard let word = sectionDatas.getOrNil(index: indexPath.section)?.vocabularies.getOrNil(index: indexPath.row)?.wordEntry.word else { return }
         SpeechVoiceManager.shared.speak(text: word)
     }
     
     func toggleStar(indexPath: IndexPath) {
-        let vocabulary = sectionDatas[indexPath.section].vocabularys[indexPath.row]
+        let vocabulary = sectionDatas[indexPath.section].vocabularies[indexPath.row]
         vocabulary.isStar.toggle()
         vocabularyManager.saveVocabulay(vocabulary: vocabulary)
             .sink { [weak self] completion in
@@ -95,18 +95,18 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
                 if case .failure(let error) = completion {
                     print("initialVocabulary error: \(error.localizedDescription)")
                 }
-            } receiveValue: { [weak self] vocabularys in
-                self?.groupWordsAtoZ(vocabularys: vocabularys)
+            } receiveValue: { [weak self] vocabularies in
+                self?.groupWordsAtoZ(vocabularies: vocabularies)
                 self?.outputSubject.send(.reloadAll)
             }
             .store(in: &subscriptions)
     }
     
     /// 依照Ａ－Ｚ分組
-    private func groupWordsAtoZ(vocabularys: [VocabularyModel]) {
-        guard vocabularys.isNotEmpty else { return }
+    private func groupWordsAtoZ(vocabularies: [VocabularyModel]) {
+        guard vocabularies.isNotEmpty else { return }
         var categorizedWords: [Character: [VocabularyModel]] = [:]
-        for vocabulary in vocabularys {
+        for vocabulary in vocabularies {
             guard let firstChar = vocabulary.wordEntry.word.uppercased().first else { continue }
             if categorizedWords[firstChar] == nil {
                 categorizedWords[firstChar] = [vocabulary]
@@ -116,8 +116,8 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         }
         var temp: [SectionData] = []
         for key in categorizedWords.keys.sorted() {
-            let vocabularys = categorizedWords[key] ?? []
-            temp.append(.init(title: String(key), vocabularys: vocabularys))
+            let vocabularies = categorizedWords[key] ?? []
+            temp.append(.init(title: String(key), vocabularies: vocabularies))
         }
         self.sectionDatas = temp
     }
@@ -127,8 +127,8 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         let decoder = TOEICWordDecoder()
         decoder.decode()
             .flatMap({ words in
-                let vocabularys = words.map({ VocabularyModel(word: $0) })
-                return self.vocabularyManager.saveVocabulayPackage(vocabularys: vocabularys)
+                let vocabularies = words.map({ VocabularyModel(word: $0) })
+                return self.vocabularyManager.saveVocabulayPackage(vocabularies: vocabularies)
             })
             .sink { completion in
                 if case .failure(let error) = completion {

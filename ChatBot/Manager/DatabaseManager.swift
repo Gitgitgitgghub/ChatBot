@@ -65,6 +65,8 @@ class DatabaseManager {
                 t.column("familiarity", .integer).notNull().defaults(to: 0)
                 t.column("isStar", .boolean).notNull().defaults(to: false)
                 t.column("lastViewedTime", .datetime).notNull()
+                t.column("wordSentences", .blob).notNull()
+                t.column("kkPronunciation", .text).notNull().defaults(to: "")
             }
         }
     }

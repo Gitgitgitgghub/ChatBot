@@ -21,19 +21,18 @@ class MyVocabularyViewController: BaseUIViewController {
         super.viewDidLoad()
         bind()
         initUI()
-        
+        viewModel.transform(inputEvent: .fetchVocabularys)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.transform(inputEvent: .fetchVocabularys)
+        
     }
     
     private func initUI() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(cellType: MyVocabularyViews.VocabularyCell.self)
-        //tableView.register(MyVocabularyViews.HeaderView.self, forHeaderFooterViewReuseIdentifier: "header")
     }
     
     private func bind() {
@@ -79,25 +78,24 @@ extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let sectionData = viewModel.sectionDatas.getOrNil(index: section), sectionData.isExpanding {
-            return sectionData.vocabularys.count
+            return sectionData.vocabularies.count
         }
         return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(with: MyVocabularyViews.VocabularyCell.self, for: indexPath)
-        cell.bindVocabulary(indexPath: indexPath, vocabulary: viewModel.sectionDatas[indexPath.section].vocabularys[indexPath.row])
+        cell.bindVocabulary(indexPath: indexPath, vocabulary: viewModel.sectionDatas[indexPath.section].vocabularies[indexPath.row])
         cell.delegate = self
         return cell
     }
     
-//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        if let sectionData = viewModel.sectionDatas.getOrNil(index: section) {
-//            let header = MyVocabularyViews.HeaderView()
-//            return sectionData.title
-//        }
-//        return nil
-//    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vocabularies = viewModel.sectionDatas[indexPath.section].vocabularies
+        let index = indexPath.row
+        let vc = ScreenLoader.loadScreen(screen: .Vocabulary(vocabularies: vocabularies, startIndex: index))
+        navigationController?.pushViewController(vc, animated: true)
+    }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if let sectionData = viewModel.sectionDatas.getOrNil(index: section) {

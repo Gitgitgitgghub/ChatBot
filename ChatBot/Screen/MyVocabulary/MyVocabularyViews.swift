@@ -17,7 +17,6 @@ class MyVocabularyViews: ControllerView {
         tableView.keyboardDismissMode = .interactive
         tableView.separatorStyle = .singleLine
         tableView.rowHeight = UITableView.automaticDimension
-        //tableView.allowsSelection = false
     }
     var addNoteButton = UIButton(type: .custom).apply {
         $0.cornerRadius = 25
@@ -85,7 +84,7 @@ extension MyVocabularyViews {
         }
         
         func setSectionData(sectionModel: MyVocabularyViewModel.SectionData) {
-            titleLabel.text = sectionModel.title.uppercased() + " 共有\(sectionModel.vocabularys.count)個單字"
+            titleLabel.text = sectionModel.title.uppercased() + " 共有\(sectionModel.vocabularies.count)個單字"
             let imageName = sectionModel.isExpanding ? "arrow.up" : "arrow.down"
             arrowImageView.image = .init(systemName: imageName)?.withTintColor(.darkGray, renderingMode: .alwaysOriginal)
         }

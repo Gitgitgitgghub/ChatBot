@@ -15,13 +15,17 @@ class VocabularyModel: Codable, FetchableRecord, PersistableRecord {
     var familiarity: Int = 0
     var isStar = false
     var lastViewedTime: Date
+    var wordSentences: [WordSentence] = []
+    var kkPronunciation: String = ""
     
-    init(id: Int64? = nil, wordEntry: WordEntry, familiarity: Int, isStar: Bool, lastViewedTime: Date) {
+    init(id: Int64? = nil, wordEntry: WordEntry, familiarity: Int, isStar: Bool, lastViewedTime: Date, examples: [WordSentence], kkPronunciation: String) {
         self.id = id
         self.wordEntry = wordEntry
         self.familiarity = familiarity
         self.isStar = isStar
         self.lastViewedTime = lastViewedTime
+        self.wordSentences = examples
+        self.kkPronunciation = kkPronunciation
     }
     
     func didInsert(_ inserted: InsertionSuccess) {
@@ -32,10 +36,10 @@ class VocabularyModel: Codable, FetchableRecord, PersistableRecord {
 extension VocabularyModel {
     
     /// tableName
-    static let databaseTableName = "vocabularys"
+    static let databaseTableName = "vocabularies"
     
     convenience init(word: WordEntry) {
-        self.init(wordEntry: word, familiarity: 0, isStar: false, lastViewedTime: .now)
+        self.init(wordEntry: word, familiarity: 0, isStar: false, lastViewedTime: .now, examples: [], kkPronunciation: "")
     }
     
 }

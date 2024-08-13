@@ -35,6 +35,8 @@ class ScreenLoader {
         case textEditor(content: Data?,inputBackgroundColor: UIColor, delegate: TextEditorViewControllerDelegate)
         /// 我的單字頁面
         case MyVocabulary
+        /// 單字內頁
+        case Vocabulary(vocabularies: [VocabularyModel], startIndex: Int)
     }
     
     static func loadScreen(screen: Screen) -> UIViewController {
@@ -52,6 +54,7 @@ class ScreenLoader {
         case .textEditor(content: let content, inputBackgroundColor: let inputBackgroundColor, let delegate):
             return TextEditorViewController(content: content, inputBackgroundColor: inputBackgroundColor, delegate: delegate)
         case .MyVocabulary: return MyVocabularyViewController()
+        case .Vocabulary(vocabularies: let vocabularies, startIndex: let startIndex): return VocabularyViewController(vocabularies: vocabularies, startIndex: startIndex)
         }
     }
 }
