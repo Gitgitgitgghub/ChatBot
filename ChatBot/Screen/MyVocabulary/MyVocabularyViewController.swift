@@ -38,10 +38,20 @@ class MyVocabularyViewController: BaseUIViewController {
     
     private func bind() {
         viewModel.bindInputEvent()
-        viewModel.$sectionDatas
+        viewModel.outputSubject
             .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.tableView.reloadData()
+            .sink { [weak self] event in
+                guard let `self` = self else { return }
+                switch event {
+                case .reloadRows(indexPath: let indexPath):
+                    self.tableView.reloadRows(at: indexPath, with: .automatic)
+                case .reloadAll:
+                    self.tableView.reloadData()
+                case .reloadSection(section: let section):
+                    self.tableView.reloadSections(.init(integer: section), with: .automatic)
+                case .toast(message: let message):
+                    self.showToast(message: message)
+                }
             }
             .store(in: &subscriptions)
     }
@@ -60,7 +70,7 @@ extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate
     }
     
     func onStarButtonClicked(indexPath: IndexPath) {
-        
+        viewModel.transform(inputEvent: .toggleStar(indexPath: indexPath))
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

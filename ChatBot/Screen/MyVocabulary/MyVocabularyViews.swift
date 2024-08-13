@@ -112,7 +112,8 @@ extension MyVocabularyViews {
         }
         var starButton = UIButton(type: .custom).apply{
             $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.setImage(.init(systemName: "star"), for: .normal)
+            $0.setImage(.init(systemName: "star")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
+            $0.setImage(.init(systemName: "star.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .selected)
         }
         private(set) var vocabulary: VocabularyModel?
         private(set) var indexPath: IndexPath = .init(row: 0, section: 0)
@@ -179,8 +180,7 @@ extension MyVocabularyViews {
         
         private func setStar() {
             guard let vocabulary = self.vocabulary else { return }
-            let color: UIColor = vocabulary.isStar ? .systemYellow: .white
-            starButton.tintColor = color
+            starButton.isSelected = vocabulary.isStar
         }
         
     }

@@ -19,7 +19,10 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
     }
     
     enum OutputEvent {
-        
+        case reloadRows(indexPath: [IndexPath])
+        case reloadAll
+        case reloadSection(section: Int)
+        case toast(message: String)
     }
     
     struct SectionData {
@@ -29,7 +32,7 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
     }
     
     private let vocabularyManager = VocabularyManager.share
-    @Published var sectionDatas: [SectionData] = []
+    var sectionDatas: [SectionData] = []
     
     func bindInputEvent() {
         inputSubject
@@ -55,14 +58,27 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         guard let word = sectionDatas.getOrNil(index: indexPath.section)?.vocabularys.getOrNil(index: indexPath.row)?.wordEntry.word else { return }
         SpeechVoiceManager.shared.speak(text: word)
     }
+    
     func toggleStar(indexPath: IndexPath) {
-        
+        let vocabulary = sectionDatas[indexPath.section].vocabularys[indexPath.row]
+        vocabulary.isStar.toggle()
+        vocabularyManager.saveVocabulay(vocabulary: vocabulary)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    vocabulary.isStar.toggle()
+                    self?.outputSubject.send(.toast(message: "操作失敗：\(error.localizedDescription)"))
+                }
+            } receiveValue: { [weak self] _ in
+                self?.outputSubject.send(.reloadRows(indexPath: [indexPath]))
+            }
+            .store(in: &subscriptions)
     }
     
     private func toggleExpanding(section: Int) {
         var sectionData = sectionDatas[section]
         sectionData.isExpanding.toggle()
         sectionDatas[section] = sectionData
+        outputSubject.send(.reloadSection(section: section))
     }
     
     /// 取得所有單字
@@ -81,6 +97,7 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
                 }
             } receiveValue: { [weak self] vocabularys in
                 self?.groupWordsAtoZ(vocabularys: vocabularys)
+                self?.outputSubject.send(.reloadAll)
             }
             .store(in: &subscriptions)
     }
@@ -90,14 +107,19 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         guard vocabularys.isNotEmpty else { return }
         var categorizedWords: [Character: [VocabularyModel]] = [:]
         for vocabulary in vocabularys {
-            guard let firstChar = vocabulary.wordEntry.word.first else { continue }
+            guard let firstChar = vocabulary.wordEntry.word.uppercased().first else { continue }
             if categorizedWords[firstChar] == nil {
                 categorizedWords[firstChar] = [vocabulary]
             } else {
                 categorizedWords[firstChar]?.append(vocabulary)
             }
         }
-        self.sectionDatas = categorizedWords.map({ SectionData(title: String($0.key), vocabularys: $0.value) })
+        var temp: [SectionData] = []
+        for key in categorizedWords.keys.sorted() {
+            let vocabularys = categorizedWords[key] ?? []
+            temp.append(.init(title: String(key), vocabularys: vocabularys))
+        }
+        self.sectionDatas = temp
     }
     
     /// 讀取json裡面的單字並且存到db

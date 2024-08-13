@@ -22,6 +22,11 @@ class VocabularyManager {
         .eraseToAnyPublisher()
     }
     
+    /// 保存單字
+    func saveVocabulay(vocabulary: VocabularyModel) -> AnyPublisher<Void, Error> {
+        return saveVocabulayPackage(vocabularys: [vocabulary])
+    }
+    
     /// 保存所有單字
     func saveVocabulayPackage(vocabularys: [VocabularyModel]) -> AnyPublisher<Void, Error> {
         return dbQueue.writePublisher(receiveOn: RunLoop.main) { db in
