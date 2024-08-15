@@ -102,19 +102,20 @@ fileprivate class WordCell: UITableViewCell {
     private let wordLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .darkGray
-        $0.font = .boldSystemFont(ofSize: 22)
+        $0.font = SystemDefine.Message.defaultTextFont.withSize(22).bold()
         $0.numberOfLines = 1
     }
     private let kkLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .darkGray
-        $0.font = .systemFont(ofSize: 18)
+        $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 1
     }
     private let definitionsLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .darkGray
-        $0.font = .systemFont(ofSize: 18)
+        $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
+        $0.numberOfLines = 0
     }
     private let lineView = UIView().apply {
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -157,7 +158,7 @@ fileprivate class WordCell: UITableViewCell {
     func bindWord(vocabulary: VocabularyModel?) {
         self.vocabulary = vocabulary
         wordLabel.text = vocabulary?.wordEntry.word
-        kkLabel.text = "[\(vocabulary?.kkPronunciation ?? "")]"
+        kkLabel.text = "KK [\(vocabulary?.kkPronunciation ?? "")]"
         definitionsLabel.text = vocabulary?.wordEntry.displayDefinitionString
     }
     
@@ -168,13 +169,13 @@ fileprivate class WordExampleCell: UITableViewCell {
     private let sentenceLabel = PaddingLabel(withInsets: .init(top: 25, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .darkGray
-        $0.font = .boldSystemFont(ofSize: 18)
+        $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 0
     }
     private let translationLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .darkGray
-        $0.font = .boldSystemFont(ofSize: 18)
+        $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 0
     }
     

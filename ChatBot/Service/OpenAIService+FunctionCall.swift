@@ -17,10 +17,6 @@ extension OpenAIService {
         let sentence: WordSentence
     }
     
-    struct FetchWordResponse: Codable {
-        let data: [WordDetail]
-    }
-    
     /// 查詢多單字 kk音標，句子，翻譯
     /// 因為一次帶多個給ai慢到會timeout
     /// 所以改採並行機制
