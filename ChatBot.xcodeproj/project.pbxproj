@@ -88,8 +88,7 @@
 		32B7E6DC2C6B31FE0032ABFD /* FSPagerViewObjcCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D32C6B31FE0032ABFD /* FSPagerViewObjcCompat.m */; };
 		32B7E6DD2C6B31FE0032ABFD /* FSPageViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D42C6B31FE0032ABFD /* FSPageViewLayout.swift */; };
 		32B7E6DE2C6B31FE0032ABFD /* FSPageViewTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D52C6B31FE0032ABFD /* FSPageViewTransformer.swift */; };
-		32B7E6E02C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6DF2C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift */; };
-		32B7E6E22C6DBB4B0032ABFD /* PublisherCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6E12C6DBB4B0032ABFD /* PublisherCache.swift */; };
+		32B7E6E02C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6DF2C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift */; };
 		32B7E6E42C6DC1150032ABFD /* DataCacheProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
@@ -218,8 +217,7 @@
 		32B7E6D32C6B31FE0032ABFD /* FSPagerViewObjcCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPagerViewObjcCompat.m; sourceTree = "<group>"; };
 		32B7E6D42C6B31FE0032ABFD /* FSPageViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPageViewLayout.swift; sourceTree = "<group>"; };
 		32B7E6D52C6B31FE0032ABFD /* FSPageViewTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPageViewTransformer.swift; sourceTree = "<group>"; };
-		32B7E6DF2C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenAIService+FunctionCall.swift"; sourceTree = "<group>"; };
-		32B7E6E12C6DBB4B0032ABFD /* PublisherCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherCache.swift; sourceTree = "<group>"; };
+		32B7E6DF2C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VocabularyService+DataCacheProtocol.swift"; sourceTree = "<group>"; };
 		32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCacheProtocol.swift; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -486,7 +484,6 @@
 				32690FC52C3CE62A00700192 /* ImageFileHandler.swift */,
 				943CFF922C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift */,
 				32B7E6A72C637C010032ABFD /* DataToAttributedString.swift */,
-				32B7E6E12C6DBB4B0032ABFD /* PublisherCache.swift */,
 				32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */,
 			);
 			path = protocol;
@@ -628,7 +625,7 @@
 			children = (
 				32E264312C1BDA8D0083EC63 /* OpenAIService.swift */,
 				32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */,
-				32B7E6DF2C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift */,
+				32B7E6DF2C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -864,9 +861,8 @@
 				32B7E6B32C69CF360032ABFD /* MyVocabularyViewModel.swift in Sources */,
 				322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */,
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
-				32B7E6E22C6DBB4B0032ABFD /* PublisherCache.swift in Sources */,
 				32B7E6DD2C6B31FE0032ABFD /* FSPageViewLayout.swift in Sources */,
-				32B7E6E02C6B54FF0032ABFD /* OpenAIService+FunctionCall.swift in Sources */,
+				32B7E6E02C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift in Sources */,
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				3241BE442C3F81D80047BB71 /* UserDefault+.swift in Sources */,

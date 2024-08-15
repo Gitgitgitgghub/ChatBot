@@ -17,7 +17,7 @@ class VocabularyViewController: BaseUIViewController {
     }
     
     init(vocabularies: [VocabularyModel], startIndex: Int) {
-        self.viewModel = .init(vocabularies: vocabularies, startIndex: startIndex, openAI: OpenAIService())
+        self.viewModel = .init(vocabularies: vocabularies, startIndex: startIndex, openAI: VocabularyService())
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -77,6 +77,7 @@ extension VocabularyViewController: FSPagerViewDelegate, FSPagerViewDataSource, 
         let cell = pagerView.dequeueReusableCell(withReuseIdentifier: VocabularyViews.VocabularyPagerViewCell.className, at: index) as! VocabularyViews.VocabularyPagerViewCell
         cell.bindVocabulary(vocabulary: viewModel.vocabularies[index])
         print("cellForItemAt: \(index)")
+        viewModel.transform(inputEvent: .currentIndexPathChange(index: index))
         return cell
     }
     

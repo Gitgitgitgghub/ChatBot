@@ -13,6 +13,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     enum InputEvent {
         case initialVocabularies
         case fetchVocabularies(index: Int)
+        case currentIndexPathChange(index: Int)
     }
     
     enum OutputEvent {
@@ -23,12 +24,13 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     
     let vocabularies: [VocabularyModel]
     let startIndex: Int
-    let openAI: OpenAIService
+    let openAI: VocabularyService
     let vocabularyManager = VocabularyManager.share
     private(set) var displayEnable = false
     private(set) var isFetching = false
+    private(set) var currentIndex: Int = 0
     
-    init(vocabularies: [VocabularyModel], startIndex: Int, openAI: OpenAIService) {
+    init(vocabularies: [VocabularyModel], startIndex: Int, openAI: VocabularyService) {
         self.vocabularies = vocabularies
         self.startIndex = startIndex
         self.openAI = openAI
@@ -43,9 +45,24 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
                     self.fetchVocabularies(index: index)
                 case .initialVocabularies:
                     self.initialVocabularies()
+                case .currentIndexPathChange(index: let index):
+                    self.currentIndexPathChange(index: index)
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    private func currentIndexPathChange(index: Int) {
+//        currentIndex = index
+//        let vocabulary = vocabularies[currentIndex]
+//            .updateLastViewedTime()
+//        vocabularyManager.saveVocabulay(vocabulary: vocabulary)
+//            .sink { _ in
+//                
+//            } receiveValue: { _ in
+//                
+//            }
+//            .store(in: &subscriptions)
     }
     
     private func initialVocabularies() {
@@ -55,9 +72,8 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     }
     
     private func fetchVocabularies(index: Int) {
-        guard !isFetching else { return }
         let startIndex = index
-        let numbers = generateAlternatingNumbers(start: startIndex, count: 10)
+        let numbers = generateAlternatingNumbers(start: startIndex, count: 3)
         var temp: [VocabularyModel] = []
         for number in numbers {
             if let vocabulary = self.vocabularies.getOrNil(index: number) {
@@ -103,7 +119,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     
     /// 處理ai回覆的資料
     /// 找到對應的voicabularies並把sentnece設定進去
-    private func handelWordDetailsResponse(wordDetails: [OpenAIService.WordDetail]) -> AnyPublisher<[VocabularyModel], Error> {
+    private func handelWordDetailsResponse(wordDetails: [VocabularyService.WordDetail]) -> AnyPublisher<[VocabularyModel], Error> {
         Future { [weak self] promise in
             guard let `self` = self else {
                 promise(.success([]))

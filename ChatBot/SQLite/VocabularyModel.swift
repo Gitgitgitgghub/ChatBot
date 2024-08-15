@@ -28,6 +28,11 @@ class VocabularyModel: Codable, FetchableRecord, PersistableRecord {
         self.kkPronunciation = kkPronunciation
     }
     
+    func updateLastViewedTime() -> VocabularyModel {
+        lastViewedTime = .now
+        return self
+    }
+    
     func didInsert(_ inserted: InsertionSuccess) {
         id = inserted.rowID
     }
