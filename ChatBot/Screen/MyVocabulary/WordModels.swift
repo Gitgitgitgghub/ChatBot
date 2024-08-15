@@ -22,7 +22,7 @@ struct WordDefinition: Codable {
 
 struct WordEntry: Codable {
     let number: String
-    let word: String
+    var word: String
     let definitions: [WordDefinition]
     var displayDefinitionString: String {
         return definitions.map { "(\($0.partOfSpeech)) \($0.definition.replacingOccurrences(of: " ", with: ""))" }.joined(separator: "\n")

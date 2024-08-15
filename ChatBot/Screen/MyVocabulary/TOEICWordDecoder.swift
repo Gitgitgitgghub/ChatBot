@@ -14,7 +14,15 @@ class TOEICWordDecoder {
     func decodeWords(from jsonData: Data) -> [WordEntry]? {
         let decoder = JSONDecoder()
         do {
-            let wordList = try decoder.decode([WordEntry].self, from: jsonData)
+            var wordList = try decoder.decode([WordEntry].self, from: jsonData)
+            /// 單字標準化 json裡面有些單字例如"backﬁre" // 使用了连字 ﬁ (U+FB01)
+            /// 要把他轉換成普通的f i
+            wordList = wordList.map { entry in
+                var modifiedEntry = entry
+                modifiedEntry.word = entry.word
+                    .removeAllLigatures()
+                return modifiedEntry
+            }
             return wordList
         } catch {
             print("Error decoding JSON: \(error)")

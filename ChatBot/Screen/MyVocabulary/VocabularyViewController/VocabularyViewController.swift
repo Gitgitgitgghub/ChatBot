@@ -29,7 +29,7 @@ class VocabularyViewController: BaseUIViewController {
         super.viewDidLoad()
         initUI()
         bind()
-        viewModel.fetchVocabularies()
+        viewModel.transform(inputEvent: .initialVocabularies)
     }
     
     private func initUI() {
@@ -50,6 +50,10 @@ class VocabularyViewController: BaseUIViewController {
                 case .scrollTo(index: let index):
                     self.pagerView.reloadData()
                     self.pagerView.scrollToItem(at: index, animated: false)
+                case .toast(message: let message):
+                    self.showToast(message: message)
+                case .reloadCurrentIndex:
+                    self.pagerView.reloadData()
                 }
             }
             .store(in: &subscriptions)
@@ -61,10 +65,8 @@ class VocabularyViewController: BaseUIViewController {
 extension VocabularyViewController: FSPagerViewDelegate, FSPagerViewDataSource, UICollectionViewDataSourcePrefetching {
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        for indexPath in indexPaths {
-            print("prefetchItemsAt: \(indexPath)")
-        }
-        
+        guard let index = indexPaths.last?.item else { return }
+        viewModel.transform(inputEvent: .fetchVocabularies(index: index))
     }
     
     func numberOfItems(in pagerView: FSPagerView) -> Int {

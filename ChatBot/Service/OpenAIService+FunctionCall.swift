@@ -7,6 +7,7 @@
 
 import Foundation
 import OpenAI
+import Combine
 
 extension OpenAIService {
     
@@ -16,37 +17,64 @@ extension OpenAIService {
         let sentence: WordSentence
     }
     
-    func fetchWordDetails(words: [String]) async throws -> [WordDetail] {
-        // 将单词列表转换为字符串
-        let wordsList = words.joined(separator: ", ")
-        let prompt = """
-            For each word in this list: \(wordsList), return the KK phonetic transcription, a sentence using the word, and the Chinese translation of the sentence.
-            Format the result as a JSON array, with each item having this structure:
-            {
-                "word": "[The word itself]",
-                "kkPronunciation": "[KK phonetic transcription]",
-                "sentence": {
-                    "sentence": "[A sentence using the word]",
-                    "translation": "[The Chinese translation of the sentence]"
-                }
-            }
-            Return only the JSON data, with no additional text or explanations.
-            """
-        // 创建查询请求
-        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt3_5Turbo)
-        // 发送请求
-        let response = try await openAI.chats(query: query)
-        // 解析响应的 JSON 数据
-        if let text = response.choices.first?.message.content?.string {
-            if let jsonData = text.data(using: .utf8) {
-                let wordDetailsArray = try JSONDecoder().decode([WordDetail].self, from: jsonData)
-                return wordDetailsArray
-            } else {
-                throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to convert response to data"])
-            }
-        } else {
-            throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "No valid response from OpenAI"])
-        }
+    struct FetchWordResponse: Codable {
+        let data: [WordDetail]
     }
     
+    /// 查詢多單字 kk音標，句子，翻譯
+    /// 因為一次帶多個給ai慢到會timeout
+    /// 所以改採並行機制
+    func fetchWordDetails(words: [String]) -> AnyPublisher<[WordDetail], Error> {
+        let publishers = words.map { word in
+            return fetchSingleWordDetail(word: word)
+                .eraseToAnyPublisher()
+        }
+        let mergePublisher = Publishers.MergeMany(publishers)
+            .collect()
+            .eraseToAnyPublisher()
+        return performAPICall(mergePublisher)
+            .print("fetchWordDetails")
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+    /// 查詢單一單字 kk音標，句子，翻譯
+    func fetchSingleWordDetail(word: String) -> AnyPublisher<WordDetail, Error> {
+        // prompt很重要一定要明確要求他返回ＪＳＯＮ
+        let prompt = """
+        請將以下單詞的 KK 音標、例句以及例句的翻譯提供出來，翻譯請使用繁體中文：
+        單詞: \(word)
+        請按照以下格式返回JSON，並確保使用繁體中文：
+        {
+            "word": "\(word)",
+            "kkPronunciation": "KK 音標",
+            "sentence": {
+                "sentence": "使用該單詞的例句",
+                "translation": "例句的繁體中文翻譯"
+            }
+        }
+        """
+        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt3_5Turbo, responseFormat: .jsonObject)
+        let publisher = openAI.chats(query: query)
+            .eraseToAnyPublisher()
+        return performAPICall(publisher)
+            .print("fetchSingleWordDetail: \(word)")
+            .tryMap({ chatResult in
+                // 解析JSON
+                if let text = chatResult.choices.first?.message.content?.string {
+                    if let jsonData = text.data(using: .utf8) {
+                        let response = try JSONDecoder().decode(WordDetail.self, from: jsonData)
+                        return response
+                    } else {
+                        throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to convert response to data"])
+                    }
+                } else {
+                    throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "No valid response from OpenAI"])
+                }
+            })
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
 }

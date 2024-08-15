@@ -50,6 +50,13 @@ extension String {
         }
         return false
     }
+    
+    /// 使用 Unicode 正規化形式 NFKD 將連字分解為獨立的字符"ﬁﬂﬃﬄ"
+    func removeAllLigatures() -> String {
+        let decomposedString = self.precomposedStringWithCompatibilityMapping
+        // 去掉重音符
+        return decomposedString.folding(options: .diacriticInsensitive, locale: .current)
+    }
 }
 
 extension FileManager {

@@ -31,6 +31,7 @@ extension VocabularyViews {
         private let tableView = UITableView(frame: .zero, style: .plain).apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.estimatedRowHeight = UITableView.automaticDimension
+            $0.separatorStyle = .none
         }
 //        private enum Section {
 //            case word
@@ -84,7 +85,11 @@ extension VocabularyViews {
                 cell.bindWord(vocabulary: vocabulary)
                 return cell
             default:
-                return tableView.dequeueReusableCell(with: WordExampleCell.self, for: indexPath)
+                let cell = tableView.dequeueReusableCell(with: WordExampleCell.self, for: indexPath)
+                if let sentence = vocabulary?.wordSentences.getOrNil(index: indexPath.row) {
+                    cell.bindWordSentence(wordSentence: sentence)
+                }
+                return cell
             }
         }
         
@@ -94,19 +99,19 @@ extension VocabularyViews {
 
 fileprivate class WordCell: UITableViewCell {
     
-    private let wordLabel = PaddingLabel(withInsets: .init(top: 5, left: 10, bottom: 5, right: 10)).apply{
+    private let wordLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .darkGray
         $0.font = .boldSystemFont(ofSize: 22)
         $0.numberOfLines = 1
     }
-    private let kkLabel = PaddingLabel(withInsets: .init(top: 5, left: 10, bottom: 5, right: 10)).apply{
+    private let kkLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .darkGray
         $0.font = .systemFont(ofSize: 18)
         $0.numberOfLines = 1
     }
-    private let definitionsLabel = PaddingLabel(withInsets: .init(top: 5, left: 10, bottom: 5, right: 10)).apply{
+    private let definitionsLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .darkGray
         $0.font = .systemFont(ofSize: 18)
@@ -145,14 +150,14 @@ fileprivate class WordCell: UITableViewCell {
         lineView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(1)
-            make.top.equalTo(definitionsLabel.snp.bottom)
+            make.top.equalTo(definitionsLabel.snp.bottom).offset(10)
         }
     }
     
     func bindWord(vocabulary: VocabularyModel?) {
         self.vocabulary = vocabulary
         wordLabel.text = vocabulary?.wordEntry.word
-        kkLabel.text = vocabulary?.kkPronunciation
+        kkLabel.text = "[\(vocabulary?.kkPronunciation ?? "")]"
         definitionsLabel.text = vocabulary?.wordEntry.displayDefinitionString
     }
     
@@ -160,4 +165,43 @@ fileprivate class WordCell: UITableViewCell {
 
 fileprivate class WordExampleCell: UITableViewCell {
     
+    private let sentenceLabel = PaddingLabel(withInsets: .init(top: 25, left: 15, bottom: 5, right: 10)).apply{
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.textColor = .darkGray
+        $0.font = .boldSystemFont(ofSize: 18)
+        $0.numberOfLines = 0
+    }
+    private let translationLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.textColor = .darkGray
+        $0.font = .boldSystemFont(ofSize: 18)
+        $0.numberOfLines = 0
+    }
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        initUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func initUI() {
+        contentView.addSubview(sentenceLabel)
+        contentView.addSubview(translationLabel)
+        sentenceLabel.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
+        translationLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(sentenceLabel.snp.bottom).priority(.medium)
+            make.bottom.equalToSuperview()
+        }
+    }
+    
+    func bindWordSentence(wordSentence: WordSentence) {
+        sentenceLabel.text = wordSentence.sentence
+        translationLabel.text = wordSentence.translation
+    }
 }
