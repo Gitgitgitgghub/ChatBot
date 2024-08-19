@@ -72,6 +72,7 @@ class SpeechVoiceManager {
         synthesizer.speak(utterance)
     }
     
+    //TODO: - 第一次安裝播不出來
     /// 播放自動判斷該用中文還英文播放
     func speak(text: String) {
         let text = cleanText(text)

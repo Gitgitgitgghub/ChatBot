@@ -29,7 +29,7 @@ struct WordEntry: Codable {
     }
 }
 
-struct WordSentence: Codable {
+struct WordSentence: Codable, Equatable {
     let sentence: String
     let translation: String
 }

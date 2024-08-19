@@ -29,11 +29,18 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     private(set) var displayEnable = false
     private(set) var isFetching = false
     private(set) var currentIndex: Int = 0
+    private var fetchWordDetailsSubject = PassthroughSubject<[VocabularyModel], Never>()
+    private var cacheManager = CacheManager<VocabularyModel, AnyPublisher<VocabularyService.WordDetail, Error>>()
+    private var memoryCache: [Int: VocabularyModel] = [:]
     
     init(vocabularies: [VocabularyModel], startIndex: Int, openAI: VocabularyService) {
         self.vocabularies = vocabularies
         self.startIndex = startIndex
         self.openAI = openAI
+    }
+    
+    deinit {
+        cacheManager.clearCache()
     }
     
     func bindInput() {
@@ -53,19 +60,20 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     }
     
     private func currentIndexPathChange(index: Int) {
-//        currentIndex = index
-//        let vocabulary = vocabularies[currentIndex]
-//            .updateLastViewedTime()
-//        vocabularyManager.saveVocabulay(vocabulary: vocabulary)
-//            .sink { _ in
-//                
-//            } receiveValue: { _ in
-//                
-//            }
-//            .store(in: &subscriptions)
+        currentIndex = index
+        let vocabulary = vocabularies[currentIndex]
+            .updateLastViewedTime()
+        vocabularyManager.saveVocabulay(vocabulary: vocabulary)
+            .sink { _ in
+                
+            } receiveValue: { _ in
+                
+            }
+            .store(in: &subscriptions)
     }
     
     private func initialVocabularies() {
+        setupFetchWordDetailsPipeline()
         fetchVocabularies(index: startIndex)
         displayEnable = true
         outputSubject.send(.scrollTo(index: startIndex))
@@ -79,6 +87,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
             if let vocabulary = self.vocabularies.getOrNil(index: number) {
                 if vocabulary.wordSentences.isEmpty {
                     temp.append(vocabulary)
+                    memoryCache[number] = vocabulary
                 }
             }
         }
@@ -89,18 +98,45 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     }
     
     private func fetchWordDetails(words: [VocabularyModel]) {
-        openAI.fetchWordDetails(words: words.map { $0.wordEntry.word })
-            .flatMap({ [weak self] wordDetails -> AnyPublisher<[VocabularyModel], Error> in
+        fetchWordDetailsSubject.send(words)
+    }
+
+    private func setupFetchWordDetailsPipeline() {
+        fetchWordDetailsSubject
+            .flatMap { [weak self] words -> AnyPublisher<VocabularyService.WordDetail, Error> in
                 guard let self = self else {
                     return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
                 }
-                return self.handelWordDetailsResponse(wordDetails: wordDetails)
+                return Publishers.Sequence(sequence: words)
+                    .flatMap { word in
+                        let wordKey = word.wordEntry.word
+                        if let cachedPublisher = self.cacheManager.getCache(forKey: word) {
+                            return cachedPublisher
+                        } else {
+                            let publisher = self.openAI.fetchSingleWordDetail(word: wordKey)
+                                .handleEvents(receiveCompletion: { [weak self] _ in
+                                    guard let `self` = self else { return }
+                                    self.cacheManager.removeCache(forKey: word)
+                                })
+                                .share()
+                                .eraseToAnyPublisher()
+                            self.cacheManager.setCache(publisher, forKey: word)
+                            return publisher
+                        }
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .flatMap({ [weak self] wordDetail -> AnyPublisher<(key: Int, value: VocabularyModel), Error> in
+                guard let self = self else {
+                    return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
+                }
+                return self.handelWordDetailsResponse(wordDetail: wordDetail)
             })
-            .flatMap({ [weak self] changeVocabularies -> AnyPublisher<Void, Error> in
-                guard let self = self else {
+            .flatMap({ [weak self] changeVocabulary -> AnyPublisher<Int, Error> in
+                guard let `self` = self else {
                     return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
                 }
-                return self.saveChangeVocabularies(vocabularies: changeVocabularies)
+                return self.saveChangeVocabulary(changeData: changeVocabulary)
             })
             .handleEvents(receiveSubscription: { [weak self] _ in
                 self?.isFetching = true
@@ -111,35 +147,47 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
                 if case .failure(let error) = completion {
                     print("查找單字句子失敗：\(error)")
                 }
-            } receiveValue: { [weak self] in
-                self?.outputSubject.send(.reloadCurrentIndex)
+            } receiveValue: { [weak self] index in
+                self?.reloadCurrentIndex(index: index)
             }
             .store(in: &subscriptions)
     }
     
+    private func reloadCurrentIndex(index: Int) {
+        guard index == currentIndex else { return }
+        outputSubject.send(.reloadCurrentIndex)
+    }
+
+    
+    private func needToSave(existingSentence: [WordSentence], newSentence: WordSentence) -> Bool {
+        return existingSentence.isEmpty || existingSentence.last?.sentence ?? "" != newSentence.sentence
+    }
+    
     /// 處理ai回覆的資料
     /// 找到對應的voicabularies並把sentnece設定進去
-    private func handelWordDetailsResponse(wordDetails: [VocabularyService.WordDetail]) -> AnyPublisher<[VocabularyModel], Error> {
+    // 修改后的 handelWordDetailsResponse 处理单个单词的响应
+    private func handelWordDetailsResponse(wordDetail: VocabularyService.WordDetail) -> AnyPublisher<(key: Int, value: VocabularyModel), Error> {
         Future { [weak self] promise in
-            guard let `self` = self else {
-                promise(.success([]))
+            guard let self = self else {
+                promise(.failure(NSError(domain: "self is nil", code: -1, userInfo: nil)))
                 return
             }
-            let detailDict = Dictionary(uniqueKeysWithValues: wordDetails.map { ($0.word, $0) })
-            print("得到單字資料 count: \(detailDict.count)")
-            var changes: [VocabularyModel] = []
-            for i in 0..<self.vocabularies.count {
-                let vocabulary = self.vocabularies[i]
-                if let match = detailDict[vocabulary.wordEntry.word] {
-                    vocabulary.kkPronunciation = match.kkPronunciation
-                    vocabulary.wordSentences.append(match.sentence)
-                    changes.append(vocabulary)
+            for (i, vocabulary) in memoryCache {
+                guard vocabulary.wordEntry.word == wordDetail.word else { continue }
+                vocabulary.kkPronunciation = wordDetail.kkPronunciation
+                if needToSave(existingSentence: vocabulary.wordSentences, newSentence: wordDetail.sentence) {
+                    vocabulary.wordSentences.append(wordDetail.sentence)
+                    promise(.success((i, vocabulary)))
                 }
             }
-            
-            promise(.success(changes))
         }
         .eraseToAnyPublisher()
+    }
+    
+    private func saveChangeVocabulary(changeData: (key: Int, value: VocabularyModel)) -> AnyPublisher<Int, Error> {
+        return vocabularyManager.saveVocabulay(vocabulary: changeData.value)
+            .map({ changeData.key })
+            .eraseToAnyPublisher()
     }
     
     private func saveChangeVocabularies(vocabularies: [VocabularyModel]) -> AnyPublisher<Void, Error> {
@@ -168,3 +216,4 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     }
     
 }
+

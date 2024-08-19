@@ -1,5 +1,5 @@
 //
-//  VocabularyService+DataCacheProtocol.swift
+//  VocabularyService.swift
 //  ChatBot
 //
 //  Created by 吳俊諺 on 2024/8/13.
@@ -9,18 +9,20 @@ import Foundation
 import OpenAI
 import Combine
 
-class VocabularyService: OpenAIService, DataCacheProtocol {
+class VocabularyService: OpenAIService {
     
-    typealias ValueType = AnyPublisher<WordDetail, Error>
     
-    struct WordDetail: Codable {
+    struct WordDetail: Codable, Equatable {
+        static func == (lhs: VocabularyService.WordDetail, rhs: VocabularyService.WordDetail) -> Bool {
+            return lhs.kkPronunciation == rhs.kkPronunciation &&
+            lhs.sentence == rhs.sentence
+        }
+        
         let word: String
         let kkPronunciation: String
         let sentence: WordSentence
     }
     
-    var cache: [String: AnyPublisher<WordDetail, Error>] = [:]
-    var subscriptions: Set<AnyCancellable> = .init()
     
     /// 查詢多單字 kk音標，句子，翻譯
     /// 因為一次帶多個給ai慢到會timeout
@@ -41,11 +43,6 @@ class VocabularyService: OpenAIService, DataCacheProtocol {
     
     /// 查詢單一單字 kk音標，句子，翻譯
     func fetchSingleWordDetail(word: String) -> AnyPublisher<WordDetail, Error> {
-        // 如果缓存中存在，直接返回
-        if let cachedPublisher = get(forKey: word) {
-            return cachedPublisher
-        }
-        print("查單字： \(word)")
         // prompt很重要一定要明確要求他返回ＪＳＯＮ
         let prompt = """
         請將以下單詞的 KK 音標、例句以及例句的翻譯提供出來，翻譯請使用繁體中文：
@@ -75,16 +72,15 @@ class VocabularyService: OpenAIService, DataCacheProtocol {
                     throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "No valid response from OpenAI"])
                 }
             })
+            .handleEvents(receiveSubscription: { _ in
+                print("查單字： \(word)")
+            }, receiveCancel: {
+                print("取消查單字： \(word)")
+            })
             .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
-            .share()
             .eraseToAnyPublisher()
-        set(publisher, forKey: word)
         return publisher
-    }
-    
-    func set(_ value: AnyPublisher<WordDetail, any Error>, forKey key: String) {
-        cache[key] = value
     }
     
 }

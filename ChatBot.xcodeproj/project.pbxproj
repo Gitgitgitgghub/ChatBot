@@ -88,7 +88,7 @@
 		32B7E6DC2C6B31FE0032ABFD /* FSPagerViewObjcCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D32C6B31FE0032ABFD /* FSPagerViewObjcCompat.m */; };
 		32B7E6DD2C6B31FE0032ABFD /* FSPageViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D42C6B31FE0032ABFD /* FSPageViewLayout.swift */; };
 		32B7E6DE2C6B31FE0032ABFD /* FSPageViewTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D52C6B31FE0032ABFD /* FSPageViewTransformer.swift */; };
-		32B7E6E02C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6DF2C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift */; };
+		32B7E6E02C6B54FF0032ABFD /* VocabularyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6DF2C6B54FF0032ABFD /* VocabularyService.swift */; };
 		32B7E6E42C6DC1150032ABFD /* DataCacheProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
@@ -100,6 +100,7 @@
 		32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */; };
 		32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264312C1BDA8D0083EC63 /* OpenAIService.swift */; };
 		32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E264332C1BE75C0083EC63 /* Extensions.swift */; };
+		94215CAB2C73851000F4DDF1 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94215CAA2C73851000F4DDF1 /* CacheManager.swift */; };
 		942395EB2C56A95000E65150 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942395EA2C56A95000E65150 /* ImageManager.swift */; };
 		943CFF912C5CBE7E00B96812 /* TextEditorViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943CFF902C5CBE7E00B96812 /* TextEditorViews.swift */; };
 		943CFF932C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943CFF922C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift */; };
@@ -217,7 +218,7 @@
 		32B7E6D32C6B31FE0032ABFD /* FSPagerViewObjcCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPagerViewObjcCompat.m; sourceTree = "<group>"; };
 		32B7E6D42C6B31FE0032ABFD /* FSPageViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPageViewLayout.swift; sourceTree = "<group>"; };
 		32B7E6D52C6B31FE0032ABFD /* FSPageViewTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPageViewTransformer.swift; sourceTree = "<group>"; };
-		32B7E6DF2C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VocabularyService+DataCacheProtocol.swift"; sourceTree = "<group>"; };
+		32B7E6DF2C6B54FF0032ABFD /* VocabularyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyService.swift; sourceTree = "<group>"; };
 		32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCacheProtocol.swift; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -233,6 +234,7 @@
 		32E2642E2C1AA9D10083EC63 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
 		32E264312C1BDA8D0083EC63 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		32E264332C1BE75C0083EC63 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		94215CAA2C73851000F4DDF1 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		942395EA2C56A95000E65150 /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
 		943CFF902C5CBE7E00B96812 /* TextEditorViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorViews.swift; sourceTree = "<group>"; };
 		943CFF922C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewLeftAlignedLayout.swift; sourceTree = "<group>"; };
@@ -400,6 +402,7 @@
 				942395EA2C56A95000E65150 /* ImageManager.swift */,
 				327D28642C57314B00F6ED68 /* SharedGroupStorage.swift */,
 				32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */,
+				94215CAA2C73851000F4DDF1 /* CacheManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -625,7 +628,7 @@
 			children = (
 				32E264312C1BDA8D0083EC63 /* OpenAIService.swift */,
 				32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */,
-				32B7E6DF2C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift */,
+				32B7E6DF2C6B54FF0032ABFD /* VocabularyService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -823,6 +826,7 @@
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
 				943CFF932C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift in Sources */,
 				32B7E6DA2C6B31FE0032ABFD /* FSPagerViewCell.swift in Sources */,
+				94215CAB2C73851000F4DDF1 /* CacheManager.swift in Sources */,
 				3241BE532C4DEAAA0047BB71 /* NoteViewController.swift in Sources */,
 				32690FD42C3E766300700192 /* VoicePickerViewController.swift in Sources */,
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
@@ -862,7 +866,7 @@
 				322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */,
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
 				32B7E6DD2C6B31FE0032ABFD /* FSPageViewLayout.swift in Sources */,
-				32B7E6E02C6B54FF0032ABFD /* VocabularyService+DataCacheProtocol.swift in Sources */,
+				32B7E6E02C6B54FF0032ABFD /* VocabularyService.swift in Sources */,
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				3241BE442C3F81D80047BB71 /* UserDefault+.swift in Sources */,

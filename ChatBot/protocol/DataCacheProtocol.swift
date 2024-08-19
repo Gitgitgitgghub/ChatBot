@@ -11,38 +11,39 @@ import Combine
 protocol DataCacheProtocol {
     
     associatedtype ValueType
+    associatedtype Key: Hashable
     
-    var cache: [String: ValueType] { get set }
+    var cacheManager: CacheManager<Key, ValueType> { get }
     var subscriptions: Set<AnyCancellable> { get set }
     
     // 獲取缓存
-    func get(forKey key: String) -> ValueType?
+    func getCache(forKey key: Key) -> ValueType?
     
     // 設置缓存
-    mutating func set(_ value: ValueType, forKey key: String)
+    func setCache(_ value: ValueType, forKey key: Key)
     
     // 移除缓存
-    mutating func remove(forKey key: String)
+    func removeCache(forKey key: Key)
     
     // 清空缓存
-    mutating func clear()
+    func clearCache()
 }
 
 extension DataCacheProtocol {
-    
-    func get(forKey key: String) -> ValueType? {
-        return cache[key]
+    func getCache(forKey key: Key) -> ValueType? {
+        return cacheManager.getCache(forKey: key)
     }
     
-    mutating func set(_ value: ValueType, forKey key: String) {
-        cache[key] = value
+    func setCache(_ value: ValueType, forKey key: Key) {
+        cacheManager.setCache(value, forKey: key)
     }
     
-    mutating func remove(forKey key: String) {
-        cache.removeValue(forKey: key)
+    func removeCache(forKey key: Key) {
+        cacheManager.removeCache(forKey: key)
     }
     
-    mutating func clear() {
-        cache.removeAll()
+    func clearCache() {
+        cacheManager.clearCache()
     }
 }
+

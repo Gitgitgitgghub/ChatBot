@@ -8,7 +8,7 @@
 import Foundation
 import GRDB
 
-class VocabularyModel: Codable, FetchableRecord, PersistableRecord {
+class VocabularyModel: Codable, FetchableRecord, PersistableRecord, Hashable {
     
     var id: Int64?
     var wordEntry: WordEntry
@@ -26,6 +26,14 @@ class VocabularyModel: Codable, FetchableRecord, PersistableRecord {
         self.lastViewedTime = lastViewedTime
         self.wordSentences = examples
         self.kkPronunciation = kkPronunciation
+    }
+    
+    static func == (lhs: VocabularyModel, rhs: VocabularyModel) -> Bool {
+        return lhs.wordEntry.word == rhs.wordEntry.word
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(wordEntry.word)
     }
     
     func updateLastViewedTime() -> VocabularyModel {
