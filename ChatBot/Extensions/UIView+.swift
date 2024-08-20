@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SnapKit
 
 extension UIView {
     
@@ -27,6 +28,35 @@ extension UIView {
         get {
             return layer.cornerRadius
         }
+    }
+    
+}
+
+//MARK: 針對snapKit的extension
+extension UIView {
+    
+    var top: ConstraintItem {
+        return snp.top
+    }
+    
+    var leading: ConstraintItem {
+        return snp.leading
+    }
+    
+    var trailing: ConstraintItem {
+        return snp.trailing
+    }
+    
+    var bottom: ConstraintItem {
+        return snp.bottom
+    }
+    
+    var centerX: ConstraintItem {
+        return snp.centerX
+    }
+    
+    var centerY: ConstraintItem {
+        return snp.centerY
     }
     
 }

@@ -66,6 +66,7 @@
 		32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0C2C2405EC00FE5786 /* UIImage+.swift */; };
 		32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F112C251E5400FE5786 /* AttributedStringParsable.swift */; };
 		32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */; };
+		32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */; };
 		32B7E6A22C607E200032ABFD /* UICollectionView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A12C607E200032ABFD /* UICollectionView+.swift */; };
 		32B7E6A42C607F500032ABFD /* TextEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */; };
 		32B7E6A62C60E4C10032ABFD /* ActionUIStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */; };
@@ -195,6 +196,7 @@
 		32800F0C2C2405EC00FE5786 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
 		32800F112C251E5400FE5786 /* AttributedStringParsable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedStringParsable.swift; sourceTree = "<group>"; };
 		32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTextDelegate.swift; sourceTree = "<group>"; };
+		32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViewContoller.swift; sourceTree = "<group>"; };
 		32B7E6A12C607E200032ABFD /* UICollectionView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+.swift"; sourceTree = "<group>"; };
 		32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorViewModel.swift; sourceTree = "<group>"; };
 		32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionUIStatusModel.swift; sourceTree = "<group>"; };
@@ -319,20 +321,24 @@
 		323E88A92C353DC000401F50 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				32690FC82C3D0F7000700192 /* _myNote */,
+				323E88AA2C353DCF00401F50 /* _history */,
+				32B7E6A92C69C1840032ABFD /* _myVocabulary */,
+				32690FC72C3D0F6600700192 /* _setting */,
 				323E88AD2C353DFA00401F50 /* HomeViewController.swift */,
 				323E88B12C354BA200401F50 /* HomeViews.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
 		};
-		323E88AA2C353DCF00401F50 /* History */ = {
+		323E88AA2C353DCF00401F50 /* _history */ = {
 			isa = PBXGroup;
 			children = (
 				323E88AB2C353DE800401F50 /* HistoryViewController.swift */,
 				94A6CFC32C39EBD500B1E4E3 /* HistoryViewModel.swift */,
 				323E88B32C3B761800401F50 /* HistoryViews.swift */,
 			);
-			path = History;
+			path = _history;
 			sourceTree = "<group>";
 		};
 		3241BE422C3F81BE0047BB71 /* UserDefault */ = {
@@ -354,14 +360,14 @@
 			path = SQLite;
 			sourceTree = "<group>";
 		};
-		3241BE512C4DEA890047BB71 /* Note */ = {
+		3241BE512C4DEA890047BB71 /* _note */ = {
 			isa = PBXGroup;
 			children = (
 				3241BE522C4DEAAA0047BB71 /* NoteViewController.swift */,
 				3241BE542C4DF0C70047BB71 /* NoteViewModel.swift */,
 				3241BE562C4DF1AA0047BB71 /* NoteViews.swift */,
 			);
-			path = Note;
+			path = _note;
 			sourceTree = "<group>";
 		};
 		32690FC22C3BA06100700192 /* Base */ = {
@@ -373,24 +379,24 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
-		32690FC72C3D0F6600700192 /* Setting */ = {
+		32690FC72C3D0F6600700192 /* _setting */ = {
 			isa = PBXGroup;
 			children = (
 				32690FCA2C3D2F0600700192 /* SettingViewController.swift */,
 				3241BE402C3F7A720047BB71 /* SettingViews.swift */,
 			);
-			path = Setting;
+			path = _setting;
 			sourceTree = "<group>";
 		};
-		32690FC82C3D0F7000700192 /* MyNote */ = {
+		32690FC82C3D0F7000700192 /* _myNote */ = {
 			isa = PBXGroup;
 			children = (
-				3241BE512C4DEA890047BB71 /* Note */,
+				3241BE512C4DEA890047BB71 /* _note */,
 				32690FCC2C3D2F2400700192 /* MyNoteViewController.swift */,
 				9455D8042C4918F6007AC9C2 /* MyNoteViews.swift */,
 				9455D8062C491966007AC9C2 /* MyNoteViewModel.swift */,
 			);
-			path = MyNote;
+			path = _myNote;
 			sourceTree = "<group>";
 		};
 		32690FC92C3D2EC300700192 /* Manager */ = {
@@ -440,13 +446,9 @@
 		32800EE82C1C225500FE5786 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
-				32B7E6A92C69C1840032ABFD /* MyVocabulary */,
 				327D286A2C59E0C700F6ED68 /* RichTextEditor */,
 				32690FD22C3E763100700192 /* VoicePicker */,
-				32690FC82C3D0F7000700192 /* MyNote */,
-				32690FC72C3D0F6600700192 /* Setting */,
 				32690FC22C3BA06100700192 /* Base */,
-				323E88AA2C353DCF00401F50 /* History */,
 				323E88A92C353DC000401F50 /* Home */,
 				32800EFA2C211B6D00FE5786 /* Launch */,
 				32800EEB2C1C231700FE5786 /* Login */,
@@ -495,10 +497,19 @@
 			path = protocol;
 			sourceTree = "<group>";
 		};
-		32B7E6A92C69C1840032ABFD /* MyVocabulary */ = {
+		32B4D70D2C7446DB00CA4C40 /* _flipCardViewContoller */ = {
 			isa = PBXGroup;
 			children = (
-				32B7E6BA2C6B25C90032ABFD /* VocabularyViewController */,
+				32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */,
+			);
+			path = _flipCardViewContoller;
+			sourceTree = "<group>";
+		};
+		32B7E6A92C69C1840032ABFD /* _myVocabulary */ = {
+			isa = PBXGroup;
+			children = (
+				32B4D70D2C7446DB00CA4C40 /* _flipCardViewContoller */,
+				32B7E6BA2C6B25C90032ABFD /* _vocabularyViewController */,
 				32B7E6AA2C69C24F0032ABFD /* TOEICWord.json */,
 				32B7E6AC2C69C2C10032ABFD /* TOEICWordDecoder.swift */,
 				32B7E6AE2C69C3650032ABFD /* WordModels.swift */,
@@ -506,17 +517,17 @@
 				32B7E6B22C69CF360032ABFD /* MyVocabularyViewModel.swift */,
 				32B7E6B82C69E5610032ABFD /* MyVocabularyViews.swift */,
 			);
-			path = MyVocabulary;
+			path = _myVocabulary;
 			sourceTree = "<group>";
 		};
-		32B7E6BA2C6B25C90032ABFD /* VocabularyViewController */ = {
+		32B7E6BA2C6B25C90032ABFD /* _vocabularyViewController */ = {
 			isa = PBXGroup;
 			children = (
 				32B7E6BB2C6B25E30032ABFD /* VocabularyViewController.swift */,
 				32B7E6BD2C6B27750032ABFD /* VocabularyViews.swift */,
 				32B7E6BF2C6B277E0032ABFD /* VocabularyViewModel.swift */,
 			);
-			path = VocabularyViewController;
+			path = _vocabularyViewController;
 			sourceTree = "<group>";
 		};
 		32B7E6C12C6B2F1E0032ABFD /* ThirdParty */ = {
@@ -818,6 +829,7 @@
 			files = (
 				32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */,
 				32B7E6D72C6B31FE0032ABFD /* FSPageControl.swift in Sources */,
+				32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */,
 				32B7E6DB2C6B31FE0032ABFD /* FSPagerViewLayoutAttributes.swift in Sources */,
 				94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */,
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,

@@ -23,13 +23,13 @@ class MainTabBarController: UITabBarController {
             case .Home:
                 vc = ScreenLoader.loadScreen(screen: .home)
             case .History:
-                vc = ScreenLoader.loadScreen(screen: .history)
+                vc = ScreenLoader.loadScreen(screen: .home_history)
             case .MyNote:
-                vc = ScreenLoader.loadScreen(screen: .myNote)
+                vc = ScreenLoader.loadScreen(screen: .home_myNote)
             case .Setting:
-                vc = ScreenLoader.loadScreen(screen: .setting)
+                vc = ScreenLoader.loadScreen(screen: .home_setting)
             case .MyVocabulary:
-                vc = ScreenLoader.loadScreen(screen: .MyVocabulary)
+                vc = ScreenLoader.loadScreen(screen: .home_myVocabulary)
             }
             vc.tabBarItem = self.tabBarItem
             // 這邊是讓tabvc的子vc的view從tabbar上方開始

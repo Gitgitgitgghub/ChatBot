@@ -30,6 +30,7 @@ class MyVocabularyViewController: BaseUIViewController {
     }
     
     private func initUI() {
+        views.bottomToolBar.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(cellType: MyVocabularyViews.VocabularyCell.self)
@@ -62,7 +63,11 @@ class MyVocabularyViewController: BaseUIViewController {
 }
 
 //MARK: - UITableViewDataSource, UITableViewDelegate, VocabularyCellDelegate
-extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate, VocabularyCellDelegate {
+extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate, MyVocabularyViewDelegate {
+    
+    func onFlipCardButton() {
+        
+    }
     
     func onSpeakButtonClicked(indexPath: IndexPath) {
         viewModel.transform(inputEvent: .speakWord(indexPath: indexPath))

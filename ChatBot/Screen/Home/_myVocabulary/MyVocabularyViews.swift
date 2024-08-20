@@ -25,34 +25,46 @@ class MyVocabularyViews: ControllerView {
         $0.layer.borderColor = UIColor.lightGray.cgColor
         $0.layer.borderWidth = 1
     }
+    let bottomToolBar = BottomToolBar().apply {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
     
     override func initUI() {
         view.addSubview(tableView)
         view.addSubview(addNoteButton)
+        view.addSubview(bottomToolBar)
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.leading.trailing.top.equalToSuperview()
+            make.bottom.equalTo(bottomToolBar.top)
         }
         addNoteButton.snp.makeConstraints { make in
             make.size.equalTo(CGSize(width: 50, height: 50))
             make.trailing.bottom.equalToSuperview().inset(15)
+        }
+        bottomToolBar.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(80)
         }
     }
     
 }
 
 //MARK: - VocabularyCellDelegate
-protocol VocabularyCellDelegate: AnyObject {
+protocol MyVocabularyViewDelegate: AnyObject {
     
     /// 當播放按鈕點選
     func onSpeakButtonClicked(indexPath: IndexPath)
     /// 當收藏按鈕被點選
     func onStarButtonClicked(indexPath: IndexPath)
+    /// 當翻卡測驗按鈕被點選
+    func onFlipCardButton()
     
 }
 
 //MARK: - 自定義的view
 extension MyVocabularyViews {
     
+    //MARK: - 單字分類的header
     class HeaderView: UIView {
         
         private var titleLabel = PaddingLabel(withInsets: .init(top: 0, left: 10, bottom: 0, right: 10)).apply {
@@ -91,6 +103,7 @@ extension MyVocabularyViews {
         
     }
     
+    //MARK: - 單字Cell
     class VocabularyCell: UITableViewCell {
         
         var wordLabel = PaddingLabel(withInsets: .init(top: 5, left: 10, bottom: 5, right: 10)).apply {
@@ -116,7 +129,7 @@ extension MyVocabularyViews {
         }
         private(set) var vocabulary: VocabularyModel?
         private(set) var indexPath: IndexPath = .init(row: 0, section: 0)
-        weak var delegate: VocabularyCellDelegate?
+        weak var delegate: MyVocabularyViewDelegate?
         
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -180,6 +193,43 @@ extension MyVocabularyViews {
         private func setStar() {
             guard let vocabulary = self.vocabulary else { return }
             starButton.isSelected = vocabulary.isStar
+        }
+        
+    }
+    
+    //MARK: - BottomToolBar
+    class BottomToolBar: UIView {
+        
+        let flipCardButton = UIButton(type: .custom).apply {
+            $0.setTitle("翻卡測驗", for: .normal)
+            $0.setTitleColor(.white, for: .normal)
+            $0.backgroundColor = .systemBrown
+            $0.cornerRadius = 25
+        }
+        weak var delegate: MyVocabularyViewDelegate?
+        
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            initUI()
+        }
+        
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        
+        private func initUI() {
+            backgroundColor = .white
+            addSubview(flipCardButton)
+            flipCardButton.snp.makeConstraints { make in
+                make.size.equalTo(CGSize(width: 130, height: 50))
+                make.centerY.equalToSuperview()
+                make.leading.equalToSuperview().inset(50)
+            }
+            flipCardButton.addTarget(self, action: #selector(flipCard), for: .touchUpInside)
+        }
+        
+        @objc private func flipCard() {
+            delegate?.onFlipCardButton()
         }
         
     }
