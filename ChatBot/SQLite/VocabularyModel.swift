@@ -18,13 +18,13 @@ class VocabularyModel: Codable, FetchableRecord, PersistableRecord, Hashable {
     var wordSentences: [WordSentence] = []
     var kkPronunciation: String = ""
     
-    init(id: Int64? = nil, wordEntry: WordEntry, familiarity: Int, isStar: Bool, lastViewedTime: Date, examples: [WordSentence], kkPronunciation: String) {
+    init(id: Int64? = nil, wordEntry: WordEntry, familiarity: Int, isStar: Bool, lastViewedTime: Date, wordSentences: [WordSentence], kkPronunciation: String) {
         self.id = id
         self.wordEntry = wordEntry
         self.familiarity = familiarity
         self.isStar = isStar
         self.lastViewedTime = lastViewedTime
-        self.wordSentences = examples
+        self.wordSentences = wordSentences
         self.kkPronunciation = kkPronunciation
     }
     
@@ -52,7 +52,7 @@ extension VocabularyModel {
     static let databaseTableName = "vocabularies"
     
     convenience init(word: WordEntry) {
-        self.init(wordEntry: word, familiarity: 0, isStar: false, lastViewedTime: .now, examples: [], kkPronunciation: "")
+        self.init(wordEntry: word, familiarity: 0, isStar: false, lastViewedTime: .now, wordSentences: [], kkPronunciation: "")
     }
     
 }

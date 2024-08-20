@@ -66,7 +66,7 @@ class MyVocabularyViewController: BaseUIViewController {
 extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate, MyVocabularyViewDelegate {
     
     func onFlipCardButton() {
-        
+        ScreenLoader.toScreen(screen: .flipCard, viewController: self)
     }
     
     func onSpeakButtonClicked(indexPath: IndexPath) {
@@ -98,7 +98,7 @@ extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vocabularies = viewModel.sectionDatas[indexPath.section].vocabularies
         let index = indexPath.row
-        let vc = ScreenLoader.loadScreen(screen: .Vocabulary(vocabularies: vocabularies, startIndex: index))
+        let vc = ScreenLoader.loadScreen(screen: .vocabulary(vocabularies: vocabularies, startIndex: index))
         navigationController?.pushViewController(vc, animated: true)
     }
     

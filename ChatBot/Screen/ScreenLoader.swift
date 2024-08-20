@@ -60,4 +60,13 @@ class ScreenLoader {
         case .flipCard: return FlipCardViewContoller()
         }
     }
+    
+    //TODO: - 有空可以實作一下啟動方式
+    static func toScreen(screen: Screen, viewController: UIViewController) {
+        switch screen {
+        case .flipCard:
+            viewController.navigationController?.pushViewController(loadScreen(screen: screen), animated: true)
+        default: print("ScreenLoader.toScreen 尚未實作")
+        }
+    }
 }

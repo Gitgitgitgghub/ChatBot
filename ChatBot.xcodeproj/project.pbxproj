@@ -67,6 +67,8 @@
 		32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F112C251E5400FE5786 /* AttributedStringParsable.swift */; };
 		32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */; };
 		32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */; };
+		32B4D70F2C745F4500CA4C40 /* FlipCardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */; };
+		32B4D7112C747DD000CA4C40 /* FlipCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7102C747DD000CA4C40 /* FlipCardViewModel.swift */; };
 		32B7E6A22C607E200032ABFD /* UICollectionView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A12C607E200032ABFD /* UICollectionView+.swift */; };
 		32B7E6A42C607F500032ABFD /* TextEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */; };
 		32B7E6A62C60E4C10032ABFD /* ActionUIStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */; };
@@ -197,6 +199,8 @@
 		32800F112C251E5400FE5786 /* AttributedStringParsable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedStringParsable.swift; sourceTree = "<group>"; };
 		32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTextDelegate.swift; sourceTree = "<group>"; };
 		32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViewContoller.swift; sourceTree = "<group>"; };
+		32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViews.swift; sourceTree = "<group>"; };
+		32B4D7102C747DD000CA4C40 /* FlipCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViewModel.swift; sourceTree = "<group>"; };
 		32B7E6A12C607E200032ABFD /* UICollectionView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+.swift"; sourceTree = "<group>"; };
 		32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorViewModel.swift; sourceTree = "<group>"; };
 		32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionUIStatusModel.swift; sourceTree = "<group>"; };
@@ -501,6 +505,8 @@
 			isa = PBXGroup;
 			children = (
 				32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */,
+				32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */,
+				32B4D7102C747DD000CA4C40 /* FlipCardViewModel.swift */,
 			);
 			path = _flipCardViewContoller;
 			sourceTree = "<group>";
@@ -898,12 +904,14 @@
 				32B7E6BC2C6B25E30032ABFD /* VocabularyViewController.swift in Sources */,
 				323E88B42C3B761800401F50 /* HistoryViews.swift in Sources */,
 				323E88B02C353FE000401F50 /* ScreenLoader.swift in Sources */,
+				32B4D7112C747DD000CA4C40 /* FlipCardViewModel.swift in Sources */,
 				32B7E6A62C60E4C10032ABFD /* ActionUIStatusModel.swift in Sources */,
 				3241BE462C3F82410047BB71 /* DefaultKeys.swift in Sources */,
 				322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */,
 				320421992C19343E00D72203 /* ChatViewModel.swift in Sources */,
 				32690FCB2C3D2F0600700192 /* SettingViewController.swift in Sources */,
 				32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */,
+				32B4D70F2C745F4500CA4C40 /* FlipCardViews.swift in Sources */,
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32B7E6E42C6DC1150032ABFD /* DataCacheProtocol.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,
