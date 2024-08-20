@@ -56,7 +56,7 @@ extension VocabularyViews {
             tableView.delegate = self
             tableView.dataSource = self
             tableView.register(cellType: WordCell.self)
-            tableView.register(cellType: WordExampleCell.self)
+            tableView.register(cellType: WordSentenceCell.self)
         }
         
         func bindVocabulary(vocabulary: VocabularyModel) {
@@ -85,9 +85,9 @@ extension VocabularyViews {
                 cell.bindWord(vocabulary: vocabulary)
                 return cell
             default:
-                let cell = tableView.dequeueReusableCell(with: WordExampleCell.self, for: indexPath)
+                let cell = tableView.dequeueReusableCell(with: WordSentenceCell.self, for: indexPath)
                 if let sentence = vocabulary?.wordSentences.getOrNil(index: indexPath.row) {
-                    cell.bindWordSentence(wordSentence: sentence)
+                    cell.bindWordSentence(wordSentence: sentence, indexPath: indexPath)
                 }
                 return cell
             }
@@ -97,7 +97,8 @@ extension VocabularyViews {
     
 }
 
-fileprivate class WordCell: UITableViewCell {
+//MARK: - 最上方單字資訊的cell
+fileprivate class WordCell: UITableViewCell, SpeechTextDelegate {
     
     private let wordLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -121,6 +122,10 @@ fileprivate class WordCell: UITableViewCell {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.backgroundColor = .systemGray
     }
+    var speakButton = UIButton(type: .custom).apply{
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.setImage(.init(systemName: "speaker.wave.2.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
+    }
     private(set) var vocabulary: VocabularyModel?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -137,8 +142,10 @@ fileprivate class WordCell: UITableViewCell {
         contentView.addSubview(kkLabel)
         contentView.addSubview(definitionsLabel)
         contentView.addSubview(lineView)
+        contentView.addSubview(speakButton)
         wordLabel.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.leading.equalToSuperview()
+            make.trailing.equalTo(speakButton.snp.leading)
         }
         definitionsLabel.snp.makeConstraints { make in
             make.bottom.leading.trailing.equalToSuperview()
@@ -153,6 +160,12 @@ fileprivate class WordCell: UITableViewCell {
             make.height.equalTo(1)
             make.top.equalTo(definitionsLabel.snp.bottom).offset(10)
         }
+        speakButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 30, height: 30))
+            make.centerY.equalTo(wordLabel)
+            make.trailing.equalToSuperview().inset(20)
+        }
+        speakButton.addTarget(self, action: #selector(sepak), for: .touchUpInside)
     }
     
     func bindWord(vocabulary: VocabularyModel?) {
@@ -162,11 +175,26 @@ fileprivate class WordCell: UITableViewCell {
         definitionsLabel.text = vocabulary?.wordEntry.displayDefinitionString
     }
     
+    @objc private func sepak() {
+        guard let word = self.vocabulary?.wordEntry.word else { return }
+        speak(text: word)
+    }
+    
 }
 
-fileprivate class WordExampleCell: UITableViewCell {
+//MARK: - 句子的cell
+fileprivate class WordSentenceCell: UITableViewCell, SpeechTextDelegate {
     
-    private let sentenceLabel = PaddingLabel(withInsets: .init(top: 25, left: 15, bottom: 5, right: 10)).apply{
+    private let sentenceTitleLabel = PaddingLabel(withInsets: .init(top: 25, left: 15, bottom: 5, right: 10)).apply{
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.textColor = .darkGray
+        $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
+        $0.numberOfLines = 0
+        $0.text = "例句:"
+        $0.isVisible = false
+        $0.textColor = .systemBrown
+    }
+    private let sentenceLabel = PaddingLabel(withInsets: .init(top: 10, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .darkGray
         $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
@@ -178,6 +206,12 @@ fileprivate class WordExampleCell: UITableViewCell {
         $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 0
     }
+    var speakButton = UIButton(type: .custom).apply{
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.setImage(.init(systemName: "speaker.wave.2.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
+    }
+    private(set) var indexPath: IndexPath?
+    private(set) var wordSentence: WordSentence?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -189,20 +223,41 @@ fileprivate class WordExampleCell: UITableViewCell {
     }
     
     private func initUI() {
+        contentView.addSubview(sentenceTitleLabel)
         contentView.addSubview(sentenceLabel)
         contentView.addSubview(translationLabel)
-        sentenceLabel.snp.makeConstraints { make in
+        contentView.addSubview(speakButton)
+        sentenceTitleLabel.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
+        }
+        sentenceLabel.snp.makeConstraints { make in
+            make.top.equalTo(sentenceTitleLabel.snp.bottom).offset(10)
+            make.leading.equalToSuperview()
+            make.trailing.equalTo(speakButton.snp.leading)
         }
         translationLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(sentenceLabel.snp.bottom).priority(.medium)
             make.bottom.equalToSuperview()
         }
+        speakButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 30, height: 30))
+            make.centerY.equalTo(sentenceLabel)
+            make.trailing.equalToSuperview().inset(20)
+        }
+        speakButton.addTarget(self, action: #selector(sepak), for: .touchUpInside)
     }
     
-    func bindWordSentence(wordSentence: WordSentence) {
+    func bindWordSentence(wordSentence: WordSentence, indexPath: IndexPath) {
+        self.wordSentence = wordSentence
+        self.indexPath = indexPath
         sentenceLabel.text = wordSentence.sentence
         translationLabel.text = wordSentence.translation
+        sentenceTitleLabel.isVisible = indexPath.row == 0
+    }
+    
+    @objc private func sepak() {
+        guard let sentence = wordSentence?.sentence else { return }
+        speak(text: sentence)
     }
 }

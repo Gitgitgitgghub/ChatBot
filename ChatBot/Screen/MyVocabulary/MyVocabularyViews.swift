@@ -107,7 +107,7 @@ extension MyVocabularyViews {
         }
         var speakButton = UIButton(type: .custom).apply{
             $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.setImage(.init(systemName: "speaker.fill"), for: .normal)
+            $0.setImage(.init(systemName: "speaker.wave.2.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
         }
         var starButton = UIButton(type: .custom).apply{
             $0.translatesAutoresizingMaskIntoConstraints = false

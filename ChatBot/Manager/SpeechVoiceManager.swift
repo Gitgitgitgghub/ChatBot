@@ -38,7 +38,6 @@ class SpeechVoiceManager {
     
     
     private func setupVoices() {
-        self.voiceSetting = MyDefaults.loadVoiceSetting()
         let voices = AVSpeechSynthesisVoice.speechVoices()
         // 先對語音做分類
         for voice in voices {
@@ -47,6 +46,24 @@ class SpeechVoiceManager {
             } else if voice.language.hasPrefix("zh") {
                 chineseVoices.append(voice)
             }
+        }
+        setDefaultVoiceSetting()
+        prepareSpeechSynthesizer()
+    }
+    
+    private func setDefaultVoiceSetting() {
+        self.voiceSetting = MyDefaults.loadVoiceSetting()
+        var isEmpty = false
+        if voiceSetting.selectedChineseVoiceId.isEmpty {
+            voiceSetting.selectedChineseVoiceId = chineseVoices.first?.identifier ?? ""
+            isEmpty = true
+        }
+        if voiceSetting.selectedEnglishVoiceId.isEmpty {
+            voiceSetting.selectedEnglishVoiceId = englishVoices.first?.identifier ?? ""
+            isEmpty = true
+        }
+        if isEmpty {
+            saveVoice(selectedChineseVoiceId: voiceSetting.selectedChineseVoiceId, selectedEnglishVoiceId: voiceSetting.selectedEnglishVoiceId)
         }
     }
     
@@ -57,7 +74,7 @@ class SpeechVoiceManager {
     }
     
     /// 預先播放聲音(避免第一次播放會卡很久 爬文看是iOS本身bug)
-    func prepareSpeechSynthesizer() {
+    private func prepareSpeechSynthesizer() {
         let silentUtterance = AVSpeechUtterance(string: "see you tomorrow")
         silentUtterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         silentUtterance.volume = 0
@@ -71,8 +88,7 @@ class SpeechVoiceManager {
         utterance.voice = voice
         synthesizer.speak(utterance)
     }
-    
-    //TODO: - 第一次安裝播不出來
+     
     /// 播放自動判斷該用中文還英文播放
     func speak(text: String) {
         let text = cleanText(text)
@@ -132,6 +148,13 @@ class SpeechVoiceManager {
         voiceSetting.voiceRate = rate
         voiceSetting.voicePitch = pitch
         MyDefaults.saveVoiceSetting(setting: voiceSetting)
+    }
+    
+    /// 保存聲音
+    func saveVoice(selectedChineseVoiceId: String, selectedEnglishVoiceId: String) {
+        guard let chIdIndex = chineseVoices.firstIndex(where: { $0.identifier == selectedChineseVoiceId }),
+        let enIdIndex = englishVoices.firstIndex(where: { $0.identifier == selectedEnglishVoiceId }) else { return }
+        saveVoice(chIndex: chIdIndex, engIndex: enIdIndex, rate: voiceSetting.voiceRate, pitch: voiceSetting.voicePitch)
     }
     
 }

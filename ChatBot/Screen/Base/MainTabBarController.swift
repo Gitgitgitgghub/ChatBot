@@ -64,10 +64,8 @@ class MainTabBarController: UITabBarController {
     
     /// 這裡做一些準備工作
     private func prepare() {
-        DispatchQueue.global().async {
-            SpeechVoiceManager.shared.prepareSpeechSynthesizer()
-            _ = DatabaseManager.shared
-        }
+        // SpeechVoiceManager初始化一下
+        _ = SpeechVoiceManager.shared
     }
     
     /// 創建子視圖控制器

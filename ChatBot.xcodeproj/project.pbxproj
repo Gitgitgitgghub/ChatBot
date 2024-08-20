@@ -65,6 +65,7 @@
 		32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */; };
 		32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0C2C2405EC00FE5786 /* UIImage+.swift */; };
 		32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F112C251E5400FE5786 /* AttributedStringParsable.swift */; };
+		32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */; };
 		32B7E6A22C607E200032ABFD /* UICollectionView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A12C607E200032ABFD /* UICollectionView+.swift */; };
 		32B7E6A42C607F500032ABFD /* TextEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */; };
 		32B7E6A62C60E4C10032ABFD /* ActionUIStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */; };
@@ -193,6 +194,7 @@
 		32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenAIProtocol+ ImageFileHandler.swift"; sourceTree = "<group>"; };
 		32800F0C2C2405EC00FE5786 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
 		32800F112C251E5400FE5786 /* AttributedStringParsable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedStringParsable.swift; sourceTree = "<group>"; };
+		32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTextDelegate.swift; sourceTree = "<group>"; };
 		32B7E6A12C607E200032ABFD /* UICollectionView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+.swift"; sourceTree = "<group>"; };
 		32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorViewModel.swift; sourceTree = "<group>"; };
 		32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionUIStatusModel.swift; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				943CFF922C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift */,
 				32B7E6A72C637C010032ABFD /* DataToAttributedString.swift */,
 				32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */,
+				32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */,
 			);
 			path = protocol;
 			sourceTree = "<group>";
@@ -840,6 +843,7 @@
 				32B7E6AD2C69C2C10032ABFD /* TOEICWordDecoder.swift in Sources */,
 				32B7E6D82C6B31FE0032ABFD /* FSPagerCollectionView.swift in Sources */,
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
+				32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */,
 				32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */,
 				9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */,
 				9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */,
