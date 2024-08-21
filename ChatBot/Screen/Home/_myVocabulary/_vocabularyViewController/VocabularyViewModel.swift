@@ -13,13 +13,16 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     enum InputEvent {
         case initialVocabularies
         case fetchVocabularies(index: Int)
-        case currentIndexPathChange(index: Int)
+        case currentIndexChange(index: Int)
+        case toggleStar(index: Int)
+        case fetchMoreSentence(index: Int)
     }
     
     enum OutputEvent {
-        case scrollTo(index: Int)
         case toast(message: String)
-        case reloadCurrentIndex
+        case changeTitle(title: String)
+        case updateStar(isStar: Bool)
+        case reloadUI(scrollTo: Int? = nil, isStar: Bool)
     }
     
     let vocabularies: [VocabularyModel]
@@ -37,6 +40,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
         self.vocabularies = vocabularies
         self.startIndex = startIndex
         self.openAI = openAI
+        self.currentIndex = startIndex
     }
     
     deinit {
@@ -52,17 +56,54 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
                     self.fetchVocabularies(index: index)
                 case .initialVocabularies:
                     self.initialVocabularies()
-                case .currentIndexPathChange(index: let index):
-                    self.currentIndexPathChange(index: index)
+                case .currentIndexChange(index: let index):
+                    self.currentIndexChange(index: index)
+                case .toggleStar(index: let index):
+                    self.toggleStar(index: index)
+                case .fetchMoreSentence(index: let index):
+                    self.fetchMoreSentence(index: index)
                 }
             }
             .store(in: &subscriptions)
     }
     
-    private func currentIndexPathChange(index: Int) {
+    /// 切換星星
+    func toggleStar(index: Int) {
+        let vocabulary = vocabularies[index]
+        vocabulary.isStar.toggle()
+        vocabularyManager.saveVocabulay(vocabulary: vocabulary)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    vocabulary.isStar.toggle()
+                    self?.outputSubject.send(.toast(message: "操作失敗：\(error.localizedDescription)"))
+                }
+            } receiveValue: { [weak self] _ in
+                self?.outputSubject.send(.updateStar(isStar: vocabulary.isStar))
+            }
+            .store(in: &subscriptions)
+    }
+    
+    //TODO: - 對某一個單字讀取更多句子
+    /// 讀取單字更多句子
+    func fetchMoreSentence(index: Int) {
+        
+    }
+    
+    /// 變更naviation title
+    private func updateUI() {
+        let prefix = "字卡堆"
+        let suffix = vocabularies.first?.wordEntry.word.first?.uppercased() ?? ""
+        let total = vocabularies.count
+        let index = currentIndex + 1
+        outputSubject.send(.changeTitle(title: prefix + suffix + ":" + "(\(index)/\(total))"))
+        outputSubject.send(.updateStar(isStar: vocabularies[currentIndex].isStar))
+    }
+    
+    private func currentIndexChange(index: Int) {
         currentIndex = index
+        updateUI()
         let vocabulary = vocabularies[currentIndex]
-            .updateLastViewedTime()
+        vocabulary.updateLastViewedTime()
         vocabularyManager.saveVocabulay(vocabulary: vocabulary)
             .sink { _ in
                 
@@ -76,7 +117,8 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
         setupFetchWordDetailsPipeline()
         fetchVocabularies(index: startIndex)
         displayEnable = true
-        outputSubject.send(.scrollTo(index: startIndex))
+        outputSubject.send(.reloadUI(scrollTo: startIndex, isStar: vocabularies[startIndex].isStar))
+        updateUI()
     }
     
     private func fetchVocabularies(index: Int) {
@@ -155,7 +197,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     
     private func reloadCurrentIndex(index: Int) {
         guard index == currentIndex else { return }
-        outputSubject.send(.reloadCurrentIndex)
+        outputSubject.send(.reloadUI(isStar: vocabularies[index].isStar))
     }
 
     

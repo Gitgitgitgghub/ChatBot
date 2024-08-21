@@ -50,7 +50,8 @@ class FlipCardViewModel: BaseViewModel<FlipCardViewModel.InputEvent, FlipCardVie
     }
     
     private func currentPageChange(index: Int) {
-        let vocabulary = vocabularies[index].updateLastViewedTime()
+        let vocabulary = vocabularies[index]
+        vocabulary.updateLastViewedTime()
         vocabularyManager.saveVocabulay(vocabulary: vocabulary)
             .sink { _ in
                 

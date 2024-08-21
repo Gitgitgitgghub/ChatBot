@@ -12,12 +12,49 @@ import UIKit
 class VocabularyViews: ControllerView {
 
     let pagerView = FSPagerView()
+    let starButton = UIButton(type: .custom).apply{
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.cornerRadius = 10
+        $0.backgroundColor = .systemBrown
+        $0.setImage(UIImage(systemName: "star")?.withTintColor(.hex("#f5deb3"), renderingMode: .alwaysOriginal), for: .normal)
+        $0.setImage(UIImage(systemName: "star.fill")?.withTintColor(.hex("#f5deb3"), renderingMode: .alwaysOriginal), for: .selected)
+    }
+    let moreButton = UIButton(type: .custom).apply{
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.setTitle("更多句子", for: .normal)
+        $0.titleLabel?.font = .boldSystemFont(ofSize: 12)
+        $0.cornerRadius = 10
+        $0.backgroundColor = .systemBrown
+        $0.setTitleColor(.white, for: .normal)
+    }
+    lazy var functionsStackView = UIStackView().apply {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.alignment = .center
+        $0.axis = .horizontal
+        $0.distribution = .equalSpacing
+        $0.spacing = 40
+    }
     
     override func initUI() {
         view.addSubview(pagerView)
+        view.addSubview(functionsStackView)
         pagerView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+            make.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalTo(functionsStackView.top)
         }
+        functionsStackView.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(50)
+            make.centerX.equalToSuperview()
+        }
+        starButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 40, height: 40))
+        }
+        moreButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 80, height: 40))
+        }
+        functionsStackView.addArrangedSubview(starButton)
+        functionsStackView.addArrangedSubview(moreButton)
     }
     
 }

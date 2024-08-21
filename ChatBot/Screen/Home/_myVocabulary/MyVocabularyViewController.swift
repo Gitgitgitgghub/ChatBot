@@ -96,6 +96,7 @@ extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
         let vocabularies = viewModel.sectionDatas[indexPath.section].vocabularies
         let index = indexPath.row
         let vc = ScreenLoader.loadScreen(screen: .vocabulary(vocabularies: vocabularies, startIndex: index))

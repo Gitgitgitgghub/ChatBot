@@ -97,9 +97,9 @@ extension FlipCardViews {
         }
         let functionsStackView = UIStackView().apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.alignment = .center  // 子视图在垂直方向上居中
+            $0.alignment = .center
             $0.axis = .horizontal
-            $0.distribution = .equalSpacing  // 子视图在水平方向上居中分布
+            $0.distribution = .equalSpacing 
             $0.spacing = 20
         }
         private(set) var isFlipped: Bool = false

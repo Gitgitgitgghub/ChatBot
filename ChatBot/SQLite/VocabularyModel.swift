@@ -36,9 +36,8 @@ class VocabularyModel: Codable, FetchableRecord, PersistableRecord, Hashable {
         hasher.combine(wordEntry.word)
     }
     
-    func updateLastViewedTime() -> VocabularyModel {
+    func updateLastViewedTime() {
         lastViewedTime = .now
-        return self
     }
     
     func didInsert(_ inserted: InsertionSuccess) {

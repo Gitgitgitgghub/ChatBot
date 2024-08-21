@@ -38,6 +38,16 @@ class VocabularyViewController: BaseUIViewController {
         pagerView.collectionView.prefetchDataSource = self
         pagerView.collectionView.isPrefetchingEnabled = true
         pagerView.register(VocabularyViews.VocabularyPagerViewCell.self, forCellWithReuseIdentifier: VocabularyViews.VocabularyPagerViewCell.className)
+        views.starButton.addTarget(self, action: #selector(starButtonClicked), for: .touchUpInside)
+        views.moreButton.addTarget(self, action: #selector(moreButtonClicked), for: .touchUpInside)
+    }
+    
+    @objc private func starButtonClicked() {
+        viewModel.transform(inputEvent: .toggleStar(index: pagerView.currentIndex))
+    }
+    
+    @objc private func moreButtonClicked() {
+        viewModel.transform(inputEvent: .fetchMoreSentence(index: pagerView.currentIndex))
     }
     
     private func bind() {
@@ -47,16 +57,29 @@ class VocabularyViewController: BaseUIViewController {
             .sink { [weak self] event in
                 guard let `self` = self else { return }
                 switch event {
-                case .scrollTo(index: let index):
-                    self.pagerView.reloadData()
-                    self.pagerView.scrollToItem(at: index, animated: false)
                 case .toast(message: let message):
                     self.showToast(message: message)
-                case .reloadCurrentIndex:
-                    self.pagerView.reloadData()
+                case .changeTitle(title: let title):
+                    self.title = title
+                case .updateStar(isStar: let isStar):
+                    self.updateStar(isStar: isStar)
+                case .reloadUI(scrollTo: let scrollTo, isStar: let isStar):
+                    self.updateUI(scrollTo: scrollTo, isStar: isStar)
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    private func updateStar(isStar: Bool) {
+        self.views.starButton.isSelected = isStar
+    }
+    
+    private func updateUI(scrollTo: Int? = nil, isStar: Bool) {
+        self.pagerView.reloadData()
+        updateStar(isStar: isStar)
+        if let scrollTo = scrollTo {
+            self.pagerView.scrollToItem(at: scrollTo, animated: false)
+        }
     }
     
 }
@@ -76,12 +99,10 @@ extension VocabularyViewController: FSPagerViewDelegate, FSPagerViewDataSource, 
     func pagerView(_ pagerView: FSPagerView, cellForItemAt index: Int) -> FSPagerViewCell {
         let cell = pagerView.dequeueReusableCell(withReuseIdentifier: VocabularyViews.VocabularyPagerViewCell.className, at: index) as! VocabularyViews.VocabularyPagerViewCell
         cell.bindVocabulary(vocabulary: viewModel.vocabularies[index])
-        print("cellForItemAt: \(index)")
-        viewModel.transform(inputEvent: .currentIndexPathChange(index: index))
         return cell
     }
     
-    func pagerView(_ pagerView: FSPagerView, willDisplay cell: FSPagerViewCell, forItemAt index: Int) {
-        print("willDisplay: \(index)")
+    func pagerViewDidEndDecelerating(_ pagerView: FSPagerView) {
+        viewModel.transform(inputEvent: .currentIndexChange(index: pagerView.currentIndex))
     }
 }
