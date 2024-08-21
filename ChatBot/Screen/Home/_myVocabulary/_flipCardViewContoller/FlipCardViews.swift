@@ -49,11 +49,17 @@ class FlipCardViews: ControllerView {
     
 }
 
+protocol FlipCardViewsDelegate: AnyObject {
+    
+    func onClickStar(index: Int)
+    
+}
+
 //MARK: - FlipCardViews
 extension FlipCardViews {
     
     //MARK: - 卡片ＵＩ
-    class CardView: UIView {
+    class CardView: UIView, SpeechTextDelegate {
         let indexLabel = PaddingLabel(withInsets: .zero).apply{
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.textColor = .darkGray
@@ -74,6 +80,36 @@ extension FlipCardViews {
             $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
             $0.numberOfLines = 0
         }
+        private let kkLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.textColor = .darkGray
+            $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
+            $0.numberOfLines = 1
+        }
+        let speakButton = UIButton(type: .custom).apply{
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.setImage(UIImage(systemName: "speaker.wave.2.fill")?.withTintColor(.systemBrown, renderingMode: .alwaysOriginal), for: .normal)
+        }
+        let starButton = UIButton(type: .custom).apply{
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.setImage(UIImage(systemName: "star")?.withTintColor(.systemBrown, renderingMode: .alwaysOriginal), for: .normal)
+            $0.setImage(UIImage(systemName: "star.fill")?.withTintColor(.systemBrown, renderingMode: .alwaysOriginal), for: .selected)
+        }
+        let functionsStackView = UIStackView().apply {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.alignment = .center  // 子视图在垂直方向上居中
+            $0.axis = .horizontal
+            $0.distribution = .equalSpacing  // 子视图在水平方向上居中分布
+            $0.spacing = 20
+        }
+        private(set) var isFlipped: Bool = false
+        private(set) var vocabulary: VocabularyModel?
+        
+        init(isFlipped: Bool) {
+            self.isFlipped = isFlipped
+            super.init(frame: .zero)
+            initUI()
+        }
         
         override init(frame: CGRect) {
             super.init(frame: frame)
@@ -88,7 +124,9 @@ extension FlipCardViews {
             cornerRadius = 10
             addSubview(indexLabel)
             addSubview(wordLabel)
+            addSubview(kkLabel)
             addSubview(definitionsLabel)
+            addSubview(functionsStackView)
             indexLabel.snp.makeConstraints { make in
                 make.top.equalToSuperview().inset(15)
                 make.leading.trailing.equalToSuperview()
@@ -96,16 +134,50 @@ extension FlipCardViews {
             wordLabel.snp.makeConstraints { make in
                 make.center.equalToSuperview()
             }
-            definitionsLabel.snp.makeConstraints { make in
-                make.top.equalTo(wordLabel.bottom).offset(15)
+            kkLabel.snp.makeConstraints { make in
+                make.top.equalTo(wordLabel.bottom).priority(.medium)
                 make.centerX.equalToSuperview()
             }
+            definitionsLabel.snp.makeConstraints { make in
+                make.top.equalTo(kkLabel.bottom).offset(15).priority(.medium)
+                make.centerX.equalToSuperview()
+            }
+            functionsStackView.snp.makeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.bottom.equalToSuperview().inset(20)
+            }
+            starButton.snp.makeConstraints { make in
+                make.size.equalTo(CGSize(width: 45, height: 45))
+            }
+            speakButton.snp.makeConstraints { make in
+                make.size.equalTo(CGSize(width: 45, height: 45))
+            }
+            functionsStackView.addArrangedSubview(starButton)
+            functionsStackView.addArrangedSubview(speakButton)
+            if !isFlipped {
+                functionsStackView.isVisible = false
+                kkLabel.isVisible = false
+                definitionsLabel.isVisible = false
+            }
+            backgroundColor = isFlipped ? .lightGray : .systemBrown
+            speakButton.addTarget(self, action: #selector(speakVocabulary), for: .touchUpInside)
+        }
+        
+        @objc private func speakVocabulary() {
+            guard let vocabulary = self.vocabulary else { return }
+            speak(text: vocabulary.wordEntry.word)
         }
         
         func bindVocabulary(vocabulary: VocabularyModel, index: Int, total: Int) {
+            self.vocabulary = vocabulary
             indexLabel.text = "\(index + 1)/\(total)"
             wordLabel.text = vocabulary.wordEntry.word
             definitionsLabel.text = vocabulary.wordEntry.displayDefinitionString
+            if vocabulary.kkPronunciation.isEmpty {
+                kkLabel.isVisible = false
+            }else {
+                kkLabel.text = "KK [\(vocabulary.kkPronunciation)]"
+            }
         }
     }
     
@@ -116,16 +188,16 @@ extension FlipCardViews {
         private(set) var index = 0
         private(set) var total = 0
         private(set) var vocabulary: VocabularyModel?
-        private let originalView = CardView().apply {
-            $0.definitionsLabel.isVisible = false
-            $0.backgroundColor = .systemBrown
+        private let originalView = CardView(isFlipped: false).apply {
+            $0.translatesAutoresizingMaskIntoConstraints = false
         }
-        private let flippedView = CardView().apply {
-            $0.backgroundColor = .systemBrown.withAlphaComponent(0.6)
+        private let flippedView = CardView(isFlipped: true).apply {
+            $0.translatesAutoresizingMaskIntoConstraints = false
         }
         private var cardView: CardView {
             return isFlipped ? flippedView: originalView
         }
+        weak var delegate: FlipCardViewsDelegate?
         
         override init(frame: CGRect) {
             super.init(frame: frame)
@@ -146,6 +218,11 @@ extension FlipCardViews {
             originalView.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
+            flippedView.starButton.addTarget(self, action: #selector(starButtonClicked), for: .touchUpInside)
+        }
+        
+        @objc private func starButtonClicked() {
+            delegate?.onClickStar(index: index)
         }
         
         func bindVocabulary(vocabulary: VocabularyModel, index: Int, total: Int, isFlipped: Bool) {
@@ -162,16 +239,22 @@ extension FlipCardViews {
             originalView.bindVocabulary(vocabulary: vocabulary, index: index, total: total)
             flippedView.isVisible = isFlipped
             originalView.isVisible = !isFlipped
-            
+            originalView.starButton.isSelected = vocabulary.isStar
+            flippedView.starButton.isSelected = vocabulary.isStar
         }
         
         func flipCardView(isFlipped: Bool) {
             self.isFlipped = isFlipped
-            UIView.transition(with: cardView, duration: 0.3, options: isFlipped ? .transitionFlipFromRight : .transitionFlipFromLeft, animations: {
-                // 這裡可以執行翻轉前後所需要的UI更新
-                self.setupUI()
+            let fromView = isFlipped ? originalView : flippedView
+            let toView = isFlipped ? flippedView : originalView
+            let filpAnimation: UIView.AnimationOptions = isFlipped ? .transitionFlipFromRight : .transitionFlipFromLeft
+            UIView.transition(with: contentView, duration: 0.5, options: [filpAnimation, .showHideTransitionViews], animations: {
+                fromView.isHidden = true
+                toView.isHidden = false
             }, completion: nil)
         }
+
+
         
     }
     

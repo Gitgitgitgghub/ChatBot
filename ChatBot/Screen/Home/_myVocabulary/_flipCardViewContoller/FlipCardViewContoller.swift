@@ -24,9 +24,11 @@ class FlipCardViewContoller: BaseUIViewController {
     }
     
     private func initUI() {
+        title = "翻卡練習"
         views.pagerView.delegate = self
         views.pagerView.dataSource = self
         views.pagerView.register(FlipCardViews.CardContentCell.self, forCellWithReuseIdentifier: FlipCardViews.CardContentCell.className)
+        views.flipCardButton.addTarget(self, action: #selector(flipCardButtonClicked), for: .touchUpInside)
     }
     
     private func bind() {
@@ -43,9 +45,17 @@ class FlipCardViewContoller: BaseUIViewController {
                 switch event {
                 case .flipCard(index: let index):
                     self.flipCard(index: index)
+                case .toast(message: let message):
+                    self.showToast(message: message)
+                case .reloadCurrent:
+                    self.pagerView.reloadData()
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    @objc private func flipCardButtonClicked() {
+        viewModel.transform(inputEvent: .flipCard(index: pagerView.currentIndex))
     }
     
     private func flipCard(index: Int) {
@@ -64,12 +74,23 @@ extension FlipCardViewContoller: FSPagerViewDelegate, FSPagerViewDataSource {
     
     func pagerView(_ pagerView: FSPagerView, cellForItemAt index: Int) -> FSPagerViewCell {
         guard let cell = pagerView.dequeueReusableCell(withReuseIdentifier: FlipCardViews.CardContentCell.className, at: index) as? FlipCardViews.CardContentCell else { return FSPagerViewCell() }
-        cell.bindVocabulary(vocabulary: viewModel.vocabularies[index], index: index, total: viewModel.vocabularies.count, isFlipped: false)
+        cell.bindVocabulary(vocabulary: viewModel.vocabularies[index], index: index, total: viewModel.vocabularies.count, isFlipped: viewModel.flippedStates[index] ?? false)
+        cell.delegate = self
+        viewModel.transform(inputEvent: .currentPageChange(index: index))
         return cell
     }
     
     func pagerView(_ pagerView: FSPagerView, didSelectItemAt index: Int) {
         viewModel.transform(inputEvent: .flipCard(index: index))
     }
+    
+}
+
+extension FlipCardViewContoller: FlipCardViewsDelegate {
+    
+    func onClickStar(index: Int) {
+        viewModel.transform(inputEvent: .toggleStar(index: index))
+    }
+    
     
 }

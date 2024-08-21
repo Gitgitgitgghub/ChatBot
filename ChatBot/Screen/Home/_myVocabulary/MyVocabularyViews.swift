@@ -17,6 +17,7 @@ class MyVocabularyViews: ControllerView {
         tableView.keyboardDismissMode = .interactive
         tableView.separatorStyle = .singleLine
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.sectionHeaderTopPadding = 0
     }
     var addNoteButton = UIButton(type: .custom).apply {
         $0.cornerRadius = 25
@@ -67,20 +68,25 @@ extension MyVocabularyViews {
     //MARK: - 單字分類的header
     class HeaderView: UIView {
         
-        private var titleLabel = PaddingLabel(withInsets: .init(top: 0, left: 10, bottom: 0, right: 10)).apply {
+        private let titleLabel = PaddingLabel(withInsets: .init(top: 0, left: 10, bottom: 0, right: 10)).apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.textColor = .darkGray
             $0.numberOfLines = 1
-            $0.backgroundColor = .lightGray
+            $0.backgroundColor = .hex("#f0f0f0")
         }
-        private var arrowImageView = UIImageView(image: nil).apply{
+        private let arrowImageView = UIImageView(image: nil).apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        private let bottomLineView = UIView().apply {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.backgroundColor = .hex("#e0e0e0")
         }
         
         override init(frame: CGRect) {
             super.init(frame: frame)
             addSubview(titleLabel)
             addSubview(arrowImageView)
+            addSubview(bottomLineView)
             titleLabel.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
@@ -88,6 +94,10 @@ extension MyVocabularyViews {
                 make.size.equalTo(CGSize(width: 25, height: 25))
                 make.centerY.equalToSuperview()
                 make.trailing.equalToSuperview().inset(10)
+            }
+            bottomLineView.snp.makeConstraints { make in
+                make.bottom.leading.trailing.equalToSuperview()
+                make.height.equalTo(1)
             }
         }
         
@@ -201,7 +211,7 @@ extension MyVocabularyViews {
     class BottomToolBar: UIView {
         
         let flipCardButton = UIButton(type: .custom).apply {
-            $0.setTitle("翻卡測驗", for: .normal)
+            $0.setTitle("翻卡練習", for: .normal)
             $0.setTitleColor(.white, for: .normal)
             $0.backgroundColor = .systemBrown
             $0.cornerRadius = 25

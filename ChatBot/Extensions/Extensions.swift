@@ -78,6 +78,34 @@ extension UIColor {
         let rgb: Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
         return String(format:"#%06x", rgb)
     }
+    
+    // 使用 RGB 和 Alpha 初始化颜色
+    static func rgba(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat = 1.0) -> UIColor {
+        return UIColor(red: r / 255.0, green: g / 255.0, blue: b / 255.0, alpha: a)
+    }
+    
+    // 使用 HEX 代码初始化颜色
+    static func hex(_ hex: String, alpha: CGFloat = 1.0) -> UIColor {
+        var hexFormatted = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        
+        // 处理 # 前缀
+        if hexFormatted.hasPrefix("#") {
+            hexFormatted.remove(at: hexFormatted.startIndex)
+        }
+        
+        // 确保格式正确
+        assert(hexFormatted.count == 6, "Invalid hex code used.")
+        
+        // 将 HEX 代码转为 RGB 值
+        var rgbValue: UInt64 = 0
+        Scanner(string: hexFormatted).scanHexInt64(&rgbValue)
+        
+        let r = CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0
+        let g = CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0
+        let b = CGFloat(rgbValue & 0x0000FF) / 255.0
+        
+        return UIColor(red: r, green: g, blue: b, alpha: alpha)
+    }
 }
 
 extension UIFont{

@@ -13,10 +13,14 @@ class FlipCardViewModel: BaseViewModel<FlipCardViewModel.InputEvent, FlipCardVie
     enum InputEvent {
         case fetchVocabularies
         case flipCard(index: Int)
+        case currentPageChange(index: Int)
+        case toggleStar(index: Int)
     }
     
     enum OutputEvent {
         case flipCard(index: Int)
+        case toast(message: String)
+        case reloadCurrent
     }
     
     let maxCount = 30
@@ -36,7 +40,37 @@ class FlipCardViewModel: BaseViewModel<FlipCardViewModel.InputEvent, FlipCardVie
                     self.fetchVocabularies()
                 case .flipCard(index: let index):
                     self.flipCard(index: index)
+                case .currentPageChange(index: let index):
+                    self.currentPageChange(index: index)
+                case .toggleStar(let index):
+                    self.toggleStar(index: index)
                 }
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func currentPageChange(index: Int) {
+        let vocabulary = vocabularies[index].updateLastViewedTime()
+        vocabularyManager.saveVocabulay(vocabulary: vocabulary)
+            .sink { _ in
+                
+            } receiveValue: { _ in
+                
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func toggleStar(index: Int) {
+        let vocabulary = vocabularies[index]
+        vocabulary.isStar.toggle()
+        vocabularyManager.saveVocabulay(vocabulary: vocabulary)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    vocabulary.isStar.toggle()
+                    self?.outputSubject.send(.toast(message: "操作失敗：\(error.localizedDescription)"))
+                }
+            } receiveValue: { [weak self] _ in
+                self?.outputSubject.send(.reloadCurrent)
             }
             .store(in: &subscriptions)
     }
