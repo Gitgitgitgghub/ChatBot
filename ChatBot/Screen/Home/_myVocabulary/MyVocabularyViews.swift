@@ -132,11 +132,7 @@ extension MyVocabularyViews {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.setImage(.init(systemName: "speaker.wave.2.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
         }
-        var starButton = UIButton(type: .custom).apply{
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.setImage(.init(systemName: "star")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
-            $0.setImage(.init(systemName: "star.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .selected)
-        }
+        var starButton = StarButton()
         private(set) var vocabulary: VocabularyModel?
         private(set) var indexPath: IndexPath = .init(row: 0, section: 0)
         weak var delegate: MyVocabularyViewDelegate?

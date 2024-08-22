@@ -90,11 +90,7 @@ extension FlipCardViews {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.setImage(UIImage(systemName: "speaker.wave.2.fill")?.withTintColor(.systemBrown, renderingMode: .alwaysOriginal), for: .normal)
         }
-        let starButton = UIButton(type: .custom).apply{
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.setImage(UIImage(systemName: "star")?.withTintColor(.systemBrown, renderingMode: .alwaysOriginal), for: .normal)
-            $0.setImage(UIImage(systemName: "star.fill")?.withTintColor(.systemBrown, renderingMode: .alwaysOriginal), for: .selected)
-        }
+        let starButton = StarButton()
         let functionsStackView = UIStackView().apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.alignment = .center

@@ -12,13 +12,7 @@ import UIKit
 class VocabularyViews: ControllerView {
 
     let pagerView = FSPagerView()
-    let starButton = UIButton(type: .custom).apply{
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.cornerRadius = 10
-        $0.backgroundColor = .systemBrown
-        $0.setImage(UIImage(systemName: "star")?.withTintColor(.hex("#f5deb3"), renderingMode: .alwaysOriginal), for: .normal)
-        $0.setImage(UIImage(systemName: "star.fill")?.withTintColor(.hex("#f5deb3"), renderingMode: .alwaysOriginal), for: .selected)
-    }
+    let starButton = StarButton()
     let moreButton = UIButton(type: .custom).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.setTitle("更多句子", for: .normal)

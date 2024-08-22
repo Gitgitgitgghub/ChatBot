@@ -69,6 +69,7 @@
 		32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */; };
 		32B4D70F2C745F4500CA4C40 /* FlipCardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */; };
 		32B4D7112C747DD000CA4C40 /* FlipCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7102C747DD000CA4C40 /* FlipCardViewModel.swift */; };
+		32B4D7192C77448700CA4C40 /* StarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7182C77448700CA4C40 /* StarButton.swift */; };
 		32B7E6A22C607E200032ABFD /* UICollectionView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A12C607E200032ABFD /* UICollectionView+.swift */; };
 		32B7E6A42C607F500032ABFD /* TextEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */; };
 		32B7E6A62C60E4C10032ABFD /* ActionUIStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */; };
@@ -201,6 +202,7 @@
 		32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViewContoller.swift; sourceTree = "<group>"; };
 		32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViews.swift; sourceTree = "<group>"; };
 		32B4D7102C747DD000CA4C40 /* FlipCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViewModel.swift; sourceTree = "<group>"; };
+		32B4D7182C77448700CA4C40 /* StarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarButton.swift; sourceTree = "<group>"; };
 		32B7E6A12C607E200032ABFD /* UICollectionView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+.swift"; sourceTree = "<group>"; };
 		32B7E6A32C607F500032ABFD /* TextEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorViewModel.swift; sourceTree = "<group>"; };
 		32B7E6A52C60E4C10032ABFD /* ActionUIStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionUIStatusModel.swift; sourceTree = "<group>"; };
@@ -639,6 +641,7 @@
 				32800EF62C2023B400FE5786 /* LoadingView.swift */,
 				32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */,
 				327D286E2C5A10DC00F6ED68 /* NoActionTextView.swift */,
+				32B4D7182C77448700CA4C40 /* StarButton.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -866,6 +869,7 @@
 				9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */,
 				9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */,
 				32B7E6B92C69E5610032ABFD /* MyVocabularyViews.swift in Sources */,
+				32B4D7192C77448700CA4C40 /* StarButton.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
 				327D28652C57314B00F6ED68 /* SharedGroupStorage.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
