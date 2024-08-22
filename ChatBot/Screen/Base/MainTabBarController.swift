@@ -55,7 +55,7 @@ class MainTabBarController: UITabBarController {
     
     private let tabs: [Tab] = [.Home, .MyVocabulary, .History, .MyNote, .Setting]
     private lazy var tabViewControllers = self.tabs.map({ $0.viewController })
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -66,6 +66,7 @@ class MainTabBarController: UITabBarController {
     private func prepare() {
         // SpeechVoiceManager初始化一下
         _ = SpeechVoiceManager.shared
+        VocabularyManager.share.checkAndPopulateDatabase()
     }
     
     /// 創建子視圖控制器

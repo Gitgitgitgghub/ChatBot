@@ -6,33 +6,40 @@
 //
 
 import Foundation
+import Combine
 
 
 class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyVocabularyViewModel.OutputEvent> {
     
     enum InputEvent {
         case initialVocabulary
-        case fetchVocabularys
         case toggleExpanding(section: Int)
         case speakWord(indexPath: IndexPath)
         case toggleStar(indexPath: IndexPath)
+        case reloadExpandingSection
     }
     
     enum OutputEvent {
         case reloadRows(indexPath: [IndexPath])
         case reloadAll
-        case reloadSection(section: Int)
+        case reloadSections(sections: [Int])
         case toast(message: String)
     }
     
     struct SectionData {
-        var title: String
+        var letter: String
         var vocabularies: [VocabularyModel]
+        var count: Int
         var isExpanding = false
+        
+        mutating func updateVocabularies(vocabularies: [VocabularyModel]) {
+            self.vocabularies = vocabularies
+            self.count = vocabularies.count
+        }
     }
     
     private let vocabularyManager = VocabularyManager.share
-    var sectionDatas: [SectionData] = []
+    private(set) var sectionDatas: [SectionData] = []
     
     func bindInputEvent() {
         inputSubject
@@ -41,14 +48,14 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
                 switch event {
                 case .initialVocabulary:
                     self.initialVocabulary()
-                case .fetchVocabularys:
-                    self.fetchVocabularys()
                 case .toggleExpanding(section: let section):
                     self.toggleExpanding(section: section)
                 case .speakWord(indexPath: let indexPath):
                     self.speakWord(indexPath: indexPath)
                 case .toggleStar(indexPath: let indexPath):
                     self.toggleStar(indexPath: indexPath)
+                case .reloadExpandingSection:
+                    self.reloadExpandingSection()
                 }
             }
             .store(in: &subscriptions)
@@ -74,70 +81,92 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
             .store(in: &subscriptions)
     }
     
+    private func reloadExpandingSection() {
+        guard let expandingIndex = sectionDatas.firstIndex(where: { $0.isExpanding }) else { return }
+        fetchExpandingSectionVocabulary(expandingIndex: expandingIndex) { [weak self] in
+            self?.outputSubject.send(.reloadSections(sections: [expandingIndex]))
+        }
+    }
+    
     private func toggleExpanding(section: Int) {
-        var sectionData = sectionDatas[section]
-        sectionData.isExpanding.toggle()
-        sectionDatas[section] = sectionData
-        outputSubject.send(.reloadSection(section: section))
+        //即將展開
+        var willExpandingSection = -1
+        //即將收起
+        var willCloseSection = -1
+        //一次只能展開一組
+        for (i, var sectionData) in sectionDatas.enumerated() {
+            if sectionData.isExpanding {
+                willCloseSection = i
+            }
+            if i == section {
+                sectionData.isExpanding.toggle()
+            }else {
+                sectionData.isExpanding = false
+            }
+            if sectionData.isExpanding {
+                willExpandingSection = i
+            }
+            sectionDatas[i] = sectionData
+        }
+        var reloadSections: [Int] = []
+        if willCloseSection >= 0 {
+            reloadSections.append(willCloseSection)
+        }
+        if willExpandingSection >= 0 {
+            reloadSections.append(willExpandingSection)
+            fetchExpandingSectionVocabulary(expandingIndex: willExpandingSection) { [weak self] in
+                self?.outputSubject.send(.reloadSections(sections: reloadSections))
+            }
+        }else {
+            outputSubject.send(.reloadSections(sections: reloadSections))
+        }
     }
     
-    /// 取得所有單字
-    func fetchVocabularys() {
-        vocabularyManager.fetchAllVocabulary()
-            .map({ [weak self] models in
-                // 如果db是空的代表要初始化
-                if models.isEmpty {
-                    self?.initialVocabulary()
-                }
-                return models
-            })
-            .sink { completion in
-                if case .failure(let error) = completion {
-                    print("initialVocabulary error: \(error.localizedDescription)")
-                }
-            } receiveValue: { [weak self] vocabularies in
-                self?.groupWordsAtoZ(vocabularies: vocabularies)
-                self?.outputSubject.send(.reloadAll)
+    /// 取得展開中的section的單字資料並更新
+    private func fetchExpandingSectionVocabulary(expandingIndex: Int, completion: @escaping () -> ()) {
+        var expandingSection = sectionDatas[expandingIndex]
+        vocabularyManager.fetchVocabulary(letter: expandingSection.letter)
+            .sink { _ in
+                
+            } receiveValue: { results in
+                expandingSection.updateVocabularies(vocabularies: results)
+                self.sectionDatas[expandingIndex] = expandingSection
+                completion()
             }
             .store(in: &subscriptions)
     }
     
-    /// 依照Ａ－Ｚ分組
-    private func groupWordsAtoZ(vocabularies: [VocabularyModel]) {
-        guard vocabularies.isNotEmpty else { return }
-        var categorizedWords: [Character: [VocabularyModel]] = [:]
-        for vocabulary in vocabularies {
-            guard let firstChar = vocabulary.wordEntry.word.uppercased().first else { continue }
-            if categorizedWords[firstChar] == nil {
-                categorizedWords[firstChar] = [vocabulary]
-            } else {
-                categorizedWords[firstChar]?.append(vocabulary)
-            }
-        }
-        var temp: [SectionData] = []
-        for key in categorizedWords.keys.sorted() {
-            let vocabularies = categorizedWords[key] ?? []
-            temp.append(.init(title: String(key), vocabularies: vocabularies))
-        }
-        self.sectionDatas = temp
-    }
-    
-    /// 讀取json裡面的單字並且存到db
     private func initialVocabulary() {
-        let decoder = TOEICWordDecoder()
-        decoder.decode()
-            .flatMap({ words in
-                let vocabularies = words.map({ VocabularyModel(word: $0) })
-                return self.vocabularyManager.saveVocabulayPackage(vocabularies: vocabularies)
-            })
+        createSectionDatas()
             .sink { completion in
                 if case .failure(let error) = completion {
-                    print("initialVocabulary error: \(error.localizedDescription)")
+                    print("Failed to fetch counts: \(error.localizedDescription)")
                 }
-            } receiveValue: { [weak self] _ in
-                self?.fetchVocabularys()
+            } receiveValue: { [weak self] sectionDataArray in
+                guard let `self` = self else { return }
+                self.sectionDatas = sectionDataArray
+                self.outputSubject.send(.reloadAll)
             }
             .store(in: &subscriptions)
     }
+    
+    /// 創建一組Ａ－Ｚ的section Data array
+    private func createSectionDatas() -> AnyPublisher<[SectionData], Error> {
+        let sectionDatas = (65...90).map { asciiValue in
+            let letter = String(UnicodeScalar(asciiValue)!)
+            return SectionData(letter: letter, vocabularies: [], count: 0, isExpanding: false)
+        }
+        let countPublishers = sectionDatas.map { section in
+            vocabularyManager.countVocabulary(letter: section.letter)
+                .map { count in
+                    SectionData(letter: section.letter, vocabularies: [], count: count)
+                }
+        }
+        return Publishers.MergeMany(countPublishers)
+            .collect()
+            .eraseToAnyPublisher()
+    }
+    
+    
     
 }

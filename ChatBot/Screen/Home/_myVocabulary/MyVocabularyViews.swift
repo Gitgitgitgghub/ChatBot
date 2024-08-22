@@ -106,7 +106,7 @@ extension MyVocabularyViews {
         }
         
         func setSectionData(sectionModel: MyVocabularyViewModel.SectionData) {
-            titleLabel.text = sectionModel.title.uppercased() + " 共有\(sectionModel.vocabularies.count)個單字"
+            titleLabel.text = sectionModel.letter.uppercased() + " 共有\(sectionModel.count)個單字"
             let imageName = sectionModel.isExpanding ? "arrow.up" : "arrow.down"
             arrowImageView.image = .init(systemName: imageName)?.withTintColor(.darkGray, renderingMode: .alwaysOriginal)
         }

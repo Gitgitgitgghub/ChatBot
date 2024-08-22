@@ -21,12 +21,12 @@ class MyVocabularyViewController: BaseUIViewController {
         super.viewDidLoad()
         bind()
         initUI()
-        viewModel.transform(inputEvent: .fetchVocabularys)
+        viewModel.transform(inputEvent: .initialVocabulary)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        viewModel.transform(inputEvent: .reloadExpandingSection)
     }
     
     private func initUI() {
@@ -47,8 +47,8 @@ class MyVocabularyViewController: BaseUIViewController {
                     self.tableView.reloadRows(at: indexPath, with: .automatic)
                 case .reloadAll:
                     self.tableView.reloadData()
-                case .reloadSection(section: let section):
-                    self.tableView.reloadSections(.init(integer: section), with: .automatic)
+                case .reloadSections(sections: let sections):
+                    self.tableView.reloadSections(.init(sections), with: .automatic)
                 case .toast(message: let message):
                     self.showToast(message: message)
                 }
