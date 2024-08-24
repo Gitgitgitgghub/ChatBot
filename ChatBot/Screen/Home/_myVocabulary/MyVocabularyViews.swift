@@ -58,8 +58,9 @@ protocol MyVocabularyViewDelegate: AnyObject {
     /// 當收藏按鈕被點選
     func onStarButtonClicked(indexPath: IndexPath)
     /// 當翻卡測驗按鈕被點選
-    func onFlipCardButton()
-    
+    func onFlipCardButtonClicked()
+    /// 當單字測驗按鈕被點選
+    func onExamButtonClicked()
 }
 
 //MARK: - 自定義的view
@@ -132,7 +133,9 @@ extension MyVocabularyViews {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.setImage(.init(systemName: "speaker.wave.2.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
         }
-        var starButton = StarButton()
+        var starButton = StarButton().apply {
+            $0.cornerRadius = 5
+        }
         private(set) var vocabulary: VocabularyModel?
         private(set) var indexPath: IndexPath = .init(row: 0, section: 0)
         weak var delegate: MyVocabularyViewDelegate?
@@ -212,6 +215,12 @@ extension MyVocabularyViews {
             $0.backgroundColor = .systemBrown
             $0.cornerRadius = 25
         }
+        let examButton = UIButton(type: .custom).apply {
+            $0.setTitle("單字測驗", for: .normal)
+            $0.setTitleColor(.white, for: .normal)
+            $0.backgroundColor = .systemBrown
+            $0.cornerRadius = 25
+        }
         weak var delegate: MyVocabularyViewDelegate?
         
         override init(frame: CGRect) {
@@ -226,16 +235,27 @@ extension MyVocabularyViews {
         private func initUI() {
             backgroundColor = .white
             addSubview(flipCardButton)
+            addSubview(examButton)
             flipCardButton.snp.makeConstraints { make in
                 make.size.equalTo(CGSize(width: 130, height: 50))
                 make.centerY.equalToSuperview()
                 make.leading.equalToSuperview().inset(50)
             }
+            examButton.snp.makeConstraints { make in
+                make.size.equalTo(CGSize(width: 130, height: 50))
+                make.centerY.equalToSuperview()
+                make.trailing.equalToSuperview().inset(50)
+            }
             flipCardButton.addTarget(self, action: #selector(flipCard), for: .touchUpInside)
+            examButton.addTarget(self, action: #selector(exam), for: .touchUpInside)
         }
         
         @objc private func flipCard() {
-            delegate?.onFlipCardButton()
+            delegate?.onFlipCardButtonClicked()
+        }
+        
+        @objc private func exam() {
+            delegate?.onExamButtonClicked()
         }
         
     }

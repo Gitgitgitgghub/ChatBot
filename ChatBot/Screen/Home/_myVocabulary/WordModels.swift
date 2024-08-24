@@ -12,7 +12,7 @@ import Foundation
 
 struct WordDefinition: Codable {
     let partOfSpeech: String
-    let definition: String
+    var definition: String
     
     enum CodingKeys: String, CodingKey {
         case partOfSpeech = "part_of_speech"

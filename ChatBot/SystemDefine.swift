@@ -49,6 +49,17 @@ typealias LoadingStatus = SystemDefine.LoadingStatus
 
 extension SystemDefine {
     
+    //MARK: - 單字測試
+    struct VocabularyExam {
+        
+        enum SortOption: String, CaseIterable {
+            case familiarity = "依照熟悉度"
+            case lastWatchTime = "依照觀看日期"
+            case star = "星號"
+        }
+        
+    }
+    
     //MARK: - 訊息類相關變數
     struct Message {
         /// 預設訊息
@@ -124,7 +135,6 @@ extension SystemDefine {
             default: return nil
             }
         }
-        
     }
     
 }

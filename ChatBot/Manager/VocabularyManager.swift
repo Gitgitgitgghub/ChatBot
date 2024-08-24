@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import GRDB
 
 class VocabularyManager {
     
@@ -54,36 +55,6 @@ class VocabularyManager {
         .store(in: &subscriptions)
     }
     
-    /// 取得單字的數量
-    func countAllVocabulary() -> AnyPublisher<Int, Error> {
-        return dbQueue.readPublisher(receiveOn: RunLoop.main) { db in
-            return try VocabularyModel.fetchCount(db)
-        }
-        .eraseToAnyPublisher()
-    }
-    
-    /// 取得開頭為 letter 的單字
-    func fetchVocabulary(letter: String) -> AnyPublisher<[VocabularyModel], Error> {
-        return dbQueue.readPublisher(receiveOn: RunLoop.main) { db in
-            let pattern = "\(letter)%"
-            return try VocabularyModel
-                .filter(sql: "wordEntry ->> 'word' LIKE LOWER(?)", arguments: [pattern])
-                .fetchAll(db)
-        }
-        .eraseToAnyPublisher()
-    }
-    
-    /// 取得字母開頭的單字數量
-    func countVocabulary(letter: String) -> AnyPublisher<Int, Error> {
-        return dbQueue.readPublisher(receiveOn: RunLoop.main) { db in
-            let pattern = "\(letter)%"  // 生成 LIKE 查询所需的模式
-            return try VocabularyModel
-                .filter(sql: "wordEntry ->> 'word' LIKE LOWER(?)", arguments: [pattern])
-                .fetchCount(db)
-        }
-        .eraseToAnyPublisher()
-    }
-    
     /// 取得資料庫中所有單字
     func fetchAllVocabulary() -> AnyPublisher<[VocabularyModel], Error> {
         return dbQueue.readPublisher(receiveOn: RunLoop.main) { db in
@@ -99,6 +70,66 @@ class VocabularyManager {
                 .order(sql: "RANDOM()")
                 .limit(count)
                 .fetchAll(db)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    /// 取得單字
+    /// - Parameters:
+    ///   - letter: 字母開頭，nil 為不指定
+    ///   - limit: 數量，nil 為不指定
+    ///   - isStarOnly: 是否只取出isStar = true
+    ///   - useFamiliarity: 是否按照"familiarity" 升序排序
+    ///   - useLastViewedTime: 是否按照"lastViewedTime" 升序排序
+    /// - Returns: AnyPublisher<[VocabularyModel], Error>
+    func fetchVocabulary(letter: String? = nil, limit: Int? = nil, isStarOnly: Bool = false, useFamiliarity: Bool = false, useLastViewedTime: Bool = false) -> AnyPublisher<[VocabularyModel], Error> {
+        return dbQueue.readPublisher(receiveOn: RunLoop.main) { db in
+            var request = VocabularyModel.all()
+            // 如果 letter 不為 nil，則進行篩選
+            if let letter = letter {
+                let pattern = "\(letter)%"
+                request = request.filter(sql: "wordEntry ->> 'word' LIKE LOWER(?)", arguments: [pattern])
+            }
+            // 如果 isStarOnly 為 true，則進行篩選
+            if isStarOnly {
+                request = request.filter(Column("isStar") == true)
+            }
+            // 按照 familiarity 和 lastViewedTime 升序排序
+            if useFamiliarity && useLastViewedTime {
+                request = request.order(
+                    Column("familiarity").asc,
+                    Column("lastViewedTime").asc
+                )
+            } else if useFamiliarity {
+                request = request.order(Column("familiarity").asc)
+            } else if useLastViewedTime {
+                request = request.order(Column("lastViewedTime").asc)
+            }
+            // 限制結果數量
+            if let limit = limit {
+                request = request.limit(limit)
+            }
+            return try request
+                .fetchAll(db)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    /// 取得所有單字的數量
+    func countAllVocabulary() -> AnyPublisher<Int, Error> {
+        return dbQueue.readPublisher(receiveOn: RunLoop.main) { db in
+            return try VocabularyModel.fetchCount(db)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    /// 取得字母開頭的單字數量
+    func countVocabulary(letter: String) -> AnyPublisher<Int, Error> {
+        return dbQueue.readPublisher(receiveOn: RunLoop.main) { db in
+            let pattern = "\(letter)%"  // 生成 LIKE 查询所需的模式
+            return try VocabularyModel
+                .filter(sql: "wordEntry ->> 'word' LIKE LOWER(?)", arguments: [pattern])
+                .fetchCount(db)
         }
         .eraseToAnyPublisher()
     }
