@@ -230,6 +230,7 @@ fileprivate class WordSentenceCell: UITableViewCell, SpeechTextDelegate {
         $0.textColor = .darkGray
         $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 0
+        $0.lineBreakMode = .byWordWrapping
     }
     private let translationLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false

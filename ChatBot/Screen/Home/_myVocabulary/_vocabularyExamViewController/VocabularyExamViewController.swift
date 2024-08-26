@@ -38,6 +38,11 @@ class VocabularyExamViewController: BaseUIViewController {
         pagerView.delegate = self
         pagerView.dataSource = self
         pagerView.register(VocabularyExamViews.VocabularyExamQuestionCell.self, forCellWithReuseIdentifier: VocabularyExamViews.VocabularyExamQuestionCell.className)
+        views.pauseButton.addTarget(self, action: #selector(paustExam), for: .touchUpInside)
+    }
+    
+    @objc private func paustExam() {
+        viewModel.transform(inputEvent: .pauseExam)
     }
     
     private func bind() {
@@ -46,8 +51,6 @@ class VocabularyExamViewController: BaseUIViewController {
             .sink { [weak self] event in
                 guard let `self` = self else { return }
                 switch event {
-                case .reloadUI:
-                    self.pagerView.reloadData()
                 case .indexChange(string: let string):
                     self.indexChange(string: string)
                 case .notEnough:
@@ -56,11 +59,44 @@ class VocabularyExamViewController: BaseUIViewController {
                     }
                 case .scrollToNextQuestion:
                     self.pagerView.scrollToItem(at: self.pagerView.currentIndex + 1, animated: true)
-                case .examCompleted(correctCount: let correctCount, wrongCount: let wrongCount):
-                    self.showExamResult(correctCount: correctCount, wrongCount: wrongCount)
+                case .updateTimer(string: let string):
+                    self.views.timerLabel.attributedText = string
                 }
             }
             .store(in: &subscriptions)
+        viewModel.$examState
+            .sink { [weak self] state in
+                self?.examState(state: state)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func examState(state: VocabularyExamViewModel.ExamState) {
+        switch state {
+        case .preparing: 
+            break
+        case .ready:
+            let vc = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
+            vc.message = "點擊開始考試"
+            vc.addAction(.init(title: "開始考試", style: .default, handler: { _ in
+                self.viewModel.transform(inputEvent: .startExam)
+            }))
+            present(vc, animated: true)
+            pagerView.reloadData()
+        case .started: break
+        case .paused:
+            let vc = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
+            vc.message = "點擊恢復考試"
+            vc.addAction(.init(title: "恢復考試", style: .default, handler: { _ in
+                self.viewModel.transform(inputEvent: .startExam)
+            }))
+            vc.addAction(.init(title: "放棄離開", style: .destructive, handler: { _ in
+                self.navigationController?.popViewController(animated: true)
+            }))
+            present(vc, animated: true)
+        case .ended(correctCount: let correctCount, wrongCount: let wrongCount):
+            self.showExamResult(correctCount: correctCount, wrongCount: wrongCount)
+        }
     }
     
     private func indexChange(string: String) {

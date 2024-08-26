@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import UIKit
 
 
 class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent, VocabularyExamViewModel.OutputEvent> {
@@ -16,15 +17,28 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
         case currentIndexChange(currentIndex: Int)
         case onOptionSelected(question: VocabulayExamQuestion, selectedOption: String?)
         case retakeExam
+        case startExam
+        case pauseExam
+        case resumeExam
     }
     
     enum OutputEvent {
-        case reloadUI
+        //case reloadUI
         case indexChange(string: String)
         case notEnough
         case scrollToNextQuestion
-        case examCompleted(correctCount: Int, wrongCount: Int)
+        //case examCompleted(correctCount: Int, wrongCount: Int)
+        case updateTimer(string: NSAttributedString)
     }
+    
+    enum ExamState {
+        case preparing
+        case ready
+        case started
+        case paused
+        case ended(correctCount: Int, wrongCount: Int)
+    }
+    
     /// 排序方式
     private(set) var sortOption: SystemDefine.VocabularyExam.SortOption
     /// 搜索的字母
@@ -42,6 +56,9 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
     private(set) var originalData: [String : VocabularyModel] = [:]
     /// 最多題目數量
     private let limit = 30
+    private let timerManager = TimerManager()
+    @Published private(set) var examState: ExamState = .preparing
+    
     
     init(sortOption: SystemDefine.VocabularyExam.SortOption, letter: String) {
         self.sortOption = sortOption
@@ -61,16 +78,52 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
                     self.onOptionSelected(question: question, selectedOption: selectedOption)
                 case .retakeExam:
                     self.retakeExam()
+                case .startExam:
+                    self.startExam()
+                case .pauseExam:
+                    self.pauseExam()
+                case .resumeExam:
+                    self.resumeExam()
                 }
             }
             .store(in: &subscriptions)
+        timerManager.$counter
+            .receive(on: RunLoop.main)
+            .map({ second in
+                let fullText = "已用時\(second)秒"
+                let attr = NSMutableAttributedString(
+                    string: fullText,
+                    attributes: [.foregroundColor: UIColor.systemBrown]
+                )
+                let secondRange = NSRange(location: 3, length: String(second).count)
+                attr.addAttribute(.foregroundColor, value: UIColor.systemPink, range: secondRange)
+                return attr
+            })
+            .sink { [weak self] timerText in
+                self?.outputSubject.send(.updateTimer(string: timerText))
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func startExam() {
+        examState = .started
+        timerManager.startTimer()
+    }
+    private func pauseExam() {
+        examState = .paused
+        timerManager.stopTimer()
+        outputSubject.send(.updateTimer(string: .init(string: "已暫停", attributes: [.foregroundColor : UIColor.systemRed])))
+    }
+    private func resumeExam() {
+        startExam()
     }
     
     private func retakeExam() {
         questions = wrongAnswerQuestions
         correctAnswerQuestions = []
         wrongAnswerQuestions = []
-        outputSubject.send(.reloadUI)
+        timerManager.resetTimer()
+        examState = .ready
     }
     
     private func onOptionSelected(question: VocabulayExamQuestion, selectedOption: String?) {
@@ -83,7 +136,8 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
         if hasNextQuestion() {
             outputSubject.send(.scrollToNextQuestion)
         }else {
-            outputSubject.send(.examCompleted(correctCount: correctAnswerQuestions.count, wrongCount: wrongAnswerQuestions.count))
+            examState = .ended(correctCount: correctAnswerQuestions.count, wrongCount: wrongAnswerQuestions.count)
+            timerManager.stopTimer()
         }
         changeFamalirity(question: question, isCorrect: isCorrect)
     }
@@ -164,7 +218,7 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
             questions.append(question)
         }
         self.questions = questions
-        outputSubject.send(.reloadUI)
+        examState = .ready
     }
     
 }

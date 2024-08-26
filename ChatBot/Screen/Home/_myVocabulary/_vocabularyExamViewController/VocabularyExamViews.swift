@@ -18,6 +18,19 @@ class VocabularyExamViews: ControllerView {
         $0.font = .systemFont(ofSize: 22, weight: .bold)
         $0.textAlignment = .center
     }
+    let timerLabel = UILabel().apply {
+        $0.numberOfLines = 1
+        $0.textColor = .darkGray
+        $0.font = .systemFont(ofSize: 18, weight: .bold)
+        $0.textAlignment = .center
+    }
+    let pauseButton = UIButton(type: .custom).apply {
+        $0.setTitle("暫停", for: .normal)
+        $0.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
+        $0.setTitleColor(.white, for: .normal)
+        $0.backgroundColor = .systemBrown
+        $0.cornerRadius = 7
+    }
     let pagerView = FSPagerView().apply {
         $0.transformer = .init(type: .depth)
         $0.interitemSpacing = 20
@@ -27,9 +40,20 @@ class VocabularyExamViews: ControllerView {
     override func initUI() {
         view.addSubview(indexLabel)
         view.addSubview(pagerView)
+        view.addSubview(timerLabel)
+        view.addSubview(pauseButton)
         indexLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.leading.trailing.equalToSuperview()
+        }
+        timerLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(indexLabel)
+            make.leading.equalToSuperview().inset(10)
+        }
+        pauseButton.snp.makeConstraints { make in
+            make.centerY.equalTo(indexLabel)
+            make.trailing.equalToSuperview().inset(10)
+            make.size.equalTo(CGSize(width: 50, height: 30))
         }
         pagerView.snp.makeConstraints { make in
             make.top.equalTo(indexLabel.bottom).offset(10)

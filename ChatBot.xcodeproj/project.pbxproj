@@ -66,6 +66,7 @@
 		32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0C2C2405EC00FE5786 /* UIImage+.swift */; };
 		32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F112C251E5400FE5786 /* AttributedStringParsable.swift */; };
 		329B3F842C796DBE004D7570 /* VocabulayExamQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F832C796DBE004D7570 /* VocabulayExamQuestion.swift */; };
+		329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F852C7C2F2E004D7570 /* TimerManager.swift */; };
 		32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */; };
 		32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */; };
 		32B4D70F2C745F4500CA4C40 /* FlipCardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */; };
@@ -204,6 +205,7 @@
 		32800F0C2C2405EC00FE5786 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
 		32800F112C251E5400FE5786 /* AttributedStringParsable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedStringParsable.swift; sourceTree = "<group>"; };
 		329B3F832C796DBE004D7570 /* VocabulayExamQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabulayExamQuestion.swift; sourceTree = "<group>"; };
+		329B3F852C7C2F2E004D7570 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
 		32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTextDelegate.swift; sourceTree = "<group>"; };
 		32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViewContoller.swift; sourceTree = "<group>"; };
 		32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViews.swift; sourceTree = "<group>"; };
@@ -427,6 +429,7 @@
 				327D28642C57314B00F6ED68 /* SharedGroupStorage.swift */,
 				32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */,
 				94215CAA2C73851000F4DDF1 /* CacheManager.swift */,
+				329B3F852C7C2F2E004D7570 /* TimerManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -892,6 +895,7 @@
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */,
 				32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */,
+				329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */,
 				9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */,
 				9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */,
 				32B7E6B92C69E5610032ABFD /* MyVocabularyViews.swift in Sources */,
