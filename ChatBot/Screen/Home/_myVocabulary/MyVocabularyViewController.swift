@@ -66,13 +66,10 @@ class MyVocabularyViewController: BaseUIViewController {
 extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate, MyVocabularyViewDelegate {
     
     func onExamButtonClicked() {
-        ExamQuestionSelectorViewController()
-            .show(in: self) { [weak self] letter, sortOption in
-                guard let `self` = self,
-                      let letter = letter,
-                      let sortOption = SystemDefine.VocabularyExam.SortOption.init(rawValue: sortOption ?? "") else { return }
-                ScreenLoader.toScreen(screen: .VocabularyExam(letter: letter, sortOption: sortOption), viewController: self)
-            }
+        ExamQuestionSelectorViewController().show(in: self) { QuestionType in
+            guard let QuestionType = QuestionType else { return }
+            ScreenLoader.toScreen(screen: .VocabularyExam(questionType: QuestionType, vocabularies: []), viewController: self)
+        }
     }
     
     func onFlipCardButtonClicked() {

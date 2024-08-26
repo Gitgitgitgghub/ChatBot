@@ -52,6 +52,32 @@ extension SystemDefine {
     //MARK: - 單字測試
     struct VocabularyExam {
         
+        /// 問題類型
+        enum QuestionType: CaseIterable {
+            
+            /// 單純的單字測驗
+            case vocabularyWord(letter: String, sortOption: SystemDefine.VocabularyExam.SortOption)
+            /// 單字克漏字填空
+            case vocabularyCloze(letter: String, sortOption: SystemDefine.VocabularyExam.SortOption)
+            
+            static var allCases: [QuestionType] {
+                return [
+                    .vocabularyWord(letter: "", sortOption: .familiarity),
+                    .vocabularyCloze(letter: "", sortOption: .familiarity) 
+                ]
+            }
+            
+            var title: String {
+                switch self {
+                case .vocabularyWord(let letter, let sortOption):
+                    return "字義選擇"
+                case .vocabularyCloze(let letter, let sortOption):
+                    return "克漏字選擇"
+                }
+            }
+        }
+        
+        /// 排序方式
         enum SortOption: String, CaseIterable {
             case familiarity = "依照熟悉度"
             case lastWatchTime = "依照觀看日期"

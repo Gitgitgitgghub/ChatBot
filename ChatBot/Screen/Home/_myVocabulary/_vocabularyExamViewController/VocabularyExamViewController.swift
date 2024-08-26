@@ -17,8 +17,8 @@ class VocabularyExamViewController: BaseUIViewController {
         return views.pagerView
     }
     
-    init(sortOption: SystemDefine.VocabularyExam.SortOption, letter: String) {
-        self.viewModel = .init(sortOption: sortOption, letter: letter)
+    init(questionType: SystemDefine.VocabularyExam.QuestionType, vocabularies: [VocabularyModel]) {
+        self.viewModel = .init(questionType: questionType, vocabularies: vocabularies)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -53,7 +53,7 @@ class VocabularyExamViewController: BaseUIViewController {
                 switch event {
                 case .indexChange(string: let string):
                     self.indexChange(string: string)
-                case .notEnough:
+                case .error(message: let message):
                     self.showToast(message: "題目數量不足") { [weak self] in
                         self?.navigationController?.popViewController(animated: true)
                     }

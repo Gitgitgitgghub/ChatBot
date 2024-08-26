@@ -7,31 +7,49 @@
 
 import Foundation
 
+protocol ExamQuestion: Codable {
+    
+    var questionText: String { get set }
+    var options: [String] { get set }
+    var correctAnswer: String { get set }
+    /// 是否回答正確
+    func isCorrectAnswer(_ selectedAnswer: String?) -> Bool
+    /// 列印問題
+    func printQuestion()
+}
 
-struct VocabulayExamQuestion {
+extension ExamQuestion {
     
-    let questionText: String
-    let options: [String]
-    let correctAnswer: String
     
-    // 初始化方法
-    init(questionText: String, options: [String], correctAnswer: String) {
-        self.questionText = questionText
-        self.options = options
-        self.correctAnswer = correctAnswer
-    }
-    
-    // 检查答案是否正确
     func isCorrectAnswer(_ selectedAnswer: String?) -> Bool {
         return selectedAnswer == correctAnswer
     }
     
-    // 打印问题和选项（调试用途）
     func printQuestion() {
         print("Question: \(questionText)")
         for (index, option) in options.enumerated() {
             print("\(index + 1): \(option)")
         }
     }
+    
+}
+
+
+struct VocabulayExamQuestion: ExamQuestion {
+    
+    var questionText: String
+    var options: [String]
+    var correctAnswer: String
+    var original: VocabularyModel?
+    
+    // 初始化方法
+    init(questionText: String, options: [String], correctAnswer: String, original: VocabularyModel?) {
+        self.questionText = questionText
+        self.options = options
+        self.correctAnswer = correctAnswer
+        self.original = original
+    }
+    
+    
     
 }

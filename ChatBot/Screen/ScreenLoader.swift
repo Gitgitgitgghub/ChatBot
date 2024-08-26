@@ -40,7 +40,7 @@ class ScreenLoader {
         /// 翻卡測驗
         case flipCard
         /// 單字測驗
-        case VocabularyExam(letter: String, sortOption: SystemDefine.VocabularyExam.SortOption)
+        case VocabularyExam(questionType: SystemDefine.VocabularyExam.QuestionType, vocabularies: [VocabularyModel] = [])
     }
     
     static func loadScreen(screen: Screen) -> UIViewController {
@@ -60,8 +60,8 @@ class ScreenLoader {
         case .home_myVocabulary: return MyVocabularyViewController()
         case .vocabulary(vocabularies: let vocabularies, startIndex: let startIndex): return VocabularyViewController(vocabularies: vocabularies, startIndex: startIndex)
         case .flipCard: return FlipCardViewContoller()
-        case .VocabularyExam(letter: let letter, sortOption: let sortOption):
-            return VocabularyExamViewController(sortOption: sortOption, letter: letter)
+        case .VocabularyExam(questionType: let questionType, vocabularies: let vocabularies):
+            return VocabularyExamViewController(questionType: questionType, vocabularies: vocabularies)
         }
     }
     

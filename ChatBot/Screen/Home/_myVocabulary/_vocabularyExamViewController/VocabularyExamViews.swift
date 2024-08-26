@@ -78,7 +78,7 @@ extension VocabularyExamViews {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.textColor = .darkGray
             $0.font = SystemDefine.Message.defaultTextFont.withSize(22).bold()
-            $0.numberOfLines = 1
+            $0.numberOfLines = 0
             $0.textAlignment = .center
         }
         let answerStackView = UIStackView().apply {
@@ -103,7 +103,7 @@ extension VocabularyExamViews {
             addSubview(questionLabel)
             addSubview(answerStackView)
             questionLabel.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(20)
                 make.top.equalToSuperview().inset(30)
             }
             answerStackView.snp.makeConstraints { make in
