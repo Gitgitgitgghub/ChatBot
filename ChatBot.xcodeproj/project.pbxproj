@@ -68,6 +68,7 @@
 		329B3F842C796DBE004D7570 /* VocabulayExamQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F832C796DBE004D7570 /* VocabulayExamQuestion.swift */; };
 		329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F852C7C2F2E004D7570 /* TimerManager.swift */; };
 		329B3F882C7C56C7004D7570 /* EnglishQuestionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F872C7C56C7004D7570 /* EnglishQuestionGenerator.swift */; };
+		329B3F8A2C7DD802004D7570 /* EnglishQuestionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F892C7DD802004D7570 /* EnglishQuestionService.swift */; };
 		32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */; };
 		32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */; };
 		32B4D70F2C745F4500CA4C40 /* FlipCardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */; };
@@ -208,6 +209,7 @@
 		329B3F832C796DBE004D7570 /* VocabulayExamQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabulayExamQuestion.swift; sourceTree = "<group>"; };
 		329B3F852C7C2F2E004D7570 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
 		329B3F872C7C56C7004D7570 /* EnglishQuestionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishQuestionGenerator.swift; sourceTree = "<group>"; };
+		329B3F892C7DD802004D7570 /* EnglishQuestionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishQuestionService.swift; sourceTree = "<group>"; };
 		32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTextDelegate.swift; sourceTree = "<group>"; };
 		32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViewContoller.swift; sourceTree = "<group>"; };
 		32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViews.swift; sourceTree = "<group>"; };
@@ -681,6 +683,7 @@
 				32E264312C1BDA8D0083EC63 /* OpenAIService.swift */,
 				32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */,
 				32B7E6DF2C6B54FF0032ABFD /* VocabularyService.swift */,
+				329B3F892C7DD802004D7570 /* EnglishQuestionService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -963,6 +966,7 @@
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				32B7E6DE2C6B31FE0032ABFD /* FSPageViewTransformer.swift in Sources */,
 				3241BE552C4DF0C70047BB71 /* NoteViewModel.swift in Sources */,
+				329B3F8A2C7DD802004D7570 /* EnglishQuestionService.swift in Sources */,
 				942395EB2C56A95000E65150 /* ImageManager.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
 				32D54DA62C787D9C000A9E97 /* ExamQuestionSelectorViewController.swift in Sources */,

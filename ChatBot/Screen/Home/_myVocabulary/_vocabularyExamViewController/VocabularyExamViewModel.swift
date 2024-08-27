@@ -62,7 +62,7 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
     
     init(questionType: QuestionType, vocabularies: [VocabularyModel]) {
         self.questionType = questionType
-        questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, vocabularyService: .init(), questionType: questionType, vocabularies: vocabularies)
+        questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, englishQuestion: .init(), questionType: questionType, vocabularies: vocabularies)
     }
     
     func bindInputEvent() {

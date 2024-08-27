@@ -36,6 +36,16 @@ extension ExamQuestion {
     
 }
 
+struct GrammaExamQuestion: ExamQuestion {
+    
+    var questionText: String
+    var options: [String]
+    var correctAnswer: String
+    var userSelecedAnswer: String?
+    var reason: String?
+    
+}
+
 
 struct VocabulayExamQuestion: ExamQuestion {
     

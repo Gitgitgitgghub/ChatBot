@@ -20,16 +20,16 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGenerator {
     typealias QuestionType = SystemDefine.VocabularyExam.QuestionType
     
     private let vocabularyManager: VocabularyManager
-    private let vocabularyService: VocabularyService
+    private let englishQuestion: EnglishQuestionService
     private var questionType: QuestionType
     private let letter: String
     private let sortOption: SystemDefine.VocabularyExam.SortOption
     ///
     private(set) var vocabularies: [VocabularyModel]
     
-    init(vocabularyManager: VocabularyManager, vocabularyService: VocabularyService, questionType: QuestionType, vocabularies: [VocabularyModel] = []) {
+    init(vocabularyManager: VocabularyManager, englishQuestion: EnglishQuestionService, questionType: QuestionType, vocabularies: [VocabularyModel] = []) {
         self.vocabularyManager = vocabularyManager
-        self.vocabularyService = vocabularyService
+        self.englishQuestion = englishQuestion
         self.questionType = questionType
         self.vocabularies = vocabularies
         switch questionType {
@@ -65,7 +65,7 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGenerator {
     func generateClozeQuestion(limit: Int) -> AnyPublisher<[VocabulayExamQuestion], Error> {
         return fetchVocabularies(limit: limit)
             .flatMap { vocabularies -> AnyPublisher<[VocabulayExamQuestion], Error> in
-                return self.vocabularyService.fetchVocabularyClozeQuestions(vocabularies: vocabularies)
+                return self.englishQuestion.fetchVocabularyClozeQuestions(vocabularies: vocabularies)
             }
             .eraseToAnyPublisher()
     }
