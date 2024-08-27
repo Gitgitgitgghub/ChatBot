@@ -19,12 +19,41 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
     private let sortingOptions = SystemDefine.VocabularyExam.SortOption.allCases
     private var selectedSortingIndex = 0
     var completionHandler: ((_ QuestionType: SystemDefine.VocabularyExam.QuestionType?) -> Void)?
-    private let pickerView = UIPickerView()
-    private let questionTypeStackView = UIStackView()
-    private let sortOptionsStackView = UIStackView()
-
-    init() {
+    private let pickerView = UIPickerView().apply {
+        $0.isVisible = false
+    }
+    private let questionTypeStackView = UIStackView().apply {
+        $0.isVisible = false
+    }
+    private let sortOptionsStackView = UIStackView().apply {
+        $0.isVisible = false
+    }
+    private let typeOptionLabel = UILabel().apply {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.text = "問題類型"
+        $0.textColor = .darkGray
+        $0.font = .boldSystemFont(ofSize: 16)
+        $0.isVisible = false
+    }
+    private let sortOptionLabel = UILabel().apply {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.text = "問題排序"
+        $0.textColor = .darkGray
+        $0.font = .boldSystemFont(ofSize: 16)
+        $0.isVisible = false
+    }
+    /// 顯示的ＵＩ組件
+    private(set) var selectorComponent: [SelectorComponent] = SelectorComponent.allCases
+    
+    enum SelectorComponent: CaseIterable {
+        case letterPicker
+        case questionTypeSelector
+        case sortSelector
+    }
+    
+    init(selectorComponent: [SelectorComponent] = SelectorComponent.allCases) {
         super.init(nibName: nil, bundle: nil)
+        self.selectorComponent = selectorComponent
         initUI()
     }
     
@@ -33,40 +62,121 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
     }
     
     private func initUI() {
-        view.addSubview(pickerView)
-        view.addSubview(sortOptionsStackView)
-        view.addSubview(questionTypeStackView)
-        pickerView.delegate = self
-        pickerView.dataSource = self
+        setUIComponentVisible()
+        var lastView: UIView? = nil
+        // 開頭字母
+        if selectorComponent.contains(.letterPicker) {
+            view.addSubview(pickerView)
+            pickerView.delegate = self
+            pickerView.dataSource = self
+            pickerView.snp.makeConstraints { make in
+                make.top.leading.trailing.equalToSuperview()
+                make.height.equalTo(150)
+            }
+            lastView = pickerView
+        }
+        // 題型
+        if selectorComponent.contains(.questionTypeSelector) {
+            view.addSubview(typeOptionLabel)
+            view.addSubview(questionTypeStackView)
+            typeOptionLabel.snp.makeConstraints { make in
+                if let lastView = lastView {
+                    make.top.equalTo(lastView.snp.bottom).offset(10)
+                } else {
+                    make.top.equalToSuperview().offset(10)
+                }
+                make.leading.trailing.equalToSuperview().inset(10)
+                make.height.equalTo(20)
+            }
+            questionTypeStackView.snp.makeConstraints { make in
+                make.top.equalTo(typeOptionLabel.snp.bottom).offset(5)
+                make.leading.trailing.equalToSuperview().inset(10)
+            }
+            addQuestionTypeOptions()
+            lastView = questionTypeStackView
+        }
+        // 排序
+        if selectorComponent.contains(.sortSelector) {
+            view.addSubview(sortOptionLabel)
+            view.addSubview(sortOptionsStackView)
+            sortOptionLabel.snp.makeConstraints { make in
+                if let lastView = lastView {
+                    make.top.equalTo(lastView.snp.bottom).offset(5)
+                } else {
+                    make.top.equalToSuperview().offset(10)
+                }
+                make.leading.trailing.equalToSuperview().inset(10)
+                make.height.equalTo(20)
+            }
+            
+            sortOptionsStackView.snp.makeConstraints { make in
+                make.top.equalTo(sortOptionLabel.snp.bottom).offset(5)
+                make.leading.trailing.equalToSuperview().inset(10)
+                make.bottom.equalToSuperview().inset(10)
+            }
+            addSortOptions()
+            lastView = sortOptionsStackView
+        }
+        updatePreferredContentSize()
+    }
+    
+    private func updatePreferredContentSize() {
+        view.layoutIfNeeded()
+        var totalHeight: CGFloat = 0
+        if selectorComponent.contains(.letterPicker) {
+            totalHeight += pickerView.frame.height
+        }
+        if selectorComponent.contains(.questionTypeSelector) {
+            totalHeight += typeOptionLabel.frame.height + questionTypeStackView.frame.height + 15
+        }
+        if selectorComponent.contains(.sortSelector) {
+            totalHeight += sortOptionLabel.frame.height + sortOptionsStackView.frame.height + 15
+        }
+        preferredContentSize = CGSize(width: 300, height: totalHeight + 30) // 额外加上全局的间距
+    }
+    
+    
+    private func setUIComponentVisible() {
+        for component in selectorComponent {
+            switch component {
+            case .letterPicker:
+                pickerView.isVisible = true
+            case .questionTypeSelector:
+                questionTypeStackView.isVisible = true
+                typeOptionLabel.isVisible = true
+            case .sortSelector:
+                sortOptionLabel.isVisible = true
+                sortOptionsStackView.isVisible = true
+            }
+        }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        view.layoutIfNeeded()
+        updatePreferredContentSize()
+    }
+    
+    private func addQuestionTypeOptions() {
         questionTypeStackView.axis = .vertical
         questionTypeStackView.spacing = 10
         questionTypeStackView.distribution = .fillEqually
-        sortOptionsStackView.axis = .vertical
-        sortOptionsStackView.spacing = 10
-        sortOptionsStackView.distribution = .fillEqually
+        questionTypeStackView.translatesAutoresizingMaskIntoConstraints = false
         for (index, option) in typeOptions.enumerated() {
             let optionButton = createOptionButton(with: option.title, tag: index)
             questionTypeStackView.addArrangedSubview(optionButton)
         }
+    }
+    
+    private func addSortOptions() {
+        sortOptionsStackView.axis = .vertical
+        sortOptionsStackView.spacing = 10
+        sortOptionsStackView.distribution = .fillEqually
+        sortOptionsStackView.translatesAutoresizingMaskIntoConstraints = false
         for (index, option) in sortingOptions.enumerated() {
             let optionButton = createOptionButton(with: option.rawValue, tag: index)
             sortOptionsStackView.addArrangedSubview(optionButton)
         }
-        pickerView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(150)
-        }
-        questionTypeStackView.snp.makeConstraints { make in
-            make.top.equalTo(pickerView.snp.bottom).offset(10)
-            make.leading.trailing.equalToSuperview().inset(10)
-            make.bottom.equalToSuperview().inset(10)
-        }
-        sortOptionsStackView.snp.makeConstraints { make in
-            make.top.equalTo(questionTypeStackView.snp.bottom).offset(10)
-            make.leading.trailing.equalToSuperview().inset(10)
-            make.bottom.equalToSuperview().inset(10)
-        }
-        preferredContentSize = CGSize(width: 250, height: 350)
     }
     
     private func createOptionButton(with title: String, tag: Int) -> UIButton {
@@ -80,6 +190,9 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
         button.tag = tag
         button.addTarget(self, action: #selector(optionSelected(_:)), for: .touchUpInside)
         updateButtonAppearance(button, selected: tag == selectedSortingIndex)
+        button.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 280, height: 44))
+        }
         return button
     }
     
@@ -94,13 +207,17 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
     }
     
     @objc private func optionSelected(_ sender: UIButton) {
-        for case let button as UIButton in sortOptionsStackView.arrangedSubviews {
-            selectedSortingIndex = button.tag
-            updateButtonAppearance(button, selected: button.tag == selectedSortingIndex)
+        if sortOptionsStackView.arrangedSubviews.contains(sender) {
+            selectedSortingIndex = sender.tag
+            for case let button as UIButton in sortOptionsStackView.arrangedSubviews {
+                updateButtonAppearance(button, selected: button.tag == selectedSortingIndex)
+            }
         }
-        for case let button as UIButton in questionTypeStackView.arrangedSubviews {
-            selectedTypeIndex = button.tag
-            updateButtonAppearance(button, selected: button.tag == selectedTypeIndex)
+        if questionTypeStackView.arrangedSubviews.contains(sender) {
+            selectedTypeIndex = sender.tag
+            for case let button as UIButton in questionTypeStackView.arrangedSubviews {
+                updateButtonAppearance(button, selected: button.tag == selectedTypeIndex)
+            }
         }
     }
     
@@ -132,9 +249,7 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
             guard let `self` = self else { return }
             self.onCompletion()
         }))
-        alertController.addAction(UIAlertAction(title: "取消", style: .cancel, handler: { [weak self] _ in
-            self?.completionHandler?(nil)
-        }))
+        alertController.addAction(UIAlertAction(title: "取消", style: .cancel))
         viewController.present(alertController, animated: true, completion: nil)
     }
     

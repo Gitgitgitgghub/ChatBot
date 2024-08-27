@@ -43,13 +43,12 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGenerator {
     }
     
     func generateQuestion(limit: Int) -> AnyPublisher<[VocabulayExamQuestion], any Error> {
-        
-        return fetchVocabularies(limit: limit)
-            .tryMap { [weak self] vocabularies in
-                guard let `self` = self else { return [] }
-                return try self.convertVocabulriesToQuestions(vocabularies: vocabularies)
-            }
-            .eraseToAnyPublisher()
+        switch questionType {
+        case .vocabularyWord(letter: let letter, sortOption: let sortOption):
+            return generateNormalQuestion(limit: limit)
+        case .vocabularyCloze(letter: let letter, sortOption: let sortOption):
+            return generateClozeQuestion(limit: limit)
+        }
     }
     
     /// 普通的選擇題
@@ -72,7 +71,7 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGenerator {
     }
     
     private func fetchVocabularies(limit: Int) -> AnyPublisher<[VocabularyModel], Error> {
-        ///
+        /// 若有帶單字進來就不用查資料庫
         guard vocabularies.isEmpty else {
             return Just(self.vocabularies)
                 .setFailureType(to: Error.self)
@@ -99,16 +98,12 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGenerator {
         let vocabularies = vocabularies.shuffled()
         var questions: [VocabulayExamQuestion] = []
         for vocabulary in vocabularies {
-            // 使用当前的 vocabulary 生成问题
             let questionWord = vocabulary.wordEntry.word
             let correctDefinition = vocabulary.wordEntry.definitions.randomElement()?.definition.replacingOccurrences(of: " ", with: "") ?? ""
-            // 随机选择两个错误的定义作为错误选项
             let otherVocabularies = vocabularies.filter { $0 != vocabulary }.shuffled()
             let wrongDefinition1 = otherVocabularies.randomElement()?.wordEntry.definitions.randomElement()?.definition.replacingOccurrences(of: " ", with: "") ?? ""
             let wrongDefinition2 = otherVocabularies.randomElement()?.wordEntry.definitions.randomElement()?.definition.replacingOccurrences(of: " ", with: "") ?? ""
-            // 将正确答案和错误答案混合在一起
             let options = [correctDefinition, wrongDefinition1, wrongDefinition2].shuffled()
-            // 创建一个 VocabulayExamQuestion 对象并添加到 questions 数组中
             let question = VocabulayExamQuestion(questionText: questionWord, options: options, correctAnswer: correctDefinition, original: vocabulary)
             questions.append(question)
         }
