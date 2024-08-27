@@ -100,11 +100,19 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGenerator {
         for vocabulary in vocabularies {
             let questionWord = vocabulary.wordEntry.word
             let correctDefinition = vocabulary.wordEntry.definitions.randomElement()?.definition.replacingOccurrences(of: " ", with: "") ?? ""
+            var wrongDefinitions: Set<String> = []
             let otherVocabularies = vocabularies.filter { $0 != vocabulary }.shuffled()
-            let wrongDefinition1 = otherVocabularies.randomElement()?.wordEntry.definitions.randomElement()?.definition.replacingOccurrences(of: " ", with: "") ?? ""
-            let wrongDefinition2 = otherVocabularies.randomElement()?.wordEntry.definitions.randomElement()?.definition.replacingOccurrences(of: " ", with: "") ?? ""
-            let options = [correctDefinition, wrongDefinition1, wrongDefinition2].shuffled()
-            let question = VocabulayExamQuestion(questionText: questionWord, options: options, correctAnswer: correctDefinition, original: vocabulary)
+            // 選擇兩個不同的錯誤定義
+            while wrongDefinitions.count < 2 {
+                if let wrongDefinition = otherVocabularies.randomElement()?.wordEntry.definitions.randomElement()?.definition.replacingOccurrences(of: " ", with: ""),
+                   wrongDefinition != correctDefinition {
+                    wrongDefinitions.insert(wrongDefinition)
+                }
+            }
+            
+            let options = [correctDefinition] + Array(wrongDefinitions).shuffled()
+            var question = VocabulayExamQuestion(questionText: questionWord, options: options.shuffled(), correctAnswer: correctDefinition)
+            question.original = vocabulary
             questions.append(question)
         }
         return questions

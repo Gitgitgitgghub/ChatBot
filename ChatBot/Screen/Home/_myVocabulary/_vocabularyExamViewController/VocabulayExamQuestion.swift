@@ -12,8 +12,9 @@ protocol ExamQuestion: Codable {
     var questionText: String { get set }
     var options: [String] { get set }
     var correctAnswer: String { get set }
+    var userSelecedAnswer: String? { get set }
     /// 是否回答正確
-    func isCorrectAnswer(_ selectedAnswer: String?) -> Bool
+    func isCorrect() -> Bool
     /// 列印問題
     func printQuestion()
 }
@@ -21,8 +22,9 @@ protocol ExamQuestion: Codable {
 extension ExamQuestion {
     
     
-    func isCorrectAnswer(_ selectedAnswer: String?) -> Bool {
-        return selectedAnswer == correctAnswer
+    func isCorrect() -> Bool {
+        guard let userSelecedAnswer = self.userSelecedAnswer else { return false }
+        return userSelecedAnswer == correctAnswer
     }
     
     func printQuestion() {
@@ -40,16 +42,14 @@ struct VocabulayExamQuestion: ExamQuestion {
     var questionText: String
     var options: [String]
     var correctAnswer: String
+    var userSelecedAnswer: String?
     var original: VocabularyModel?
     
     // 初始化方法
-    init(questionText: String, options: [String], correctAnswer: String, original: VocabularyModel?) {
+    init(questionText: String, options: [String], correctAnswer: String) {
         self.questionText = questionText
         self.options = options
         self.correctAnswer = correctAnswer
-        self.original = original
     }
-    
-    
     
 }

@@ -159,7 +159,7 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
     
     private func addQuestionTypeOptions() {
         questionTypeStackView.axis = .vertical
-        questionTypeStackView.spacing = 10
+        questionTypeStackView.spacing = 2
         questionTypeStackView.distribution = .fillEqually
         questionTypeStackView.translatesAutoresizingMaskIntoConstraints = false
         for (index, option) in typeOptions.enumerated() {
@@ -170,7 +170,7 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
     
     private func addSortOptions() {
         sortOptionsStackView.axis = .vertical
-        sortOptionsStackView.spacing = 10
+        sortOptionsStackView.spacing = 2
         sortOptionsStackView.distribution = .fillEqually
         sortOptionsStackView.translatesAutoresizingMaskIntoConstraints = false
         for (index, option) in sortingOptions.enumerated() {

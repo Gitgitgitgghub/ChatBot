@@ -25,7 +25,7 @@ class VocabularyExamViews: ControllerView {
         $0.textAlignment = .center
     }
     let pauseButton = UIButton(type: .custom).apply {
-        $0.setTitle("暫停", for: .normal)
+        $0.setTitle("暫停考試", for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
         $0.setTitleColor(.white, for: .normal)
         $0.backgroundColor = .systemBrown
@@ -53,7 +53,7 @@ class VocabularyExamViews: ControllerView {
         pauseButton.snp.makeConstraints { make in
             make.centerY.equalTo(indexLabel)
             make.trailing.equalToSuperview().inset(10)
-            make.size.equalTo(CGSize(width: 50, height: 30))
+            make.size.equalTo(CGSize(width: 90, height: 30))
         }
         pagerView.snp.makeConstraints { make in
             make.top.equalTo(indexLabel.bottom).offset(10)
@@ -131,12 +131,44 @@ extension VocabularyExamViews {
             delegate?.onOptionSelected(question: question, selectedOption: selectedOption)
         }
         
-        func setQuestion(question: VocabulayExamQuestion) {
+        func setQuestion(question: VocabulayExamQuestion, isAnswerMode: Bool) {
             self.question = question
+            if isAnswerMode {
+                setAndwerModeUI()
+            }else {
+                setQuestionModeUI()
+            }
+        }
+        
+        private func setAndwerModeUI() {
+            guard let question = self.question else { return }
+            guard let userSelecedAnswer = question.userSelecedAnswer else { return }
+            setQuestionModeUI()
+            for (i, option) in question.options.enumerated() {
+                guard let button = answerStackView.arrangedSubviews.getOrNil(index: i) as? UIButton else { continue }
+                button.isUserInteractionEnabled = false
+                //按钮颜色 正確答案綠色 用戶選擇的但答錯紅色 其他為咖啡色
+                if option == question.correctAnswer {
+                    button.backgroundColor = .systemGreen
+                } else if option == userSelecedAnswer {
+                    if option != question.correctAnswer {
+                        button.backgroundColor = .systemRed
+                    }
+                } else {
+                    button.backgroundColor = .systemBrown
+                }
+            }
+        }
+        
+        private func setQuestionModeUI() {
+            guard let question = self.question else { return }
             questionLabel.text = question.questionText
             for (i, option) in question.options.enumerated() {
                 guard let button = answerStackView.arrangedSubviews.getOrNil(index: i) as? UIButton else { continue }
+                button.isUserInteractionEnabled = true
                 button.setTitle(option, for: .normal)
+                button.backgroundColor = .systemBrown
+                button.setTitleColor(.white, for: .normal)
             }
         }
         
@@ -173,8 +205,8 @@ extension VocabularyExamViews {
             }
         }
         
-        func bindVocabulayExamQuestion(question: VocabulayExamQuestion) {
-            questionCard.setQuestion(question: question)
+        func bindVocabulayExamQuestion(question: VocabulayExamQuestion, isAnswerMode: Bool) {
+            questionCard.setQuestion(question: question, isAnswerMode: isAnswerMode)
         }
         
     }

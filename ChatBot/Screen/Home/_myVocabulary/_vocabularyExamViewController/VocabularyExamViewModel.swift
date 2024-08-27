@@ -22,18 +22,18 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
         case startExam
         case pauseExam
         case resumeExam
+        case switchAnswerMode
     }
     
     enum OutputEvent {
-        //case reloadUI
         case indexChange(string: String)
         case error(message: String)
         case scrollToNextQuestion
-        //case examCompleted(correctCount: Int, wrongCount: Int)
         case updateTimer(string: NSAttributedString)
     }
     
-    enum ExamState {
+    enum ExamState: Equatable {
+        case answerMode
         case preparing
         case ready
         case started
@@ -52,7 +52,7 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
     /// 當前題目位置
     private(set) var currentIndex: Int = 0
     /// 最多題目數量
-    private let limit = 30
+    private let limit = 3
     /// 計時器
     private let timerManager = TimerManager()
     /// 當前考試狀態
@@ -84,6 +84,8 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
                     self.pauseExam()
                 case .resumeExam:
                     self.resumeExam()
+                case .switchAnswerMode:
+                    self.switchAnswerMode()
                 }
             }
             .store(in: &subscriptions)
@@ -105,15 +107,25 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
             .store(in: &subscriptions)
     }
     
+    private func switchAnswerMode() {
+        examState = .answerMode
+    }
+    
     private func startExam() {
         examState = .started
         timerManager.startTimer()
     }
     private func pauseExam() {
-        examState = .paused
-        timerManager.stopTimer()
-        outputSubject.send(.updateTimer(string: .init(string: "已暫停", attributes: [.foregroundColor : UIColor.systemRed])))
+        // 當考試狀態為.answerMode時按鈕功能會變為重考，其餘才是暫停考試
+        if examState == .answerMode {
+            retakeExam()
+        }else {
+            examState = .paused
+            timerManager.stopTimer()
+            outputSubject.send(.updateTimer(string: .init(string: "已暫停", attributes: [.foregroundColor : UIColor.systemRed])))
+        }
     }
+    
     private func resumeExam() {
         startExam()
     }
@@ -127,19 +139,23 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
     }
     
     private func onOptionSelected(question: VocabulayExamQuestion, selectedOption: String?) {
-        let isCorrect = question.isCorrectAnswer(selectedOption)
-        if isCorrect {
-            correctAnswerQuestions.append(question)
-        }else {
-            wrongAnswerQuestions.append(question)
+        if let index = questions.firstIndex(where: { $0.questionText == question.questionText }) {
+            questions[index].userSelecedAnswer = selectedOption
+            let updateQuestion = questions[index]
+            let isCorrect = updateQuestion.isCorrect()
+            if isCorrect {
+                correctAnswerQuestions.append(updateQuestion)
+            }else {
+                wrongAnswerQuestions.append(updateQuestion)
+            }
+            if hasNextQuestion() {
+                outputSubject.send(.scrollToNextQuestion)
+            }else {
+                examState = .ended(correctCount: correctAnswerQuestions.count, wrongCount: wrongAnswerQuestions.count)
+                timerManager.stopTimer()
+            }
+            changeFamalirity(question: updateQuestion, isCorrect: isCorrect)
         }
-        if hasNextQuestion() {
-            outputSubject.send(.scrollToNextQuestion)
-        }else {
-            examState = .ended(correctCount: correctAnswerQuestions.count, wrongCount: wrongAnswerQuestions.count)
-            timerManager.stopTimer()
-        }
-        changeFamalirity(question: question, isCorrect: isCorrect)
     }
     
     /// 更改熟悉度

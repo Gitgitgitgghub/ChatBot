@@ -54,7 +54,7 @@ class VocabularyExamViewController: BaseUIViewController {
                 case .indexChange(string: let string):
                     self.indexChange(string: string)
                 case .error(message: let message):
-                    self.showToast(message: "題目數量不足") { [weak self] in
+                    self.showToast(message: message) { [weak self] in
                         self?.navigationController?.popViewController(animated: true)
                     }
                 case .scrollToNextQuestion:
@@ -67,6 +67,7 @@ class VocabularyExamViewController: BaseUIViewController {
         viewModel.$examState
             .sink { [weak self] state in
                 self?.examState(state: state)
+                self?.updatePauseButtonUI(state: state)
             }
             .store(in: &subscriptions)
     }
@@ -82,6 +83,7 @@ class VocabularyExamViewController: BaseUIViewController {
                 self.viewModel.transform(inputEvent: .startExam)
             }))
             present(vc, animated: true)
+            pagerView.isScrollEnabled = false
             pagerView.reloadData()
         case .started: break
         case .paused:
@@ -96,6 +98,21 @@ class VocabularyExamViewController: BaseUIViewController {
             present(vc, animated: true)
         case .ended(correctCount: let correctCount, wrongCount: let wrongCount):
             self.showExamResult(correctCount: correctCount, wrongCount: wrongCount)
+        case .answerMode:
+            pagerView.isScrollEnabled = true
+            pagerView.reloadData()
+            pagerView.scrollToItem(at: 0, animated: false)
+        }
+    }
+    
+    private func updatePauseButtonUI(state: VocabularyExamViewModel.ExamState) {
+        print(state)
+        if state == .answerMode {
+            views.pauseButton.isVisible = viewModel.wrongAnswerQuestions.isNotEmpty
+            views.pauseButton.setTitle("錯題重做", for: .normal)
+        }else {
+            views.pauseButton.isVisible = true
+            views.pauseButton.setTitle("暫停考試", for: .normal)
         }
     }
     
@@ -107,11 +124,14 @@ class VocabularyExamViewController: BaseUIViewController {
         let message = "答對了\(correctCount)題\n答錯了\(wrongCount)題"
         let vc = UIAlertController(title: "答題結果", message: message, preferredStyle: .alert)
         if wrongCount > 0 {
-            vc.addAction(.init(title: "重做錯誤題", style: .default, handler: { _ in
+            vc.addAction(.init(title: "重做錯題", style: .default, handler: { _ in
                 self.viewModel.transform(inputEvent: .retakeExam)
                 self.pagerView.scrollToItem(at: 0, animated: false)
             }))
         }
+        vc.addAction(.init(title: "查看解答", style: .default, handler: { _ in
+            self.viewModel.transform(inputEvent: .switchAnswerMode)
+        }))
         vc.addAction(.init(title: "離開", style: .destructive, handler: { _ in
             self.navigationController?.popViewController(animated: true)
         }))
@@ -132,6 +152,10 @@ extension VocabularyExamViewController: QuestionCardDelegate {
 //MARK: - FSPagerViewDelegate, FSPagerViewDataSource
 extension VocabularyExamViewController: FSPagerViewDelegate, FSPagerViewDataSource {
     
+    func pagerViewDidEndDecelerating(_ pagerView: FSPagerView) {
+        viewModel.transform(inputEvent: .currentIndexChange(currentIndex: pagerView.currentIndex))
+    }
+    
     func numberOfItems(in pagerView: FSPagerView) -> Int {
         return viewModel.questions.count
     }
@@ -141,7 +165,7 @@ extension VocabularyExamViewController: FSPagerViewDelegate, FSPagerViewDataSour
             return FSPagerViewCell()
         }
         viewModel.transform(inputEvent: .currentIndexChange(currentIndex: index))
-        cell.bindVocabulayExamQuestion(question: viewModel.questions[index])
+        cell.bindVocabulayExamQuestion(question: viewModel.questions[index], isAnswerMode: viewModel.examState == .answerMode)
         cell.delegate = self
         return cell
     }

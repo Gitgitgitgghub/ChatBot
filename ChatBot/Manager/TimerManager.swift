@@ -30,7 +30,6 @@ class TimerManager {
             .autoconnect()
             .sink { [weak self] _ in
                 self?.counter += 1
-                print("Timer fired: \(self?.counter ?? 0)")
             }
     }
     
