@@ -29,6 +29,7 @@ class FlipCardViewContoller: BaseUIViewController {
         views.pagerView.dataSource = self
         views.pagerView.register(FlipCardViews.CardContentCell.self, forCellWithReuseIdentifier: FlipCardViews.CardContentCell.className)
         views.flipCardButton.addTarget(self, action: #selector(flipCardButtonClicked), for: .touchUpInside)
+        views.examButton.addTarget(self, action: #selector(examButtonClicked), for: .touchUpInside)
     }
     
     private func bind() {
@@ -52,6 +53,13 @@ class FlipCardViewContoller: BaseUIViewController {
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    @objc private func examButtonClicked() {
+        ExamQuestionSelectorViewController(selectorComponent: [.questionTypeSelector]).show(in: self) { QuestionType in
+            guard let QuestionType = QuestionType else { return }
+            ScreenLoader.toScreen(screen: .VocabularyExam(questionType: QuestionType, vocabularies: self.viewModel.vocabularies), viewController: self)
+        }
     }
     
     @objc private func flipCardButtonClicked() {

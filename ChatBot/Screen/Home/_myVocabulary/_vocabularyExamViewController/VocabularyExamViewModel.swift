@@ -163,7 +163,7 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
     
     private func currentIndexChange(currentIndex: Int) {
         self.currentIndex = currentIndex
-        let title = "第\(currentIndex + 1)題"
+        let title = "第\(currentIndex + 1)/\(questions.count)題"
         outputSubject.send(.indexChange(string: title))
     }
     

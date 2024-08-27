@@ -135,7 +135,7 @@ extension VocabularyExamViews {
             self.question = question
             questionLabel.text = question.questionText
             for (i, option) in question.options.enumerated() {
-                guard let button = answerStackView.arrangedSubviews[i] as? UIButton else { continue }
+                guard let button = answerStackView.arrangedSubviews.getOrNil(index: i) as? UIButton else { continue }
                 button.setTitle(option, for: .normal)
             }
         }

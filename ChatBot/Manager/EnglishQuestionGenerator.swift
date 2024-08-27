@@ -44,9 +44,9 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGenerator {
     
     func generateQuestion(limit: Int) -> AnyPublisher<[VocabulayExamQuestion], any Error> {
         switch questionType {
-        case .vocabularyWord(letter: let letter, sortOption: let sortOption):
+        case .vocabularyWord:
             return generateNormalQuestion(limit: limit)
-        case .vocabularyCloze(letter: let letter, sortOption: let sortOption):
+        case .vocabularyCloze:
             return generateClozeQuestion(limit: limit)
         }
     }

@@ -26,11 +26,17 @@ class FlipCardViews: ControllerView {
         $0.backgroundColor = .systemBrown
         $0.cornerRadius = 30
     }
+    let examButton = UIButton(type: .custom).apply {
+        $0.setTitle("考試", for: .normal)
+        $0.backgroundColor = .systemBrown
+        $0.cornerRadius = 30
+    }
     
     override func initUI() {
         view.addSubview(titleLabel)
         view.addSubview(pagerView)
         view.addSubview(flipCardButton)
+        view.addSubview(examButton)
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(20)
             make.leading.trailing.equalToSuperview()
@@ -42,7 +48,12 @@ class FlipCardViews: ControllerView {
         }
         flipCardButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
-            make.centerX.equalToSuperview()
+            make.centerX.equalToSuperview().multipliedBy(0.5)
+            make.size.equalTo(CGSize(width: 100, height: 60))
+        }
+        examButton.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.centerX.equalToSuperview().multipliedBy(1.5)
             make.size.equalTo(CGSize(width: 100, height: 60))
         }
     }
