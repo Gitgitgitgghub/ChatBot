@@ -1,5 +1,5 @@
 //
-//  VocabularyExamViewController.swift
+//  EnglishExamViewController.swift
 //  ChatBot
 //
 //  Created by 吳俊諺 on 2024/8/23.
@@ -9,10 +9,10 @@ import Foundation
 import UIKit
 
 
-class VocabularyExamViewController: BaseUIViewController {
+class EnglishExamViewController: BaseUIViewController {
     
-    private let viewModel: VocabularyExamViewModel
-    private lazy var views = VocabularyExamViews(view: self.view)
+    private let viewModel: EnglishExamViewModel
+    private lazy var views = EnglishExamViews(view: self.view)
     private var pagerView: FSPagerView {
         return views.pagerView
     }
@@ -37,7 +37,7 @@ class VocabularyExamViewController: BaseUIViewController {
         title = "單字測驗"
         pagerView.delegate = self
         pagerView.dataSource = self
-        pagerView.register(VocabularyExamViews.VocabularyExamQuestionCell.self, forCellWithReuseIdentifier: VocabularyExamViews.VocabularyExamQuestionCell.className)
+        pagerView.register(EnglishExamViews.VocabularyExamQuestionCell.self, forCellWithReuseIdentifier: EnglishExamViews.VocabularyExamQuestionCell.className)
         views.pauseButton.addTarget(self, action: #selector(paustExam), for: .touchUpInside)
     }
     
@@ -72,7 +72,7 @@ class VocabularyExamViewController: BaseUIViewController {
             .store(in: &subscriptions)
     }
     
-    private func examState(state: VocabularyExamViewModel.ExamState) {
+    private func examState(state: EnglishExamViewModel.ExamState) {
         switch state {
         case .preparing: 
             break
@@ -105,7 +105,7 @@ class VocabularyExamViewController: BaseUIViewController {
         }
     }
     
-    private func updatePauseButtonUI(state: VocabularyExamViewModel.ExamState) {
+    private func updatePauseButtonUI(state: EnglishExamViewModel.ExamState) {
         print(state)
         if state == .answerMode {
             views.pauseButton.isVisible = viewModel.wrongAnswerQuestions.isNotEmpty
@@ -141,7 +141,7 @@ class VocabularyExamViewController: BaseUIViewController {
 }
 
 //MARK: - QuestionCardDelegate
-extension VocabularyExamViewController: QuestionCardDelegate {
+extension EnglishExamViewController: QuestionCardDelegate {
     
     func onOptionSelected(question: EnglishExamQuestion, selectedOption: String?) {
         viewModel.transform(inputEvent: .onOptionSelected(question: question, selectedOption: selectedOption))
@@ -150,7 +150,7 @@ extension VocabularyExamViewController: QuestionCardDelegate {
 }
 
 //MARK: - FSPagerViewDelegate, FSPagerViewDataSource
-extension VocabularyExamViewController: FSPagerViewDelegate, FSPagerViewDataSource {
+extension EnglishExamViewController: FSPagerViewDelegate, FSPagerViewDataSource {
     
     func pagerViewDidEndDecelerating(_ pagerView: FSPagerView) {
         viewModel.transform(inputEvent: .currentIndexChange(currentIndex: pagerView.currentIndex))
@@ -161,7 +161,7 @@ extension VocabularyExamViewController: FSPagerViewDelegate, FSPagerViewDataSour
     }
     
     func pagerView(_ pagerView: FSPagerView, cellForItemAt index: Int) -> FSPagerViewCell {
-        guard let cell = pagerView.dequeueReusableCell(withReuseIdentifier: VocabularyExamViews.VocabularyExamQuestionCell.self.className, at: index) as? VocabularyExamViews.VocabularyExamQuestionCell else {
+        guard let cell = pagerView.dequeueReusableCell(withReuseIdentifier: EnglishExamViews.VocabularyExamQuestionCell.self.className, at: index) as? EnglishExamViews.VocabularyExamQuestionCell else {
             return FSPagerViewCell()
         }
         viewModel.transform(inputEvent: .currentIndexChange(currentIndex: index))

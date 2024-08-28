@@ -61,7 +61,7 @@ class ScreenLoader {
         case .vocabulary(vocabularies: let vocabularies, startIndex: let startIndex): return VocabularyViewController(vocabularies: vocabularies, startIndex: startIndex)
         case .flipCard: return FlipCardViewContoller()
         case .VocabularyExam(questionType: let questionType, vocabularies: let vocabularies):
-            return VocabularyExamViewController(questionType: questionType, vocabularies: vocabularies)
+            return EnglishExamViewController(questionType: questionType, vocabularies: vocabularies)
         }
     }
     

@@ -1,5 +1,5 @@
 //
-//  VocabularyExamViews.swift
+//  EnglishExamViews.swift
 //  ChatBot
 //
 //  Created by 吳俊諺 on 2024/8/23.
@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 
-class VocabularyExamViews: ControllerView {
+class EnglishExamViews: ControllerView {
     
     
     let indexLabel = UILabel().apply {
@@ -69,7 +69,7 @@ protocol QuestionCardDelegate: AnyObject {
     
 }
 
-extension VocabularyExamViews {
+extension EnglishExamViews {
     
     //MARK: - 問題卡片
     class QuestionCard: UIView {

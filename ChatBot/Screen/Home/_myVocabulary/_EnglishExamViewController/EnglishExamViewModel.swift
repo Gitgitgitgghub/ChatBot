@@ -1,5 +1,5 @@
 //
-//  VocabularyExamViewModel.swift
+//  EnglishExamViewModel.swift
 //  ChatBot
 //
 //  Created by 吳俊諺 on 2024/8/23.
@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 
-class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent, VocabularyExamViewModel.OutputEvent> {
+class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, EnglishExamViewModel.OutputEvent> {
     
     typealias QuestionType = SystemDefine.VocabularyExam.QuestionType
     
