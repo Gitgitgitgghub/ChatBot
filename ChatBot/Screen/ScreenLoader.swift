@@ -39,8 +39,8 @@ class ScreenLoader {
         case vocabulary(vocabularies: [VocabularyModel], startIndex: Int)
         /// 翻卡測驗
         case flipCard
-        /// 單字測驗
-        case VocabularyExam(questionType: SystemDefine.VocabularyExam.QuestionType, vocabularies: [VocabularyModel] = [])
+        /// 英文測驗
+        case englishExam(questionType: SystemDefine.EnglishExam.QuestionType, vocabularies: [VocabularyModel] = [])
     }
     
     static func loadScreen(screen: Screen) -> UIViewController {
@@ -60,7 +60,7 @@ class ScreenLoader {
         case .home_myVocabulary: return MyVocabularyViewController()
         case .vocabulary(vocabularies: let vocabularies, startIndex: let startIndex): return VocabularyViewController(vocabularies: vocabularies, startIndex: startIndex)
         case .flipCard: return FlipCardViewContoller()
-        case .VocabularyExam(questionType: let questionType, vocabularies: let vocabularies):
+        case .englishExam(questionType: let questionType, vocabularies: let vocabularies):
             return EnglishExamViewController(questionType: questionType, vocabularies: vocabularies)
         }
     }
@@ -68,7 +68,7 @@ class ScreenLoader {
     //TODO: - 有空可以實作一下啟動方式
     static func toScreen(screen: Screen, viewController: UIViewController) {
         switch screen {
-        case .flipCard, .VocabularyExam:
+        case .flipCard, .englishExam:
             viewController.navigationController?.pushViewController(loadScreen(screen: screen), animated: true)
         default: print("ScreenLoader.toScreen 尚未實作")
         }

@@ -49,47 +49,6 @@ typealias LoadingStatus = SystemDefine.LoadingStatus
 
 extension SystemDefine {
     
-    //MARK: - 單字測試
-    struct VocabularyExam {
-        
-        /// 問題類型
-        enum QuestionType: CaseIterable {
-            
-            /// 單純的單字測驗
-            case vocabularyWord(letter: String, sortOption: SystemDefine.VocabularyExam.SortOption)
-            /// 單字克漏字填空
-            case vocabularyCloze(letter: String, sortOption: SystemDefine.VocabularyExam.SortOption)
-            /// 文法題
-            case gramma(type: String)
-            
-            static var allCases: [QuestionType] {
-                return [
-                    .vocabularyWord(letter: "", sortOption: .familiarity),
-                    .vocabularyCloze(letter: "", sortOption: .familiarity) 
-                ]
-            }
-            
-            var title: String {
-                switch self {
-                case .vocabularyWord:
-                    return "字義選擇"
-                case .vocabularyCloze:
-                    return "克漏字選擇"
-                case .gramma:
-                    return "文法測驗"
-                }
-            }
-        }
-        
-        /// 排序方式
-        enum SortOption: String, CaseIterable {
-            case familiarity = "依照熟悉度"
-            case lastWatchTime = "依照觀看日期"
-            case star = "星號"
-        }
-        
-    }
-    
     //MARK: - 訊息類相關變數
     struct Message {
         /// 預設訊息
@@ -130,23 +89,28 @@ extension SystemDefine {
         case Chat
         /// 語法糾正
         case GrammarCorrection
+        /// 文法考試
+        case GrammaExam
         
         var rawValue: Int {
             switch self {
             case .Chat: return 0
             case .GrammarCorrection: return 1
+            case .GrammaExam: return 2
             }
         }
         var title: String {
             switch self {
             case .Chat: return "聊天"
             case .GrammarCorrection: return "語法糾正"
+            case .GrammaExam: return "文法考試"
             }
         }
         var enable: Bool {
             switch self {
             case .Chat: return true
             case .GrammarCorrection: return true
+            case .GrammaExam: return true
             }
         }
         var prompt: String {
@@ -162,6 +126,7 @@ extension SystemDefine {
             switch rawValue {
             case 0: self = .Chat
             case 1: self = .GrammarCorrection
+            case 2: self = .GrammaExam
             default: return nil
             }
         }

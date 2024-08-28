@@ -26,6 +26,8 @@ class HomeViewController: BaseUIViewController {
                 self.toChatVc(function: .Chat)
             case .GrammarCorrection:
                 self.toChatVc(function: .GrammarCorrection)
+            case .GrammaExam:
+                ScreenLoader.toScreen(screen: .englishExam(questionType: .gramma(type: ""), vocabularies: []), viewController: self)
             }
         }
     }
@@ -38,6 +40,7 @@ class HomeViewController: BaseUIViewController {
             vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .normal))
         case .GrammarCorrection:
             vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .prompt(title: function.title, prompt: function.prompt)))
+        case .GrammaExam: return
         }
         navigationController?.pushViewController(vc, animated: true)
     }

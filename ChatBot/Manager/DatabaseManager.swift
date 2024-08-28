@@ -19,6 +19,10 @@ class DatabaseManager {
         setupDatabase()
     }
     
+    func test(point: SystemDefine.EnglishExam.TOEICGrammarPoint) {
+        
+    }
+    
     /// 創造聊天室和訊息的表
     private func createChatRoomTable(){
         migrator.registerMigration("createChatRooms") { db in

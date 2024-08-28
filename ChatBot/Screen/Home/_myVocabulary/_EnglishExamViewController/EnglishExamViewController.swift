@@ -17,7 +17,7 @@ class EnglishExamViewController: BaseUIViewController {
         return views.pagerView
     }
     
-    init(questionType: SystemDefine.VocabularyExam.QuestionType, vocabularies: [VocabularyModel]) {
+    init(questionType: SystemDefine.EnglishExam.QuestionType, vocabularies: [VocabularyModel]) {
         self.viewModel = .init(questionType: questionType, vocabularies: vocabularies)
         super.init(nibName: nil, bundle: nil)
     }
@@ -34,7 +34,7 @@ class EnglishExamViewController: BaseUIViewController {
     }
     
     private func initUI() {
-        title = "單字測驗"
+        title = viewModel.questionType.title
         pagerView.delegate = self
         pagerView.dataSource = self
         pagerView.register(EnglishExamViews.VocabularyExamQuestionCell.self, forCellWithReuseIdentifier: EnglishExamViews.VocabularyExamQuestionCell.className)

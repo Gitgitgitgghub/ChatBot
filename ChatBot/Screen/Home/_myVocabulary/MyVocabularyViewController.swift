@@ -68,7 +68,7 @@ extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate
     func onExamButtonClicked() {
         ExamQuestionSelectorViewController().show(in: self) { QuestionType in
             guard let QuestionType = QuestionType else { return }
-            ScreenLoader.toScreen(screen: .VocabularyExam(questionType: QuestionType, vocabularies: []), viewController: self)
+            ScreenLoader.toScreen(screen: .englishExam(questionType: QuestionType, vocabularies: []), viewController: self)
         }
     }
     

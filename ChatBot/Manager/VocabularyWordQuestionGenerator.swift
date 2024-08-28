@@ -13,13 +13,13 @@ import Combine
 
 class VocabularyWordQuestionGenerator: EnglishQuestionGeneratorProtocol {
     
-    typealias QuestionType = SystemDefine.VocabularyExam.QuestionType
+    typealias QuestionType = SystemDefine.EnglishExam.QuestionType
     
     private let vocabularyManager: VocabularyManager
     private let englishQuestionService: EnglishQuestionService
     private var questionType: QuestionType
     private var letter: String?
-    private var sortOption: SystemDefine.VocabularyExam.SortOption?
+    private var sortOption: SystemDefine.EnglishExam.SortOption?
     ///
     private(set) var vocabularies: [VocabularyModel]
     

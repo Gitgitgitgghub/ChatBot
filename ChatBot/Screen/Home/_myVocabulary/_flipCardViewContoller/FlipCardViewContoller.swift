@@ -58,7 +58,7 @@ class FlipCardViewContoller: BaseUIViewController {
     @objc private func examButtonClicked() {
         ExamQuestionSelectorViewController(selectorComponent: [.questionTypeSelector]).show(in: self) { QuestionType in
             guard let QuestionType = QuestionType else { return }
-            ScreenLoader.toScreen(screen: .VocabularyExam(questionType: QuestionType, vocabularies: self.viewModel.vocabularies), viewController: self)
+            ScreenLoader.toScreen(screen: .englishExam(questionType: QuestionType, vocabularies: self.viewModel.vocabularies), viewController: self)
         }
     }
     

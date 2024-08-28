@@ -13,12 +13,12 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
     private let letters: [String] = ["隨機", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
     private var selectedLetter: String?
     /// 題型選項
-    private let typeOptions: [SystemDefine.VocabularyExam.QuestionType] = SystemDefine.VocabularyExam.QuestionType.allCases
+    private let typeOptions: [SystemDefine.EnglishExam.QuestionType] = SystemDefine.EnglishExam.QuestionType.allCases
     private var selectedTypeIndex = 0
     /// 排序選項
-    private let sortingOptions = SystemDefine.VocabularyExam.SortOption.allCases
+    private let sortingOptions = SystemDefine.EnglishExam.SortOption.allCases
     private var selectedSortingIndex = 0
-    var completionHandler: ((_ QuestionType: SystemDefine.VocabularyExam.QuestionType?) -> Void)?
+    var completionHandler: ((_ QuestionType: SystemDefine.EnglishExam.QuestionType?) -> Void)?
     private let pickerView = UIPickerView().apply {
         $0.isVisible = false
     }
@@ -238,7 +238,7 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
         print("Selected letter: \(selectedLetter ?? "")")
     }
     
-    func show(in viewController: UIViewController, completionHandler: @escaping ((_ QuestionType: SystemDefine.VocabularyExam.QuestionType?) -> Void)) {
+    func show(in viewController: UIViewController, completionHandler: @escaping ((_ QuestionType: SystemDefine.EnglishExam.QuestionType?) -> Void)) {
         self.completionHandler = completionHandler
         self.selectedLetter = letters.first
         self.selectedTypeIndex = 0

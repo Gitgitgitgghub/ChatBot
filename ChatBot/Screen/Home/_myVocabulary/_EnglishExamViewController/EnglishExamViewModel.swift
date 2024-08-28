@@ -12,7 +12,7 @@ import UIKit
 
 class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, EnglishExamViewModel.OutputEvent> {
     
-    typealias QuestionType = SystemDefine.VocabularyExam.QuestionType
+    typealias QuestionType = SystemDefine.EnglishExam.QuestionType
     
     enum InputEvent {
         case fetchQuestion
@@ -42,7 +42,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     }
     
     private let vocabularyManager = VocabularyManager.share
-    private var questionType: QuestionType
+    private(set) var questionType: QuestionType
     /// 當前題目
     private(set) var questions: [EnglishExamQuestion] = []
     /// 回答正確的題目
