@@ -65,7 +65,7 @@ class VocabularyExamViews: ControllerView {
 
 protocol QuestionCardDelegate: AnyObject {
     
-    func onOptionSelected(question: VocabulayExamQuestion, selectedOption: String?)
+    func onOptionSelected(question: EnglishExamQuestion, selectedOption: String?)
     
 }
 
@@ -87,7 +87,7 @@ extension VocabularyExamViews {
             $0.alignment = .center
             $0.distribution = .equalCentering
         }
-        var question: VocabulayExamQuestion?
+        var question: EnglishExamQuestion?
         weak var delegate: QuestionCardDelegate?
         
         override init(frame: CGRect) {
@@ -131,7 +131,7 @@ extension VocabularyExamViews {
             delegate?.onOptionSelected(question: question, selectedOption: selectedOption)
         }
         
-        func setQuestion(question: VocabulayExamQuestion, isAnswerMode: Bool) {
+        func setQuestion(question: EnglishExamQuestion, isAnswerMode: Bool) {
             self.question = question
             if isAnswerMode {
                 setAndwerModeUI()
@@ -205,7 +205,7 @@ extension VocabularyExamViews {
             }
         }
         
-        func bindVocabulayExamQuestion(question: VocabulayExamQuestion, isAnswerMode: Bool) {
+        func bindEnglishQuestion(question: EnglishExamQuestion, isAnswerMode: Bool) {
             questionCard.setQuestion(question: question, isAnswerMode: isAnswerMode)
         }
         

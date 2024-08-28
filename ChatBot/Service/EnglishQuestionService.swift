@@ -12,7 +12,7 @@ import OpenAI
 
 class EnglishQuestionService: OpenAIService {
     
-    func fetchVocabularyClozeQuestions(vocabularies: [VocabularyModel]) -> AnyPublisher<[VocabulayExamQuestion], Error> {
+    func fetchVocabularyClozeQuestions(vocabularies: [VocabularyModel]) -> AnyPublisher<[EnglishExamQuestion], Error> {
         let clozeQuestionsPublishers = vocabularies.map { vocabulary in
             self.fetchSingleVocabularyClozeQuestion(vocabulary: vocabulary)
         }
@@ -22,7 +22,7 @@ class EnglishQuestionService: OpenAIService {
     }
 
 
-    func fetchSingleVocabularyClozeQuestion(vocabulary: VocabularyModel) -> AnyPublisher<VocabulayExamQuestion, Error> {
+    func fetchSingleVocabularyClozeQuestion(vocabulary: VocabularyModel) -> AnyPublisher<EnglishExamQuestion, Error> {
         let prompt = """
         請幫我生成一個 JSON 格式的克漏字題目，請使用以下單字來生成題目：
         單字：**\(vocabulary.wordEntry.word)**
@@ -39,9 +39,9 @@ class EnglishQuestionService: OpenAIService {
                 // 解析JSON
                 if let text = chatResult.choices.first?.message.content?.string {
                     if let jsonData = text.data(using: .utf8) {
-                        var response = try JSONDecoder().decode(VocabulayExamQuestion.self, from: jsonData)
+                        var response = try JSONDecoder().decode(VocabularyExamQuestion.self, from: jsonData)
                         response.original = vocabulary
-                        return response
+                        return EnglishExamQuestion.vocabulayExamQuestion(data: response)
                     } else {
                         throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to convert response to data"])
                     }
@@ -60,7 +60,7 @@ class EnglishQuestionService: OpenAIService {
         return publisher
     }
     
-    func fetchGrammarQuestion(limit: Int) -> AnyPublisher<[GrammaExamQuestion], Error> {
+    func fetchGrammarQuestion(limit: Int) -> AnyPublisher<[EnglishExamQuestion], Error> {
         let publishers = (0..<limit).map { _ in
             fetchSingleGrammarQuestion()
         }
@@ -69,7 +69,7 @@ class EnglishQuestionService: OpenAIService {
             .eraseToAnyPublisher()
     }
     
-    func fetchSingleGrammarQuestion() -> AnyPublisher<GrammaExamQuestion, Error> {
+    func fetchSingleGrammarQuestion() -> AnyPublisher<EnglishExamQuestion, Error> {
         let prompt = """
         Please generate a diverse TOEIC grammar question in JSON format and ensure the grammar question is unique and varied, covering different grammar topics. The sentence structure, options, and correct answer should change every time, and the explanation (reason) should be provided in Traditional Chinese.
         Make sure the JSON structure follows this format:
@@ -87,7 +87,7 @@ class EnglishQuestionService: OpenAIService {
                 if let text = chatResult.choices.first?.message.content?.string {
                     if let jsonData = text.data(using: .utf8) {
                         let response = try JSONDecoder().decode(GrammaExamQuestion.self, from: jsonData)
-                        return response
+                        return EnglishExamQuestion.grammaExamQuestion(data: response)
                     } else {
                         throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to convert response to data"])
                     }

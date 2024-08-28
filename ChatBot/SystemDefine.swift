@@ -59,6 +59,8 @@ extension SystemDefine {
             case vocabularyWord(letter: String, sortOption: SystemDefine.VocabularyExam.SortOption)
             /// 單字克漏字填空
             case vocabularyCloze(letter: String, sortOption: SystemDefine.VocabularyExam.SortOption)
+            /// 文法題
+            case gramma(type: String)
             
             static var allCases: [QuestionType] {
                 return [
@@ -69,10 +71,12 @@ extension SystemDefine {
             
             var title: String {
                 switch self {
-                case .vocabularyWord(let letter, let sortOption):
+                case .vocabularyWord:
                     return "字義選擇"
-                case .vocabularyCloze(let letter, let sortOption):
+                case .vocabularyCloze:
                     return "克漏字選擇"
+                case .gramma:
+                    return "文法測驗"
                 }
             }
         }

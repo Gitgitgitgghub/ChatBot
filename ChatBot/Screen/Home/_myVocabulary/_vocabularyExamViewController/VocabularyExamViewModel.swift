@@ -17,7 +17,7 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
     enum InputEvent {
         case fetchQuestion
         case currentIndexChange(currentIndex: Int)
-        case onOptionSelected(question: VocabulayExamQuestion, selectedOption: String?)
+        case onOptionSelected(question: EnglishExamQuestion, selectedOption: String?)
         case retakeExam
         case startExam
         case pauseExam
@@ -44,11 +44,11 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
     private let vocabularyManager = VocabularyManager.share
     private var questionType: QuestionType
     /// 當前題目
-    private(set) var questions: [VocabulayExamQuestion] = []
+    private(set) var questions: [EnglishExamQuestion] = []
     /// 回答正確的題目
-    private(set) var correctAnswerQuestions: [VocabulayExamQuestion] = []
+    private(set) var correctAnswerQuestions: [EnglishExamQuestion] = []
     /// 回答錯誤的題目
-    private(set) var wrongAnswerQuestions: [VocabulayExamQuestion] = []
+    private(set) var wrongAnswerQuestions: [EnglishExamQuestion] = []
     /// 當前題目位置
     private(set) var currentIndex: Int = 0
     /// 最多題目數量
@@ -58,11 +58,11 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
     /// 當前考試狀態
     @Published private(set) var examState: ExamState = .preparing
     /// 題目產生器
-    private var questionGenerator: EnglishQuestionGenerator
+    private var questionGenerator: EnglishQuestionGeneratorProtocol
     
     init(questionType: QuestionType, vocabularies: [VocabularyModel]) {
         self.questionType = questionType
-        questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, englishQuestion: .init(), questionType: questionType, vocabularies: vocabularies)
+        questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, englishQuestionService: .init(), questionType: questionType, vocabularies: vocabularies)
     }
     
     func bindInputEvent() {
@@ -138,15 +138,14 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
         examState = .ready
     }
     
-    private func onOptionSelected(question: VocabulayExamQuestion, selectedOption: String?) {
+    private func onOptionSelected(question: EnglishExamQuestion, selectedOption: String?) {
         if let index = questions.firstIndex(where: { $0.questionText == question.questionText }) {
-            questions[index].userSelecedAnswer = selectedOption
-            let updateQuestion = questions[index]
-            let isCorrect = updateQuestion.isCorrect()
+            let (updatedQuestion, isCorrect) = question.selectAnswer(selectedOption)
+            questions[index] = updatedQuestion
             if isCorrect {
-                correctAnswerQuestions.append(updateQuestion)
+                correctAnswerQuestions.append(updatedQuestion)
             }else {
-                wrongAnswerQuestions.append(updateQuestion)
+                wrongAnswerQuestions.append(updatedQuestion)
             }
             if hasNextQuestion() {
                 outputSubject.send(.scrollToNextQuestion)
@@ -154,22 +153,24 @@ class VocabularyExamViewModel: BaseViewModel<VocabularyExamViewModel.InputEvent,
                 examState = .ended(correctCount: correctAnswerQuestions.count, wrongCount: wrongAnswerQuestions.count)
                 timerManager.stopTimer()
             }
-            changeFamalirity(question: updateQuestion, isCorrect: isCorrect)
+            changeFamalirity(question: updatedQuestion, isCorrect: isCorrect)
         }
     }
     
     /// 更改熟悉度
-    private func changeFamalirity(question: VocabulayExamQuestion, isCorrect: Bool) {
-        guard let vocabulary = question.original else { return }
-        let score = isCorrect ? 1 : -1
-        vocabulary.familiarity += score
-        vocabularyManager.saveVocabulay(vocabulary: vocabulary)
-            .sink { _ in
-                
-            } receiveValue: { _ in
-                
-            }
-            .store(in: &subscriptions)
+    private func changeFamalirity(question: EnglishExamQuestion, isCorrect: Bool) {
+        if case .vocabulayExamQuestion(let data) = question {
+            guard let vocabulary = data.original else { return }
+            let score = isCorrect ? 1 : -1
+            vocabulary.familiarity += score
+            vocabularyManager.saveVocabulay(vocabulary: vocabulary)
+                .sink { _ in
+                    
+                } receiveValue: { _ in
+                    
+                }
+                .store(in: &subscriptions)
+        }
     }
     
     /// 是否還有下一題

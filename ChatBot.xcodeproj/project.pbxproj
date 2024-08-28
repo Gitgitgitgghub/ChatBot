@@ -65,10 +65,11 @@
 		32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */; };
 		32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0C2C2405EC00FE5786 /* UIImage+.swift */; };
 		32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F112C251E5400FE5786 /* AttributedStringParsable.swift */; };
-		329B3F842C796DBE004D7570 /* VocabulayExamQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F832C796DBE004D7570 /* VocabulayExamQuestion.swift */; };
+		329B3F842C796DBE004D7570 /* EnglishQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F832C796DBE004D7570 /* EnglishQuestion.swift */; };
 		329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F852C7C2F2E004D7570 /* TimerManager.swift */; };
-		329B3F882C7C56C7004D7570 /* EnglishQuestionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F872C7C56C7004D7570 /* EnglishQuestionGenerator.swift */; };
+		329B3F882C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */; };
 		329B3F8A2C7DD802004D7570 /* EnglishQuestionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F892C7DD802004D7570 /* EnglishQuestionService.swift */; };
+		329B3F8C2C7F1377004D7570 /* ExamQuestionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F8B2C7F1377004D7570 /* ExamQuestionProtocol.swift */; };
 		32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */; };
 		32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */; };
 		32B4D70F2C745F4500CA4C40 /* FlipCardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */; };
@@ -206,10 +207,11 @@
 		32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenAIProtocol+ ImageFileHandler.swift"; sourceTree = "<group>"; };
 		32800F0C2C2405EC00FE5786 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
 		32800F112C251E5400FE5786 /* AttributedStringParsable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedStringParsable.swift; sourceTree = "<group>"; };
-		329B3F832C796DBE004D7570 /* VocabulayExamQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabulayExamQuestion.swift; sourceTree = "<group>"; };
+		329B3F832C796DBE004D7570 /* EnglishQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishQuestion.swift; sourceTree = "<group>"; };
 		329B3F852C7C2F2E004D7570 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
-		329B3F872C7C56C7004D7570 /* EnglishQuestionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishQuestionGenerator.swift; sourceTree = "<group>"; };
+		329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyWordQuestionGenerator.swift; sourceTree = "<group>"; };
 		329B3F892C7DD802004D7570 /* EnglishQuestionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishQuestionService.swift; sourceTree = "<group>"; };
+		329B3F8B2C7F1377004D7570 /* ExamQuestionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamQuestionProtocol.swift; sourceTree = "<group>"; };
 		32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTextDelegate.swift; sourceTree = "<group>"; };
 		32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViewContoller.swift; sourceTree = "<group>"; };
 		32B4D70E2C745F4500CA4C40 /* FlipCardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViews.swift; sourceTree = "<group>"; };
@@ -434,7 +436,7 @@
 				32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */,
 				94215CAA2C73851000F4DDF1 /* CacheManager.swift */,
 				329B3F852C7C2F2E004D7570 /* TimerManager.swift */,
-				329B3F872C7C56C7004D7570 /* EnglishQuestionGenerator.swift */,
+				329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -517,6 +519,7 @@
 				32B7E6A72C637C010032ABFD /* DataToAttributedString.swift */,
 				32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */,
 				32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */,
+				329B3F8B2C7F1377004D7570 /* ExamQuestionProtocol.swift */,
 			);
 			path = protocol;
 			sourceTree = "<group>";
@@ -537,7 +540,7 @@
 				32B4D71B2C7832E900CA4C40 /* VocabularyExamViewController.swift */,
 				32B4D71D2C78332000CA4C40 /* VocabularyExamViewModel.swift */,
 				32B4D71F2C78337100CA4C40 /* VocabularyExamViews.swift */,
-				329B3F832C796DBE004D7570 /* VocabulayExamQuestion.swift */,
+				329B3F832C796DBE004D7570 /* EnglishQuestion.swift */,
 			);
 			path = _vocabularyExamViewController;
 			sourceTree = "<group>";
@@ -892,7 +895,7 @@
 				32B7E6AF2C69C3650032ABFD /* WordModels.swift in Sources */,
 				327D286F2C5A10DC00F6ED68 /* NoActionTextView.swift in Sources */,
 				320421972C1933EC00D72203 /* SystemDefine.swift in Sources */,
-				329B3F842C796DBE004D7570 /* VocabulayExamQuestion.swift in Sources */,
+				329B3F842C796DBE004D7570 /* EnglishQuestion.swift in Sources */,
 				3204219B2C193B4100D72203 /* ChatViews.swift in Sources */,
 				94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */,
 				32B7E6AD2C69C2C10032ABFD /* TOEICWordDecoder.swift in Sources */,
@@ -938,6 +941,7 @@
 				3241BE412C3F7A720047BB71 /* SettingViews.swift in Sources */,
 				946F7A3C2C466FAA007DC7A8 /* ChatRoomManager.swift in Sources */,
 				3241BE4B2C44B01A0047BB71 /* ChatModel.swift in Sources */,
+				329B3F8C2C7F1377004D7570 /* ExamQuestionProtocol.swift in Sources */,
 				32800F002C214E3000FE5786 /* ChatInputView.swift in Sources */,
 				323E88AE2C353DFA00401F50 /* HomeViewController.swift in Sources */,
 				3241BE572C4DF1AA0047BB71 /* NoteViews.swift in Sources */,
@@ -956,7 +960,7 @@
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32B7E6E42C6DC1150032ABFD /* DataCacheProtocol.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,
-				329B3F882C7C56C7004D7570 /* EnglishQuestionGenerator.swift in Sources */,
+				329B3F882C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift in Sources */,
 				3241BE502C44B3FC0047BB71 /* DatabaseManager.swift in Sources */,
 				943CFF912C5CBE7E00B96812 /* TextEditorViews.swift in Sources */,
 				326F728B2C29554B00B06DF8 /* UITextView+.swift in Sources */,

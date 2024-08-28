@@ -143,7 +143,7 @@ class VocabularyExamViewController: BaseUIViewController {
 //MARK: - QuestionCardDelegate
 extension VocabularyExamViewController: QuestionCardDelegate {
     
-    func onOptionSelected(question: VocabulayExamQuestion, selectedOption: String?) {
+    func onOptionSelected(question: EnglishExamQuestion, selectedOption: String?) {
         viewModel.transform(inputEvent: .onOptionSelected(question: question, selectedOption: selectedOption))
     }
     
@@ -165,7 +165,7 @@ extension VocabularyExamViewController: FSPagerViewDelegate, FSPagerViewDataSour
             return FSPagerViewCell()
         }
         viewModel.transform(inputEvent: .currentIndexChange(currentIndex: index))
-        cell.bindVocabulayExamQuestion(question: viewModel.questions[index], isAnswerMode: viewModel.examState == .answerMode)
+        cell.bindEnglishQuestion(question: viewModel.questions[index], isAnswerMode: viewModel.examState == .answerMode)
         cell.delegate = self
         return cell
     }
