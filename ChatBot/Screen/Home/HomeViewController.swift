@@ -27,7 +27,11 @@ class HomeViewController: BaseUIViewController {
             case .GrammarCorrection:
                 self.toChatVc(function: .GrammarCorrection)
             case .GrammaExam:
-                ScreenLoader.toScreen(screen: .englishExam(questionType: .gramma(type: ""), vocabularies: []), viewController: self)
+                GrammarPointSelectorViewController().show(in: self) { [weak self] selectedGrammarPoint in
+                    guard let `self` = self else { return }
+                    print("你選擇了: \(selectedGrammarPoint?.rawValue ?? "nil")")
+                    ScreenLoader.toScreen(screen: .englishExam(questionType: .gramma(point: selectedGrammarPoint), vocabularies: []), viewController: self)
+                }
             }
         }
     }

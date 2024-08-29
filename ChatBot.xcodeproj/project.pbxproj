@@ -104,6 +104,8 @@
 		32B7E6E02C6B54FF0032ABFD /* VocabularyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6DF2C6B54FF0032ABFD /* VocabularyService.swift */; };
 		32B7E6E42C6DC1150032ABFD /* DataCacheProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */; };
 		32C495622C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495612C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift */; };
+		32C495652C8019A700AB1360 /* GrammarPointSelectorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495642C8019A700AB1360 /* GrammarPointSelectorAlert.swift */; };
+		32C495682C80594200AB1360 /* RadioButtonGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495672C80594200AB1360 /* RadioButtonGroupView.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
 		32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32C77FCF2C18504F00F335FE /* Assets.xcassets */; };
@@ -249,6 +251,8 @@
 		32B7E6DF2C6B54FF0032ABFD /* VocabularyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyService.swift; sourceTree = "<group>"; };
 		32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCacheProtocol.swift; sourceTree = "<group>"; };
 		32C495612C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemDefine+EnglishExam.swift"; sourceTree = "<group>"; };
+		32C495642C8019A700AB1360 /* GrammarPointSelectorAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarPointSelectorAlert.swift; sourceTree = "<group>"; };
+		32C495672C80594200AB1360 /* RadioButtonGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioButtonGroupView.swift; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32C77FC82C18504E00F335FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -560,6 +564,7 @@
 				32B7E6B22C69CF360032ABFD /* MyVocabularyViewModel.swift */,
 				32B7E6B82C69E5610032ABFD /* MyVocabularyViews.swift */,
 				32D54DA52C787D9C000A9E97 /* ExamQuestionSelectorViewController.swift */,
+				32C495642C8019A700AB1360 /* GrammarPointSelectorAlert.swift */,
 			);
 			path = _myVocabulary;
 			sourceTree = "<group>";
@@ -687,6 +692,7 @@
 				32690FC32C3CCF4B00700192 /* RemoteImageAttachment.swift */,
 				327D286E2C5A10DC00F6ED68 /* NoActionTextView.swift */,
 				32B4D7182C77448700CA4C40 /* StarButton.swift */,
+				32C495672C80594200AB1360 /* RadioButtonGroupView.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -892,6 +898,7 @@
 				32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */,
 				323E88B22C354BA200401F50 /* HomeViews.swift in Sources */,
 				946F7A382C464EC4007DC7A8 /* NoteModel.swift in Sources */,
+				32C495652C8019A700AB1360 /* GrammarPointSelectorAlert.swift in Sources */,
 				326F72902C2E4C4F00B06DF8 /* Array+.swift in Sources */,
 				32B4D7202C78337100CA4C40 /* EnglishExamViews.swift in Sources */,
 				32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */,
@@ -921,6 +928,7 @@
 				32B7E6B92C69E5610032ABFD /* MyVocabularyViews.swift in Sources */,
 				32B4D7192C77448700CA4C40 /* StarButton.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
+				32C495682C80594200AB1360 /* RadioButtonGroupView.swift in Sources */,
 				327D28652C57314B00F6ED68 /* SharedGroupStorage.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,

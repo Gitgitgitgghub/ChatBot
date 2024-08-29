@@ -24,7 +24,7 @@ extension SystemDefine {
             /// 單字克漏字填空
             case vocabularyCloze(letter: String, sortOption: SystemDefine.EnglishExam.SortOption)
             /// 文法題
-            case gramma(type: String)
+            case gramma(point: TOEICGrammarPoint?)
             
             static var allCases: [QuestionType] {
                 return [
@@ -53,7 +53,7 @@ extension SystemDefine {
         }
         
         //MARK: - 多益考試常見的英文語法類型
-        enum TOEICGrammarPoint: String {
+        enum TOEICGrammarPoint: String, CaseIterable {
     
             case Tense = "時態"
             case VerbForm = "動詞形式和語態"

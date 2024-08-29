@@ -45,12 +45,12 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGeneratorProtocol {
             return generateNormalQuestion(limit: limit)
         case .vocabularyCloze:
             return generateClozeQuestion(limit: limit)
-        case .gramma(let type):
-            return generateGrammaQuestion(type: type, limit: limit)
+        case .gramma(let point):
+            return generateGrammaQuestion(point: point, limit: limit)
         }
     }
     
-    func generateGrammaQuestion(type: String, limit: Int) -> AnyPublisher<[EnglishExamQuestion], any Error> {
+    func generateGrammaQuestion(point: TOEICGrammarPoint?, limit: Int) -> AnyPublisher<[EnglishExamQuestion], any Error> {
         return englishQuestionService.fetchGrammarQuestion(limit: limit)
     }
     
