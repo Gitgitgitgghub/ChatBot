@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 
@@ -64,6 +65,25 @@ extension EnglishExamQuestion {
         return (updatedQuestion, updatedQuestion.isCorrect())
     }
     
+    /// 是否允許加入筆記
+    func enableNote() -> Bool {
+        switch self {
+        case .vocabulayExamQuestion:
+            return false
+        case .grammarExamQuestion:
+            return true
+        }
+    }
+    
+    func convertToNote() -> MyNote? {
+        switch self {
+        case .vocabulayExamQuestion(let data):
+            return nil
+        case .grammarExamQuestion(let data):
+            return data.convertToNote()
+        }
+    }
+    
 }
 
 struct GrammarExamQuestion: Codable {
@@ -93,6 +113,8 @@ struct GrammarExamQuestion: Codable {
         self.reason = reason
     }
     
+    /// 確保選項的正確性
+    /// 因為有時候選項沒有正確答案
     mutating func ensureOptionsValid() {
         guard self.options.isNotEmpty else { return }
         let currectAndswer = self.correctAnswer.replacingOccurrences(of: " ", with: "")
@@ -104,6 +126,18 @@ struct GrammarExamQuestion: Codable {
         }
         self.options[0] = currectAndswer
         self.options.shuffle()
+    }
+    
+    func convertToNote() -> MyNote? {
+        let title = grammarPointDescription
+        var noteBody = "\(questionText)\n"
+        for option in options {
+            noteBody.append(option)
+            noteBody.append("\n")
+        }
+        noteBody.append(displayReason)
+        return MyNote(title: title ?? "", attributedString: .init(string: noteBody, attributes: [.font: SystemDefine.Message.defaultTextFont,
+                                                                                                 .foregroundColor: UIColor.white]))
     }
     
 }

@@ -39,10 +39,15 @@ class EnglishExamViewController: BaseUIViewController {
         pagerView.dataSource = self
         pagerView.register(EnglishExamViews.VocabularyExamQuestionCell.self, forCellWithReuseIdentifier: EnglishExamViews.VocabularyExamQuestionCell.className)
         views.pauseButton.addTarget(self, action: #selector(paustExam), for: .touchUpInside)
+        views.addNoteButton.addTarget(self, action: #selector(addNote), for: .touchUpInside)
     }
     
     @objc private func paustExam() {
         viewModel.transform(inputEvent: .pauseExam)
+    }
+    
+    @objc private func addNote() {
+        viewModel.transform(inputEvent: .addToNote)
     }
     
     private func bind() {
@@ -53,20 +58,21 @@ class EnglishExamViewController: BaseUIViewController {
                 switch event {
                 case .indexChange(string: let string):
                     self.indexChange(string: string)
-                case .error(message: let message):
-                    self.showToast(message: message) { [weak self] in
-                        self?.navigationController?.popViewController(animated: true)
-                    }
                 case .scrollToNextQuestion:
                     self.pagerView.scrollToItem(at: self.pagerView.currentIndex + 1, animated: true)
                 case .updateTimer(string: let string):
                     self.views.timerLabel.attributedText = string
+                case .toast(message: let message):
+                    self.showToast(message: message) { [weak self] in
+                        self?.navigationController?.popViewController(animated: true)
+                    }
                 }
             }
             .store(in: &subscriptions)
         viewModel.$examState
             .sink { [weak self] state in
                 self?.examState(state: state)
+                self?.setAddNoteButtonVisible(state: state)
                 self?.updatePauseButtonUI(state: state)
             }
             .store(in: &subscriptions)
@@ -110,6 +116,10 @@ class EnglishExamViewController: BaseUIViewController {
         }
     }
     
+    private func setAddNoteButtonVisible(state: EnglishExamViewModel.ExamState) {
+        views.addNoteButton.isVisible = state == .answerMode
+    }
+    
     private func updatePauseButtonUI(state: EnglishExamViewModel.ExamState) {
         print(state)
         if state == .answerMode {
@@ -122,7 +132,7 @@ class EnglishExamViewController: BaseUIViewController {
     }
     
     private func indexChange(string: String) {
-        views.indexLabel.text = string
+        title = string
     }
     
     private func showExamResult(correctCount: Int, wrongCount: Int) {

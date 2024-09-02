@@ -13,12 +13,6 @@ import NVActivityIndicatorView
 class EnglishExamViews: ControllerView {
     
     
-    let indexLabel = UILabel().apply {
-        $0.numberOfLines = 1
-        $0.textColor = .darkGray
-        $0.font = .systemFont(ofSize: 22, weight: .bold)
-        $0.textAlignment = .center
-    }
     let timerLabel = UILabel().apply {
         $0.numberOfLines = 1
         $0.textColor = .darkGray
@@ -27,7 +21,7 @@ class EnglishExamViews: ControllerView {
     }
     let pauseButton = UIButton(type: .custom).apply {
         $0.setTitle("暫停考試", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
+        $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
         $0.setTitleColor(.white, for: .normal)
         $0.backgroundColor = .systemBrown
         $0.cornerRadius = 7
@@ -37,29 +31,37 @@ class EnglishExamViews: ControllerView {
         $0.interitemSpacing = 20
         $0.isScrollEnabled = false
     }
+    let addNoteButton = UIButton(type: .custom).apply {
+        $0.setTitle("加入筆記", for: .normal)
+        $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        $0.setTitleColor(.white, for: .normal)
+        $0.backgroundColor = .systemBrown
+        $0.cornerRadius = 7
+    }
     let loadingView = LoadingView(frame: .init(origin: .zero, size: .init(width: 80, height: 80)), type: .ballScaleMultiple, color: .white, padding: 0)
     
     override func initUI() {
-        view.addSubview(indexLabel)
         view.addSubview(pagerView)
         view.addSubview(timerLabel)
         view.addSubview(pauseButton)
         view.addSubview(loadingView)
-        indexLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
-            make.leading.trailing.equalToSuperview()
-        }
+        view.addSubview(addNoteButton)
         timerLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(indexLabel)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.leading.equalToSuperview().inset(10)
         }
         pauseButton.snp.makeConstraints { make in
-            make.centerY.equalTo(indexLabel)
+            make.centerY.equalTo(timerLabel)
             make.trailing.equalToSuperview().inset(10)
             make.size.equalTo(CGSize(width: 90, height: 30))
         }
+        addNoteButton.snp.makeConstraints { make in
+            make.centerY.equalTo(timerLabel)
+            make.trailing.equalTo(pauseButton.snp.leading).offset(-5)
+            make.size.equalTo(CGSize(width: 90, height: 30))
+        }
         pagerView.snp.makeConstraints { make in
-            make.top.equalTo(indexLabel.bottom).offset(10)
+            make.top.equalTo(pauseButton.bottom).offset(10)
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
         }
         loadingView.snp.makeConstraints { make in
@@ -79,10 +81,9 @@ class EnglishExamViews: ControllerView {
     
 }
 
+//MARK: Cell的delegate
 protocol QuestionCardDelegate: AnyObject {
-    
     func onOptionSelected(question: EnglishExamQuestion, selectedOption: String?)
-    
 }
 
 extension EnglishExamViews {

@@ -23,13 +23,14 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
         case pauseExam
         case resumeExam
         case switchAnswerMode
+        case addToNote
     }
     
     enum OutputEvent {
         case indexChange(string: String)
-        case error(message: String)
         case scrollToNextQuestion
         case updateTimer(string: NSAttributedString)
+        case toast(message: String)
     }
     
     enum ExamState: Equatable {
@@ -93,6 +94,8 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
                     self.resumeExam()
                 case .switchAnswerMode:
                     self.switchAnswerMode()
+                case .addToNote:
+                    self.addToNote()
                 }
             }
             .store(in: &subscriptions)
@@ -110,6 +113,21 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
             })
             .sink { [weak self] timerText in
                 self?.outputSubject.send(.updateTimer(string: timerText))
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func addToNote() {
+        guard let note = questions.getOrNil(index: currentIndex)?.convertToNote() else {
+            outputSubject.send(.toast(message: "該題型未開放加入筆記"))
+            return }
+        NoteManager.shared.saveNote(note)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    self?.outputSubject.send(.toast(message: error.localizedDescription))
+                }
+            } receiveValue: { [weak self] _ in
+                self?.outputSubject.send(.toast(message: "儲存成功"))
             }
             .store(in: &subscriptions)
     }
@@ -187,7 +205,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     
     private func currentIndexChange(currentIndex: Int) {
         self.currentIndex = currentIndex
-        let title = "第\(currentIndex + 1)/\(questions.count)題"
+        let title = "\(questionType.title)-第\(currentIndex + 1)/\(questions.count)題"
         outputSubject.send(.indexChange(string: title))
     }
     
@@ -196,7 +214,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
             .generateQuestion(limit: limit)
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.error(message: error.localizedDescription))
+                    self?.outputSubject.send(.toast(message: error.localizedDescription))
                 }
             } receiveValue: { [weak self] questions in
                 guard let `self` = self else { return }
