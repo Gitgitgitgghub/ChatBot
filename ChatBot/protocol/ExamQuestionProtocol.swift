@@ -29,7 +29,7 @@ extension ExamQuestionProtocol {
     }
     
     func printQuestion() {
-        print("Question: \(questionText)")
+        print("Question: \(questionText)\n correctAnswer: \(correctAnswer)")
         for (index, option) in options.enumerated() {
             print("\(index + 1): \(option)")
         }

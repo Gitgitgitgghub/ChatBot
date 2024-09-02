@@ -45,13 +45,13 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGeneratorProtocol {
             return generateNormalQuestion(limit: limit)
         case .vocabularyCloze:
             return generateClozeQuestion(limit: limit)
-        case .gramma(let point):
-            return generateGrammaQuestion(point: point, limit: limit)
+        case .grammar(let point):
+            return generateGrammarQuestion(point: point, limit: limit)
         }
     }
     
-    func generateGrammaQuestion(point: TOEICGrammarPoint?, limit: Int) -> AnyPublisher<[EnglishExamQuestion], any Error> {
-        return englishQuestionService.fetchGrammarQuestion(limit: limit)
+    func generateGrammarQuestion(point: TOEICGrammarPoint?, limit: Int) -> AnyPublisher<[EnglishExamQuestion], any Error> {
+        return englishQuestionService.fetchGrammarQuestion(grammarPoint: point, limit: limit)
     }
     
     /// 普通的選擇題

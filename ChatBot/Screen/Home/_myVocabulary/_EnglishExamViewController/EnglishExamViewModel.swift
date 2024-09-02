@@ -59,10 +59,17 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     @Published private(set) var examState: ExamState = .preparing
     /// 題目產生器
     private var questionGenerator: EnglishQuestionGeneratorProtocol
+    /// englishQuestionService
+    private let englishQuestionService: EnglishQuestionService
+    /// 讀取狀態
+    var loadingStatus: CurrentValueSubject<LoadingStatus, Never> {
+        return self.englishQuestionService.loadingStatusSubject
+    }
     
     init(questionType: QuestionType, vocabularies: [VocabularyModel]) {
         self.questionType = questionType
-        questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, englishQuestionService: .init(), questionType: questionType, vocabularies: vocabularies)
+        self.englishQuestionService = EnglishQuestionService()
+        questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, englishQuestionService: englishQuestionService, questionType: questionType, vocabularies: vocabularies)
     }
     
     func bindInputEvent() {

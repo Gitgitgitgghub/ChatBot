@@ -16,13 +16,13 @@ class EnglishQuestionService: OpenAIService {
         let clozeQuestionsPublishers = vocabularies.map { vocabulary in
             self.fetchSingleVocabularyClozeQuestion(vocabulary: vocabulary)
         }
-        return Publishers.MergeMany(clozeQuestionsPublishers)
+        return performAPICall(Publishers.MergeMany(clozeQuestionsPublishers)
             .collect()
-            .eraseToAnyPublisher()
+            .eraseToAnyPublisher())
     }
 
 
-    func fetchSingleVocabularyClozeQuestion(vocabulary: VocabularyModel) -> AnyPublisher<EnglishExamQuestion, Error> {
+    private func fetchSingleVocabularyClozeQuestion(vocabulary: VocabularyModel) -> AnyPublisher<EnglishExamQuestion, Error> {
         let prompt = """
         請幫我生成一個 JSON 格式的克漏字題目，請使用以下單字來生成題目：
         單字：**\(vocabulary.wordEntry.word)**
@@ -60,34 +60,47 @@ class EnglishQuestionService: OpenAIService {
         return publisher
     }
     
-    func fetchGrammarQuestion(limit: Int) -> AnyPublisher<[EnglishExamQuestion], Error> {
+    func fetchGrammarQuestion(grammarPoint: TOEICGrammarPoint?, limit: Int) -> AnyPublisher<[EnglishExamQuestion], Error> {
         let publishers = (0..<limit).map { _ in
-            fetchSingleGrammarQuestion()
+            fetchSingleGrammarQuestion(grammarPoint: grammarPoint)
         }
-        return Publishers.MergeMany(publishers)
+        return performAPICall(Publishers.MergeMany(publishers)
             .collect()
-            .eraseToAnyPublisher()
+            .eraseToAnyPublisher())
     }
     
-    func fetchSingleGrammarQuestion() -> AnyPublisher<EnglishExamQuestion, Error> {
+    private func fetchSingleGrammarQuestion(grammarPoint: TOEICGrammarPoint?) -> AnyPublisher<EnglishExamQuestion, Error> {
+        let grammarPoint = grammarPoint ?? TOEICGrammarPoint.randomGrammarPoint()
+        let grammarPointSubType = grammarPoint.randomSubType()
+        let grammar = "針對以下語法點: \(grammarPointSubType)"
         let prompt = """
-        Please generate a diverse TOEIC grammar question in JSON format and ensure the grammar question is unique and varied, covering different grammar topics. The sentence structure, options, and correct answer should change every time, and the explanation (reason) should be provided in Traditional Chinese.
-        Make sure the JSON structure follows this format:
-        {
-          "questionText": "[Sentence with a blank space]",
-          "options": ["[Option 1]", "[Option 2]", "[Option 3]"],
-          "correctAnswer": "[Correct option]",
-          "reason": "[Explanation for the correct answer in Traditional Chinese]"
+            請生成一個符合 TOEIC 英語考試的語法題目，格式為 JSON \(grammar)。
+            請確保語法題目是獨特且多樣化的，涵蓋不同的語法主題。句子結構、選項、正確答案和問題翻譯應該每次都不同，並且應提供正確答案的解釋（理由），解釋部分應使用繁體中文。
+            JSON 結構應嚴格遵循以下格式：
+            {
+              "questionText": "[問題，包含___的句子]",
+              "questionTranslation": "[問題的完整繁體中文翻譯]",
+              "options": ["[選項 1]", "[選項 2]", "[選項 3]", "[選項 4]"],
+              "correctAnswer": "[正確選項，必須是上述選項之一]",
+              "reason": "[正確答案的解釋，使用繁體中文]"
+            }
+            """
+        var grammarPointDescription: String = ""
+        if grammarPoint.rawValue == grammarPointSubType {
+            grammarPointDescription = "\(grammarPoint.rawValue)"
+        }else {
+            grammarPointDescription = "\(grammarPoint.rawValue)-\(grammarPointSubType)"
         }
-        """
         let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt3_5Turbo, responseFormat: .jsonObject)
         let publisher = openAI.chats(query: query)
             .tryMap({ chatResult in
                 // 解析JSON
                 if let text = chatResult.choices.first?.message.content?.string {
                     if let jsonData = text.data(using: .utf8) {
-                        let response = try JSONDecoder().decode(GrammaExamQuestion.self, from: jsonData)
-                        return EnglishExamQuestion.grammaExamQuestion(data: response)
+                        var response = try JSONDecoder().decode(GrammarExamQuestion.self, from: jsonData)
+                        response.grammarPointDescription = grammarPointDescription
+                        response.ensureOptionsValid()
+                        return EnglishExamQuestion.grammarExamQuestion(data: response)
                     } else {
                         throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to convert response to data"])
                     }

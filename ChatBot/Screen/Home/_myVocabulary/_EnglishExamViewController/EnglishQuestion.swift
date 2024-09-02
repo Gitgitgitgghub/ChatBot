@@ -12,13 +12,13 @@ import Foundation
 enum EnglishExamQuestion: ExamQuestionProtocol {
     
     case vocabulayExamQuestion(data: VocabularyExamQuestion)
-    case grammaExamQuestion(data: GrammaExamQuestion)
+    case grammarExamQuestion(data: GrammarExamQuestion)
     
     var questionText: String {
         switch self {
         case .vocabulayExamQuestion(let data):
             return data.questionText
-        case .grammaExamQuestion(let data):
+        case .grammarExamQuestion(let data):
             return data.questionText
         }
     }
@@ -26,7 +26,7 @@ enum EnglishExamQuestion: ExamQuestionProtocol {
         switch self {
         case .vocabulayExamQuestion(let data):
             return data.options
-        case .grammaExamQuestion(let data):
+        case .grammarExamQuestion(let data):
             return data.options
         }
     }
@@ -34,7 +34,7 @@ enum EnglishExamQuestion: ExamQuestionProtocol {
         switch self {
         case .vocabulayExamQuestion(let data):
             return data.correctAnswer
-        case .grammaExamQuestion(let data):
+        case .grammarExamQuestion(let data):
             return data.correctAnswer
         }
     }
@@ -43,7 +43,7 @@ enum EnglishExamQuestion: ExamQuestionProtocol {
         switch self {
         case .vocabulayExamQuestion(let data):
             return data.userSelecedAnswer
-        case .grammaExamQuestion(let data):
+        case .grammarExamQuestion(let data):
             return data.userSelecedAnswer
         }
     }
@@ -57,22 +57,54 @@ extension EnglishExamQuestion {
         case .vocabulayExamQuestion(var data):
             data.userSelecedAnswer = selectedOption
             updatedQuestion = .vocabulayExamQuestion(data: data)
-        case .grammaExamQuestion(var data):
+        case .grammarExamQuestion(var data):
             data.userSelecedAnswer = selectedOption
-            updatedQuestion = .grammaExamQuestion(data: data)
+            updatedQuestion = .grammarExamQuestion(data: data)
         }
         return (updatedQuestion, updatedQuestion.isCorrect())
     }
     
 }
 
-struct GrammaExamQuestion: Codable {
+struct GrammarExamQuestion: Codable {
     
     var questionText: String
+    var questionTranslation: String
+    var grammarPointDescription: String?
     var options: [String]
     var correctAnswer: String
     var userSelecedAnswer: String?
     var reason: String?
+    var displayReason: String {
+        var str = ""
+        str.append(questionTranslation)
+        if let grammarPoint = grammarPointDescription {
+            str.append("\n本題考點為:\(grammarPoint)")
+        }
+        str.append("\n解釋:\n\(reason ?? "")")
+        return str
+    }
+    
+    init(questionText: String, questionTranslation: String, options: [String], correctAnswer: String, reason: String? = nil) {
+        self.questionText = questionText
+        self.questionTranslation = questionTranslation
+        self.options = options
+        self.correctAnswer = correctAnswer
+        self.reason = reason
+    }
+    
+    mutating func ensureOptionsValid() {
+        guard self.options.isNotEmpty else { return }
+        let currectAndswer = self.correctAnswer.replacingOccurrences(of: " ", with: "")
+        let options = self.options.map({ $0.replacingOccurrences(of: " ", with: "") })
+        for option in options {
+            if option == currectAndswer {
+                return
+            }
+        }
+        self.options[0] = currectAndswer
+        self.options.shuffle()
+    }
     
 }
 

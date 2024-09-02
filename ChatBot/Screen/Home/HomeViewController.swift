@@ -26,11 +26,11 @@ class HomeViewController: BaseUIViewController {
                 self.toChatVc(function: .Chat)
             case .GrammarCorrection:
                 self.toChatVc(function: .GrammarCorrection)
-            case .GrammaExam:
+            case .GrammarExam:
                 GrammarPointSelectorViewController().show(in: self) { [weak self] selectedGrammarPoint in
                     guard let `self` = self else { return }
                     print("你選擇了: \(selectedGrammarPoint?.rawValue ?? "nil")")
-                    ScreenLoader.toScreen(screen: .englishExam(questionType: .gramma(point: selectedGrammarPoint), vocabularies: []), viewController: self)
+                    ScreenLoader.toScreen(screen: .englishExam(questionType: .grammar(point: selectedGrammarPoint), vocabularies: []), viewController: self)
                 }
             }
         }
@@ -44,7 +44,7 @@ class HomeViewController: BaseUIViewController {
             vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .normal))
         case .GrammarCorrection:
             vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .prompt(title: function.title, prompt: function.prompt)))
-        case .GrammaExam: return
+        case .GrammarExam: return
         }
         navigationController?.pushViewController(vc, animated: true)
     }

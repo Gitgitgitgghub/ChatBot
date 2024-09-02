@@ -125,7 +125,7 @@ class GrammarPointSelectorViewController: UIViewController {
     
     @objc private func confirmButtonTapped() {
         dismiss(animated: true) {
-            self.completion?(nil)
+            self.completion?(self.selectedPoint)
         }
     }
     

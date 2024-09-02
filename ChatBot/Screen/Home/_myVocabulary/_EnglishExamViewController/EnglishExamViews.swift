@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
 
 class EnglishExamViews: ControllerView {
@@ -36,12 +37,14 @@ class EnglishExamViews: ControllerView {
         $0.interitemSpacing = 20
         $0.isScrollEnabled = false
     }
+    let loadingView = LoadingView(frame: .init(origin: .zero, size: .init(width: 80, height: 80)), type: .ballScaleMultiple, color: .white, padding: 0)
     
     override func initUI() {
         view.addSubview(indexLabel)
         view.addSubview(pagerView)
         view.addSubview(timerLabel)
         view.addSubview(pauseButton)
+        view.addSubview(loadingView)
         indexLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.leading.trailing.equalToSuperview()
@@ -58,6 +61,19 @@ class EnglishExamViews: ControllerView {
         pagerView.snp.makeConstraints { make in
             make.top.equalTo(indexLabel.bottom).offset(10)
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
+        }
+        loadingView.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 150, height: 150))
+            make.center.equalToSuperview()
+        }
+    }
+    
+    func showLoading(status: LoadingStatus) {
+        switch status {
+        case .loading(message: _):
+            loadingView.show(withMessage: "AI正在產生題目中")
+        default:
+            loadingView.hide()
         }
     }
     
@@ -81,14 +97,23 @@ extension EnglishExamViews {
             $0.numberOfLines = 0
             $0.textAlignment = .center
         }
-        let answerStackView = UIStackView().apply {
+        let questionAnswerLabel = UILabel().apply {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.textColor = .darkGray
+            $0.font = SystemDefine.Message.defaultTextFont.withSize(22).bold()
+            $0.numberOfLines = 0
+            $0.textAlignment = .left
+        }
+        let optionsStackView = UIStackView().apply {
             $0.axis = .vertical
             $0.spacing = 10
             $0.alignment = .center
             $0.distribution = .equalCentering
         }
-        var question: EnglishExamQuestion?
+        private(set) var question: EnglishExamQuestion?
         weak var delegate: QuestionCardDelegate?
+        private(set) var optionButtons: [UIButton] = []
+        private(set) var isAnswerMode: Bool = false
         
         override init(frame: CGRect) {
             super.init(frame: frame)
@@ -100,28 +125,28 @@ extension EnglishExamViews {
         }
         
         private func initUI() {
+            let spacerView = UIView()
             addSubview(questionLabel)
-            addSubview(answerStackView)
+            addSubview(questionAnswerLabel)
+            addSubview(optionsStackView)
+            addSubview(spacerView)
             questionLabel.snp.makeConstraints { make in
                 make.leading.trailing.equalToSuperview().inset(20)
                 make.top.equalToSuperview().inset(30)
             }
-            answerStackView.snp.makeConstraints { make in
-                make.bottom.equalToSuperview().inset(30)
-                make.centerX.equalToSuperview()
+            questionAnswerLabel.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(20)
+                make.top.equalTo(questionLabel.snp.bottom).offset(5)
             }
-            for i in 0..<3 {
-                let button = UIButton(type: .custom).apply {
-                    $0.setTitleColor(.white, for: .normal)
-                    $0.backgroundColor = .systemBrown
-                    $0.cornerRadius = 10
-                    $0.tag = i
-                    $0.addTarget(self, action: #selector(optionsSelected), for: .touchUpInside)
-                }
-                answerStackView.addArrangedSubview(button)
-                button.snp.makeConstraints { make in
-                    make.size.equalTo(CGSize(width: 250, height: 40))
-                }
+            spacerView.snp.makeConstraints { make in
+                make.top.equalTo(questionAnswerLabel.snp.bottom).offset(5)
+                make.leading.trailing.equalToSuperview()
+                make.bottom.equalTo(optionsStackView.snp.top)
+                make.height.greaterThanOrEqualTo(0)
+            }
+            optionsStackView.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(20)
+                make.bottom.equalToSuperview().inset(30)
             }
         }
         
@@ -133,6 +158,9 @@ extension EnglishExamViews {
         
         func setQuestion(question: EnglishExamQuestion, isAnswerMode: Bool) {
             self.question = question
+            self.isAnswerMode = isAnswerMode
+            setOptions()
+            setQuestionLabel()
             if isAnswerMode {
                 setAndwerModeUI()
             }else {
@@ -140,35 +168,89 @@ extension EnglishExamViews {
             }
         }
         
-        private func setAndwerModeUI() {
+        private func setQuestionLabel() {
             guard let question = self.question else { return }
-            guard let userSelecedAnswer = question.userSelecedAnswer else { return }
-            setQuestionModeUI()
+            questionLabel.text = question.questionText
+            switch question {
+            case .vocabulayExamQuestion(_):
+                questionLabel.font = .systemFont(ofSize: 22, weight: .bold)
+                questionLabel.textAlignment = .center
+            case .grammarExamQuestion(_):
+                questionLabel.textAlignment = .left
+                questionLabel.font = .systemFont(ofSize: 18, weight: .bold)
+            }
+        }
+        
+        private func setOptions() {
+            guard let question = self.question else { return }
+            optionsStackView.removeAllArrangedSubView()
             for (i, option) in question.options.enumerated() {
-                guard let button = answerStackView.arrangedSubviews.getOrNil(index: i) as? UIButton else { continue }
-                button.isUserInteractionEnabled = false
-                //按钮颜色 正確答案綠色 用戶選擇的但答錯紅色 其他為咖啡色
-                if option == question.correctAnswer {
-                    button.backgroundColor = .systemGreen
-                } else if option == userSelecedAnswer {
-                    if option != question.correctAnswer {
-                        button.backgroundColor = .systemRed
+                let button = dequeueReusableOptionsButton(index: i)
+                button.tag = i
+                button.setTitle(option, for: .normal)
+                button.backgroundColor = .systemBrown
+                button.isUserInteractionEnabled = !isAnswerMode
+                optionsStackView.addArrangedSubview(button)
+                if isAnswerMode {
+                    //按钮颜色 正確答案綠色 用戶選擇的但答錯紅色 其他為咖啡色
+                    if option == question.correctAnswer {
+                        button.backgroundColor = .systemGreen
+                    } else if option == question.userSelecedAnswer ?? "" {
+                        if option != question.correctAnswer {
+                            button.backgroundColor = .systemRed
+                        }
+                    } else {
+                        button.backgroundColor = .systemBrown
                     }
-                } else {
-                    button.backgroundColor = .systemBrown
                 }
             }
+        }
+        
+        /// 復用舊按鈕
+        private func dequeueReusableOptionsButton(index: Int) -> UIButton {
+            if let button = optionButtons.getOrNil(index: index) {
+                return button
+            }else {
+                let button = generateOptionButton()
+                optionButtons.append(button)
+                return button
+            }
+        }
+        
+        /// 產生全新的按鈕
+        private func generateOptionButton() -> UIButton {
+            let button = UIButton(type: .custom).apply {
+                $0.setTitleColor(.white, for: .normal)
+                $0.backgroundColor = .systemBrown
+                $0.cornerRadius = 10
+                $0.isUserInteractionEnabled = true
+                $0.addTarget(self, action: #selector(optionsSelected), for: .touchUpInside)
+                $0.snp.makeConstraints { make in
+                    make.height.equalTo(40)
+                    make.width.equalTo(250)
+                }
+            }
+            return button
         }
         
         private func setQuestionModeUI() {
             guard let question = self.question else { return }
             questionLabel.text = question.questionText
-            for (i, option) in question.options.enumerated() {
-                guard let button = answerStackView.arrangedSubviews.getOrNil(index: i) as? UIButton else { continue }
-                button.isUserInteractionEnabled = true
-                button.setTitle(option, for: .normal)
-                button.backgroundColor = .systemBrown
-                button.setTitleColor(.white, for: .normal)
+            questionAnswerLabel.isVisible = false
+        }
+        
+        private func setAndwerModeUI() {
+            setQuestionTranslationLabel()
+        }
+        
+        private func setQuestionTranslationLabel() {
+            guard let question = self.question else { return }
+            switch question {
+            case .vocabulayExamQuestion(_): break
+            case .grammarExamQuestion(let data):
+                questionAnswerLabel.font = .boldSystemFont(ofSize: 18)
+                questionAnswerLabel.isVisible = true
+                questionAnswerLabel.text = data.displayReason
             }
         }
         

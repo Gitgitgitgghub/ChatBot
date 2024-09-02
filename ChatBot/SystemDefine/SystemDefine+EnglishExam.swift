@@ -24,7 +24,7 @@ extension SystemDefine {
             /// 單字克漏字填空
             case vocabularyCloze(letter: String, sortOption: SystemDefine.EnglishExam.SortOption)
             /// 文法題
-            case gramma(point: TOEICGrammarPoint?)
+            case grammar(point: TOEICGrammarPoint?)
             
             static var allCases: [QuestionType] {
                 return [
@@ -39,7 +39,7 @@ extension SystemDefine {
                     return "字義選擇"
                 case .vocabularyCloze:
                     return "克漏字選擇"
-                case .gramma:
+                case .grammar:
                     return "文法測驗"
                 }
             }
@@ -53,7 +53,7 @@ extension SystemDefine {
         }
         
         //MARK: - 多益考試常見的英文語法類型
-        enum TOEICGrammarPoint: String, CaseIterable {
+        enum TOEICGrammarPoint: String, CaseIterable, Codable {
     
             case Tense = "時態"
             case VerbForm = "動詞形式和語態"
@@ -69,6 +69,10 @@ extension SystemDefine {
             case relativeClause = "定語從句"
             case parallelism = "平行結構"
             case inversion = "倒裝結構"
+            
+            static func randomGrammarPoint() -> TOEICGrammarPoint {
+                return allCases.randomElement() ?? .Tense
+            }
             
             func randomSubType() -> String {
                 switch self {

@@ -70,6 +70,11 @@ class EnglishExamViewController: BaseUIViewController {
                 self?.updatePauseButtonUI(state: state)
             }
             .store(in: &subscriptions)
+        viewModel.loadingStatus
+            .sink { [weak self] status in
+                self?.views.showLoading(status: status)
+            }
+            .store(in: &subscriptions)
     }
     
     private func examState(state: EnglishExamViewModel.ExamState) {

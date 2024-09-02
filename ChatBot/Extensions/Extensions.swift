@@ -141,3 +141,12 @@ extension UIFont{
     }
 }
 
+extension UIStackView {
+    
+    func removeAllArrangedSubView() {
+        for view in arrangedSubviews {
+            view.removeFromSuperview()
+        }
+    }
+    
+}

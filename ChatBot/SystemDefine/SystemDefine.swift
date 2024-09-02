@@ -90,27 +90,27 @@ extension SystemDefine {
         /// 語法糾正
         case GrammarCorrection
         /// 文法考試
-        case GrammaExam
+        case GrammarExam
         
         var rawValue: Int {
             switch self {
             case .Chat: return 0
             case .GrammarCorrection: return 1
-            case .GrammaExam: return 2
+            case .GrammarExam: return 2
             }
         }
         var title: String {
             switch self {
             case .Chat: return "聊天"
             case .GrammarCorrection: return "語法糾正"
-            case .GrammaExam: return "文法考試"
+            case .GrammarExam: return "文法考試"
             }
         }
         var enable: Bool {
             switch self {
             case .Chat: return true
             case .GrammarCorrection: return true
-            case .GrammaExam: return true
+            case .GrammarExam: return true
             }
         }
         var prompt: String {
@@ -126,7 +126,7 @@ extension SystemDefine {
             switch rawValue {
             case 0: self = .Chat
             case 1: self = .GrammarCorrection
-            case 2: self = .GrammaExam
+            case 2: self = .GrammarExam
             default: return nil
             }
         }

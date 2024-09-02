@@ -259,7 +259,7 @@ class ExamQuestionSelectorViewController: UIViewController, UIPickerViewDelegate
             completionHandler?(.vocabularyCloze(letter: selectedLetter ?? "", sortOption: sortingOptions[selectedSortingIndex]))
         case .vocabularyWord:
             completionHandler?(.vocabularyWord(letter: selectedLetter ?? "", sortOption: sortingOptions[selectedSortingIndex]))
-        case .gramma: break
+        case .grammar: break
         }
     }
 }
