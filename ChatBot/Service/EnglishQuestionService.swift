@@ -36,18 +36,9 @@ class EnglishQuestionService: OpenAIService {
         let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt3_5Turbo, responseFormat: .jsonObject)
         let publisher = openAI.chats(query: query)
             .tryMap({ chatResult in
-                // 解析JSON
-                if let text = chatResult.choices.first?.message.content?.string {
-                    if let jsonData = text.data(using: .utf8) {
-                        var response = try JSONDecoder().decode(VocabularyExamQuestion.self, from: jsonData)
-                        response.original = vocabulary
-                        return EnglishExamQuestion.vocabulayExamQuestion(data: response)
-                    } else {
-                        throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to convert response to data"])
-                    }
-                } else {
-                    throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "No valid response from OpenAI"])
-                }
+                var question = try self.decodeChatResult(VocabularyExamQuestion.self, from: chatResult)
+                question.original = vocabulary
+                return EnglishExamQuestion.vocabulayExamQuestion(data: question)
             })
             .handleEvents(receiveSubscription: { _ in
                 print("查克漏字題目： \(vocabulary.wordEntry.word)")
@@ -94,19 +85,10 @@ class EnglishQuestionService: OpenAIService {
         let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt3_5Turbo, responseFormat: .jsonObject)
         let publisher = openAI.chats(query: query)
             .tryMap({ chatResult in
-                // 解析JSON
-                if let text = chatResult.choices.first?.message.content?.string {
-                    if let jsonData = text.data(using: .utf8) {
-                        var response = try JSONDecoder().decode(GrammarExamQuestion.self, from: jsonData)
-                        response.grammarPointDescription = grammarPointDescription
-                        response.ensureOptionsValid()
-                        return EnglishExamQuestion.grammarExamQuestion(data: response)
-                    } else {
-                        throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to convert response to data"])
-                    }
-                } else {
-                    throw NSError(domain: "OpenAIError", code: 0, userInfo: [NSLocalizedDescriptionKey: "No valid response from OpenAI"])
-                }
+                var question = try self.decodeChatResult(GrammarExamQuestion.self, from: chatResult)
+                question.grammarPointDescription = grammarPointDescription
+                question.ensureOptionsValid()
+                return EnglishExamQuestion.grammarExamQuestion(data: question)
             })
             .handleEvents(receiveSubscription: { _ in
                 print("Fetching grammar question...")

@@ -34,6 +34,8 @@ class MyVocabularyViewController: BaseUIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(cellType: MyVocabularyViews.VocabularyCell.self)
+        views.searchBar.delegate = self
+        views.emptyLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(emptyLabelClicked)))
     }
     
     private func bind() {
@@ -51,14 +53,50 @@ class MyVocabularyViewController: BaseUIViewController {
                     self.tableView.reloadSections(.init(sections), with: .automatic)
                 case .toast(message: let message):
                     self.showToast(message: message)
+                case .setEmptyButtonVisible(isVisible: let isVisible):
+                    self.views.emptyLabel.isVisible = isVisible
+                    self.view.bringSubviewToFront(self.views.emptyLabel)
+                case .wordNotFound(sggestion: let sggestion):
+                    self.wordNotFound(sggestion: sggestion)
                 }
             }
             .store(in: &subscriptions)
     }
     
+    private func wordNotFound(sggestion: String?) {
+        if let suggestion = sggestion {
+            let alert = UIAlertController(title: "找不到該單字", message: "試試\(suggestion)?", preferredStyle: .alert)
+            alert.addAction(.init(title: "確認", style: .default, handler: { _ in
+                self.views.searchBar.text = suggestion
+                self.viewModel.transform(inputEvent: .searchVocabulary(text: suggestion))
+                self.viewModel.transform(inputEvent: .fetchVocabularyModel)
+            }))
+            alert.addAction(.init(title: "取消", style: .cancel))
+            present(alert, animated: true)
+        }else {
+            showToast(message: "找不到該單字")
+        }
+    }
+    
+    @objc private func emptyLabelClicked(_ sender: UIGestureRecognizer) {
+        viewModel.transform(inputEvent: .fetchVocabularyModel)
+    }
+    
     @objc private func toggleExpanding(sender: UITapGestureRecognizer) {
         guard let section = sender.view?.tag else { return }
         viewModel.transform(inputEvent: .toggleExpanding(section: section))
+    }
+}
+
+//MARK: - UISearchBarDelegate
+extension MyVocabularyViewController: UISearchBarDelegate {
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.transform(inputEvent: .searchVocabulary(text: searchText))
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.transform(inputEvent: .searchVocabulary(text: ""))
     }
 }
 
@@ -76,42 +114,59 @@ extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate
         ScreenLoader.toScreen(screen: .flipCard, viewController: self)
     }
     
-    func onSpeakButtonClicked(indexPath: IndexPath) {
-        viewModel.transform(inputEvent: .speakWord(indexPath: indexPath))
-    }
-    
     func onStarButtonClicked(indexPath: IndexPath) {
         viewModel.transform(inputEvent: .toggleStar(indexPath: indexPath))
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.sectionDatas.count
+        switch viewModel.displayMode {
+        case .normalMode:
+            return viewModel.sectionDatas.count
+        case .searchMode:
+            return 1
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let sectionData = viewModel.sectionDatas.getOrNil(index: section), sectionData.isExpanding {
-            return sectionData.vocabularies.count
+        switch viewModel.displayMode {
+        case .normalMode:
+            if let sectionData = viewModel.sectionDatas.getOrNil(index: section), sectionData.isExpanding {
+                return sectionData.vocabularies.count
+            }
+            return 0
+        case .searchMode:
+            return viewModel.searchDatas.count
         }
-        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(with: MyVocabularyViews.VocabularyCell.self, for: indexPath)
-        cell.bindVocabulary(indexPath: indexPath, vocabulary: viewModel.sectionDatas[indexPath.section].vocabularies[indexPath.row])
         cell.delegate = self
+        switch viewModel.displayMode {
+        case .normalMode:
+            cell.bindVocabulary(indexPath: indexPath, vocabulary: viewModel.sectionDatas[indexPath.section].vocabularies[indexPath.row])
+        case .searchMode:
+            cell.bindVocabulary(indexPath: indexPath, vocabulary: viewModel.searchDatas[indexPath.row])
+        }
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        let vocabularies = viewModel.sectionDatas[indexPath.section].vocabularies
+        var vocabularies: [VocabularyModel]
+        switch viewModel.displayMode {
+        case .normalMode:
+            vocabularies = viewModel.sectionDatas[indexPath.section].vocabularies
+        case .searchMode:
+            vocabularies = viewModel.searchDatas
+        }
         let index = indexPath.row
         let vc = ScreenLoader.loadScreen(screen: .vocabulary(vocabularies: vocabularies, startIndex: index))
         navigationController?.pushViewController(vc, animated: true)
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if let sectionData = viewModel.sectionDatas.getOrNil(index: section) {
+        if let sectionData = viewModel.sectionDatas.getOrNil(index: section), viewModel.displayMode == .normalMode {
             let header = MyVocabularyViews.HeaderView()
             header.tag = section
             header.setSectionData(sectionModel: sectionData)
@@ -123,7 +178,7 @@ extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 44
+        return viewModel.displayMode == .normalMode ? 44 : .zero
     }
     
 }

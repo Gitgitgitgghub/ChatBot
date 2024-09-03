@@ -54,4 +54,8 @@ extension VocabularyModel {
         self.init(wordEntry: word, familiarity: 0, isStar: false, lastViewedTime: .now, wordSentences: [], kkPronunciation: "")
     }
     
+    convenience init(wordEntry: WordEntry, wordSentences: [WordSentence], kkPronunciation: String) {
+        self.init(wordEntry: wordEntry, familiarity: 0, isStar: false, lastViewedTime: .now, wordSentences: wordSentences, kkPronunciation: kkPronunciation)
+    }
+    
 }

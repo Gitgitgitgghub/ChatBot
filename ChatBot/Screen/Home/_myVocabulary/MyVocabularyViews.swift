@@ -29,13 +29,34 @@ class MyVocabularyViews: ControllerView {
     let bottomToolBar = BottomToolBar().apply {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
+    let searchBar = UISearchBar().apply {
+        $0.placeholder = "搜尋單字"
+        $0.keyboardType = .asciiCapable
+    }
+    let emptyLabel = UILabel().apply {
+        let attr = NSMutableAttributedString(string: "沒有該單字\n請AI幫你查查", attributes: [.foregroundColor : UIColor.systemBrown])
+        attr.addAttribute(.foregroundColor, value: UIColor.systemGray, range: .init(location: 0, length: 5))
+        $0.numberOfLines = 2
+        $0.attributedText = attr
+        $0.isVisible = false
+        $0.isUserInteractionEnabled = true
+        $0.textAlignment = .center
+    }
     
     override func initUI() {
         view.addSubview(tableView)
         view.addSubview(addNoteButton)
         view.addSubview(bottomToolBar)
+        view.addSubview(searchBar)
+        view.addSubview(emptyLabel)
+        searchBar.sizeToFit()
+        searchBar.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            //make.height.equalTo(44)
+        }
         tableView.snp.makeConstraints { make in
-            make.leading.trailing.top.equalToSuperview()
+            make.top.equalTo(searchBar.bottom)
+            make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(bottomToolBar.top)
         }
         addNoteButton.snp.makeConstraints { make in
@@ -46,6 +67,9 @@ class MyVocabularyViews: ControllerView {
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(80)
         }
+        emptyLabel.snp.makeConstraints { make in
+            make.center.equalTo(tableView)
+        }
     }
     
 }
@@ -53,8 +77,6 @@ class MyVocabularyViews: ControllerView {
 //MARK: - VocabularyCellDelegate
 protocol MyVocabularyViewDelegate: AnyObject {
     
-    /// 當播放按鈕點選
-    func onSpeakButtonClicked(indexPath: IndexPath)
     /// 當收藏按鈕被點選
     func onStarButtonClicked(indexPath: IndexPath)
     /// 當翻卡測驗按鈕被點選
@@ -115,7 +137,7 @@ extension MyVocabularyViews {
     }
     
     //MARK: - 單字Cell
-    class VocabularyCell: UITableViewCell {
+    class VocabularyCell: UITableViewCell, SpeechTextDelegate {
         
         var wordLabel = PaddingLabel(withInsets: .init(top: 5, left: 10, bottom: 5, right: 10)).apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -176,7 +198,8 @@ extension MyVocabularyViews {
         }
         
         @objc private func speakButtonClicked() {
-            delegate?.onSpeakButtonClicked(indexPath: indexPath)
+            guard let text = self.vocabulary?.wordEntry.word else { return }
+            speak(text: text)
         }
         
         @objc private func starButtonClicked() {

@@ -21,7 +21,7 @@ struct WordDefinition: Codable {
 }
 
 struct WordEntry: Codable {
-    let number: String
+    let number: String?
     var word: String
     let definitions: [WordDefinition]
     var displayDefinitionString: String {

@@ -14,9 +14,10 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
     enum InputEvent {
         case initialVocabulary
         case toggleExpanding(section: Int)
-        case speakWord(indexPath: IndexPath)
         case toggleStar(indexPath: IndexPath)
         case reloadExpandingSection
+        case searchVocabulary(text: String)
+        case fetchVocabularyModel
     }
     
     enum OutputEvent {
@@ -24,6 +25,8 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         case reloadAll
         case reloadSections(sections: [Int])
         case toast(message: String)
+        case setEmptyButtonVisible(isVisible: Bool)
+        case wordNotFound(sggestion: String?)
     }
     
     struct SectionData {
@@ -38,8 +41,20 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         }
     }
     
+    /// 顯示模式
+    enum DisplayMode {
+        case normalMode
+        case searchMode
+    }
+    private let vocabularyService = VocabularyService()
     private let vocabularyManager = VocabularyManager.share
+    /// 資料源
     private(set) var sectionDatas: [SectionData] = []
+    /// 搜尋結果資料源
+    private(set) var searchDatas: [VocabularyModel] = []
+    private let searchSubject = CurrentValueSubject<String, Never>("")
+    private(set) var displayMode: DisplayMode = .normalMode
+    
     
     func bindInputEvent() {
         inputSubject
@@ -50,20 +65,18 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
                     self.initialVocabulary()
                 case .toggleExpanding(section: let section):
                     self.toggleExpanding(section: section)
-                case .speakWord(indexPath: let indexPath):
-                    self.speakWord(indexPath: indexPath)
                 case .toggleStar(indexPath: let indexPath):
                     self.toggleStar(indexPath: indexPath)
                 case .reloadExpandingSection:
                     self.reloadExpandingSection()
+                case .searchVocabulary(text: let text):
+                    self.searchVocabulary(text: text)
+                case .fetchVocabularyModel:
+                    self.fetchVocabularyModel()
                 }
             }
             .store(in: &subscriptions)
-    }
-    
-    func speakWord(indexPath: IndexPath) {
-        guard let word = sectionDatas.getOrNil(index: indexPath.section)?.vocabularies.getOrNil(index: indexPath.row)?.wordEntry.word else { return }
-        SpeechVoiceManager.shared.speak(text: word)
+        setupSearchPipeline()
     }
     
     func toggleStar(indexPath: IndexPath) {
@@ -82,9 +95,14 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
     }
     
     private func reloadExpandingSection() {
-        guard let expandingIndex = sectionDatas.firstIndex(where: { $0.isExpanding }) else { return }
-        fetchExpandingSectionVocabulary(expandingIndex: expandingIndex) { [weak self] in
-            self?.outputSubject.send(.reloadSections(sections: [expandingIndex]))
+        switch displayMode {
+        case .normalMode:
+            guard let expandingIndex = sectionDatas.firstIndex(where: { $0.isExpanding }) else { return }
+            fetchExpandingSectionVocabulary(expandingIndex: expandingIndex) { [weak self] in
+                self?.outputSubject.send(.reloadSections(sections: [expandingIndex]))
+            }
+        case .searchMode:
+            searchVocabulary(text: searchSubject.value)
         }
     }
     
@@ -167,6 +185,80 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
             .eraseToAnyPublisher()
     }
     
+}
+
+//MARK: - 搜尋相關的功能
+extension MyVocabularyViewModel {
     
+    /// 設定searchBar 輸入文字的頻率與流程
+    private func setupSearchPipeline() {
+        searchSubject
+            .throttle(for: .seconds(0.5), scheduler: DispatchQueue.global(), latest: true)
+            .sink { [weak self] text in
+                self?.startSearch(text: text)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    /// 輸入文字
+    private func searchVocabulary(text: String) {
+        if text.isEmpty {
+            displayMode = .normalMode
+            outputSubject.send(.reloadAll)
+            self.outputSubject.send(.setEmptyButtonVisible(isVisible: false))
+        }else {
+            displayMode = .searchMode
+            searchSubject.send(text)
+        }
+    }
+    
+    /// 開始執行搜索，優先搜索本地資料庫
+    private func startSearch(text: String) {
+        guard displayMode == .searchMode else { return }
+        vocabularyManager.fetchVocabulary(letter: text)
+            .sink { _ in
+                
+            } receiveValue: { [weak self] vocabularies in
+                guard let `self` = self else { return }
+                // 如果查到單字不是空的就直接刷新否則就請求api
+                self.searchDatas = vocabularies
+                self.outputSubject.send(.reloadAll)
+                self.outputSubject.send(.setEmptyButtonVisible(isVisible: vocabularies.isEmpty))
+            }
+            .store(in: &subscriptions)
+    }
+    
+    /// 透過openAI 查詢單字資料
+    private func fetchVocabularyModel() {
+        guard searchSubject.value.isNotEmpty else { return }
+        vocabularyService.fetchVocabularyModel(forWord: searchSubject.value)
+            .sink { [weak self] completion in
+                if case .failure(let failure) = completion {
+                    print("fetchVocabularyModel failure: \(failure.localizedDescription)")
+                    self?.outputSubject.send(.toast(message: failure.localizedDescription))
+                }
+            } receiveValue: { [weak self] result in
+                guard let `self` = self else { return }
+                switch result {
+                case .success(let vocabularyModel):
+                    self.searchDatas = [vocabularyModel]
+                    self.outputSubject.send(.reloadAll)
+                case .failure(let error):
+                    if case .wordNotFound(let suggestion) = error {
+                        // 這邊多這麼多判斷是因為，suggestion有時候是空字串，有時候會給你一串提示並非單字
+                        if let suggestion = suggestion,
+                           suggestion.isNotEmpty,
+                           !suggestion.contains(" ") {
+                            self.outputSubject.send(.wordNotFound(sggestion: suggestion))
+                        }else {
+                            self.outputSubject.send(.toast(message: error.localizedDescription))
+                        }
+                    }else {
+                        self.outputSubject.send(.toast(message: error.localizedDescription))
+                    }
+                }
+            }
+            .store(in: &subscriptions)
+    }
     
 }
