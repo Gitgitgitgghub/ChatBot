@@ -35,9 +35,25 @@ class BaseViewModel<I, O>: NSObject, ViewModelProtocol {
     var outputSubject: PassthroughSubject<O, Never> {
         return _outputSubject
     }
+    @Published var loadingStatus = CurrentValueSubject<LoadingStatus, Never>(.none)
     
     func transform(inputEvent: I) {
         inputSubject.send(inputEvent)
+    }
+    
+    func performAction<T>(_ publisher: AnyPublisher<T, Error>, message: String = "") -> AnyPublisher<T, Error> {
+        return publisher
+            .handleEvents(receiveSubscription: { [weak self] _ in
+                self?.loadingStatus.send(.loading(message: message))
+            }, receiveCompletion: { [weak self] completion in
+                switch completion {
+                case .finished:
+                    self?.loadingStatus.send(.success)
+                case .failure(let error):
+                    self?.loadingStatus.send(.error(error: error))
+                }
+            })
+            .eraseToAnyPublisher()
     }
     
     deinit {

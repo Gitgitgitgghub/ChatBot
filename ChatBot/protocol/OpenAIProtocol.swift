@@ -36,6 +36,9 @@ enum OpenAIError: Error {
     case noValidResponse
     /// 轉換成jsonData失敗
     case unableToConvertResponseToData
+    /// 不明錯誤
+    case unknown
+    case selfDeallocated
 
 }
 

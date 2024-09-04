@@ -16,8 +16,8 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         case toggleExpanding(section: Int)
         case toggleStar(indexPath: IndexPath)
         case reloadExpandingSection
-        case searchVocabulary(text: String)
-        case fetchVocabularyModel
+        case searchVocabularyDatabase(text: String)
+        case fetchVocabularyModel(word: String? = nil)
     }
     
     enum OutputEvent {
@@ -69,10 +69,10 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
                     self.toggleStar(indexPath: indexPath)
                 case .reloadExpandingSection:
                     self.reloadExpandingSection()
-                case .searchVocabulary(text: let text):
+                case .searchVocabularyDatabase(text: let text):
                     self.searchVocabulary(text: text)
-                case .fetchVocabularyModel:
-                    self.fetchVocabularyModel()
+                case .fetchVocabularyModel(let word):
+                    self.fetchVocabularyModel(word: word)
                 }
             }
             .store(in: &subscriptions)
@@ -193,9 +193,9 @@ extension MyVocabularyViewModel {
     /// 設定searchBar 輸入文字的頻率與流程
     private func setupSearchPipeline() {
         searchSubject
-            .throttle(for: .seconds(0.5), scheduler: DispatchQueue.global(), latest: true)
+            .debounce(for: .seconds(0.5), scheduler: DispatchQueue.global())
             .sink { [weak self] text in
-                self?.startSearch(text: text)
+                self?.startSearchDatabase(text: text)
             }
             .store(in: &subscriptions)
     }
@@ -212,53 +212,83 @@ extension MyVocabularyViewModel {
         }
     }
     
-    /// 開始執行搜索，優先搜索本地資料庫
-    private func startSearch(text: String) {
+    /// 開始執行搜索本地資料庫
+    private func startSearchDatabase(text: String, completion: ((_ isEmpty: Bool) -> ())? = nil) {
         guard displayMode == .searchMode else { return }
         vocabularyManager.fetchVocabulary(letter: text)
             .sink { _ in
                 
             } receiveValue: { [weak self] vocabularies in
                 guard let `self` = self else { return }
-                // 如果查到單字不是空的就直接刷新否則就請求api
                 self.searchDatas = vocabularies
                 self.outputSubject.send(.reloadAll)
                 self.outputSubject.send(.setEmptyButtonVisible(isVisible: vocabularies.isEmpty))
+                completion?(vocabularies.isEmpty)
             }
             .store(in: &subscriptions)
     }
     
-    /// 透過openAI 查詢單字資料
-    private func fetchVocabularyModel() {
+    /// 拿取單字資料，當word = nil 會使用searchSubject.value 去執行checkSpellingAndFetchVocabularyModel
+    private func fetchVocabularyModel(word: String?) {
+        if let word = word {
+            // 一樣先搜索本地資料庫，找不到才透過ＡＰＩ
+            startSearchDatabase(text: word) { [weak self] isEmpty in
+                guard let `self` = self else { return }
+                if isEmpty {
+                    performAction(vocabularyService.fetchVocabularyData(forWord: word))
+                        .sink { [weak self] completion in
+                            if case .failure(let failure) = completion {
+                                print("fetchVocabularyData failure: \(failure.localizedDescription)")
+                                self?.outputSubject.send(.toast(message: failure.localizedDescription))
+                            }
+                        } receiveValue: { vocabularyModel in
+                            self.fetchVocabularyComplete(vocabularyModel: vocabularyModel)
+                        }
+                        .store(in: &subscriptions)
+                }
+            }
+        }else {
+            checkSpellingAndFetchVocabularyModel()
+        }
+    }
+    
+    /// 先檢查有無此單字再做查詢
+    private func checkSpellingAndFetchVocabularyModel() {
         guard searchSubject.value.isNotEmpty else { return }
-        vocabularyService.fetchVocabularyModel(forWord: searchSubject.value)
+        performAction(vocabularyService.fetchVocabularyModel(forWord: searchSubject.value))
             .sink { [weak self] completion in
                 if case .failure(let failure) = completion {
-                    print("fetchVocabularyModel failure: \(failure.localizedDescription)")
+                    print("checkSpellingAndFetchVocabularyModel failure: \(failure.localizedDescription)")
                     self?.outputSubject.send(.toast(message: failure.localizedDescription))
                 }
             } receiveValue: { [weak self] result in
                 guard let `self` = self else { return }
                 switch result {
                 case .success(let vocabularyModel):
-                    self.searchDatas = [vocabularyModel]
-                    self.outputSubject.send(.reloadAll)
+                    self.fetchVocabularyComplete(vocabularyModel: vocabularyModel)
                 case .failure(let error):
                     if case .wordNotFound(let suggestion) = error {
-                        // 這邊多這麼多判斷是因為，suggestion有時候是空字串，有時候會給你一串提示並非單字
-                        if let suggestion = suggestion,
-                           suggestion.isNotEmpty,
-                           !suggestion.contains(" ") {
-                            self.outputSubject.send(.wordNotFound(sggestion: suggestion))
-                        }else {
-                            self.outputSubject.send(.toast(message: error.localizedDescription))
-                        }
+                        self.outputSubject.send(.wordNotFound(sggestion: suggestion))
                     }else {
                         self.outputSubject.send(.toast(message: error.localizedDescription))
                     }
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    /// 成功要到單字時要做的事情
+    private func fetchVocabularyComplete(vocabularyModel: VocabularyModel) {
+        vocabularyManager.saveVocabulay(vocabulary: vocabularyModel)
+            .sink { _ in
+                
+            } receiveValue: { _ in
+                
+            }
+            .store(in: &subscriptions)
+        self.searchDatas = [vocabularyModel]
+        self.outputSubject.send(.reloadAll)
+        self.outputSubject.send(.setEmptyButtonVisible(isVisible: false))
     }
     
 }

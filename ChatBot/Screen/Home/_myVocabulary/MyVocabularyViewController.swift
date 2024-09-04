@@ -61,15 +61,18 @@ class MyVocabularyViewController: BaseUIViewController {
                 }
             }
             .store(in: &subscriptions)
+        viewModel.loadingStatus
+            .sink { [weak self] status in
+                self?.views.showLoading(status: status)
+            }
+            .store(in: &subscriptions)
     }
     
     private func wordNotFound(sggestion: String?) {
         if let suggestion = sggestion {
             let alert = UIAlertController(title: "找不到該單字", message: "試試\(suggestion)?", preferredStyle: .alert)
             alert.addAction(.init(title: "確認", style: .default, handler: { _ in
-                self.views.searchBar.text = suggestion
-                self.viewModel.transform(inputEvent: .searchVocabulary(text: suggestion))
-                self.viewModel.transform(inputEvent: .fetchVocabularyModel)
+                self.viewModel.transform(inputEvent: .fetchVocabularyModel(word: suggestion))
             }))
             alert.addAction(.init(title: "取消", style: .cancel))
             present(alert, animated: true)
@@ -79,7 +82,7 @@ class MyVocabularyViewController: BaseUIViewController {
     }
     
     @objc private func emptyLabelClicked(_ sender: UIGestureRecognizer) {
-        viewModel.transform(inputEvent: .fetchVocabularyModel)
+        viewModel.transform(inputEvent: .fetchVocabularyModel())
     }
     
     @objc private func toggleExpanding(sender: UITapGestureRecognizer) {
@@ -92,11 +95,11 @@ class MyVocabularyViewController: BaseUIViewController {
 extension MyVocabularyViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.transform(inputEvent: .searchVocabulary(text: searchText))
+        viewModel.transform(inputEvent: .searchVocabularyDatabase(text: searchText))
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.transform(inputEvent: .searchVocabulary(text: ""))
+        viewModel.transform(inputEvent: .searchVocabularyDatabase(text: ""))
     }
 }
 

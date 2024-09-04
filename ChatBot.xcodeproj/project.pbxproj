@@ -403,6 +403,7 @@
 		32690FC22C3BA06100700192 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */,
 				32800EF42C20220500FE5786 /* BaseUIViewController.swift */,
 				323E88A72C353D2200401F50 /* MainTabBarController.swift */,
 			);
@@ -490,7 +491,6 @@
 				32C77FC62C18504E00F335FE /* AppDelegate.swift */,
 				32800EFD2C21316D00FE5786 /* LaunchScreen.storyboard */,
 				32C77FC82C18504E00F335FE /* SceneDelegate.swift */,
-				94A6CFC12C39E13100B1E4E3 /* BaseViewModel.swift */,
 				32690FCE2C3E2D2500700192 /* Test.xib */,
 			);
 			path = Screen;
