@@ -33,8 +33,8 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     private(set) var isFetching = false
     private(set) var currentIndex: Int = 0
     private var fetchWordDetailsSubject = PassthroughSubject<[VocabularyModel], Never>()
-    private var cacheManager = CacheManager<VocabularyModel, AnyPublisher<VocabularyService.WordDetail, Error>>()
-    private var memoryCache: [Int: VocabularyModel] = [:]
+    private var cacheManager = CacheManager<String, AnyPublisher<Int, Error>>()
+    //private var memoryCache: [Int: VocabularyModel] = [:]
     
     init(vocabularies: [VocabularyModel], startIndex: Int, openAI: VocabularyService) {
         self.vocabularies = vocabularies
@@ -83,10 +83,10 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
             .store(in: &subscriptions)
     }
     
-    //TODO: - 對某一個單字讀取更多句子
     /// 讀取單字更多句子
     func fetchMoreSentence(index: Int) {
-        
+        let vocabulary = vocabularies[index]
+        fetchWordDetails(words: [vocabulary])
     }
     
     /// 變更naviation title
@@ -129,7 +129,6 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
             if let vocabulary = self.vocabularies.getOrNil(index: number) {
                 if vocabulary.wordSentences.isEmpty {
                     temp.append(vocabulary)
-                    memoryCache[number] = vocabulary
                 }
             }
         }
@@ -143,43 +142,41 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
         fetchWordDetailsSubject.send(words)
     }
 
+    /// 設定背景讀取單字訊息的流程
     private func setupFetchWordDetailsPipeline() {
         fetchWordDetailsSubject
-            .flatMap { [weak self] words -> AnyPublisher<VocabularyService.WordDetail, Error> in
+            .flatMap { [weak self] words -> AnyPublisher<Int, Error> in
                 guard let self = self else {
                     return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
                 }
                 return Publishers.Sequence(sequence: words)
                     .flatMap { word in
                         let wordKey = word.wordEntry.word
-                        if let cachedPublisher = self.cacheManager.getCache(forKey: word) {
+                        /// 如果有被cache的publisher就使用
+                        if let cachedPublisher = self.cacheManager.getCache(forKey: wordKey) {
                             return cachedPublisher
                         } else {
                             let publisher = self.openAI.fetchSingleWordDetail(word: wordKey)
+                                .flatMap({ [weak self] wordDetail -> AnyPublisher<Int, Error> in
+                                    guard let self = self else {
+                                        return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
+                                    }
+                                    // 處理response 最後會得到該單字的index
+                                    return self.handelWordDetailsResponse(wordDetail: wordDetail)
+                                })
                                 .handleEvents(receiveCompletion: { [weak self] _ in
                                     guard let `self` = self else { return }
-                                    self.cacheManager.removeCache(forKey: word)
+                                    // 完成後不管成功失敗都要移除
+                                    self.cacheManager.removeCache(forKey: wordKey)
                                 })
                                 .share()
                                 .eraseToAnyPublisher()
-                            self.cacheManager.setCache(publisher, forKey: word)
+                            self.cacheManager.setCache(publisher, forKey: wordKey)
                             return publisher
                         }
                     }
                     .eraseToAnyPublisher()
             }
-            .flatMap({ [weak self] wordDetail -> AnyPublisher<(key: Int, value: VocabularyModel), Error> in
-                guard let self = self else {
-                    return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
-                }
-                return self.handelWordDetailsResponse(wordDetail: wordDetail)
-            })
-            .flatMap({ [weak self] changeVocabulary -> AnyPublisher<Int, Error> in
-                guard let `self` = self else {
-                    return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
-                }
-                return self.saveChangeVocabulary(changeData: changeVocabulary)
-            })
             .handleEvents(receiveSubscription: { [weak self] _ in
                 self?.isFetching = true
             }, receiveCompletion: { [weak self] _ in
@@ -199,41 +196,31 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
         guard index == currentIndex else { return }
         outputSubject.send(.reloadUI(isStar: vocabularies[index].isStar))
     }
-
-    
-    private func needToSave(existingSentence: [WordSentence], newSentence: WordSentence) -> Bool {
-        return existingSentence.isEmpty || existingSentence.last?.sentence ?? "" != newSentence.sentence
-    }
     
     /// 處理ai回覆的資料
     /// 找到對應的voicabularies並把sentnece設定進去
-    // 修改后的 handelWordDetailsResponse 处理单个单词的响应
-    private func handelWordDetailsResponse(wordDetail: VocabularyService.WordDetail) -> AnyPublisher<(key: Int, value: VocabularyModel), Error> {
+    /// 回傳該單字對應的index
+    private func handelWordDetailsResponse(wordDetail: VocabularyService.WordDetail) -> AnyPublisher<Int, Error> {
         Future { [weak self] promise in
             guard let self = self else {
                 promise(.failure(NSError(domain: "self is nil", code: -1, userInfo: nil)))
                 return
             }
-            for (i, vocabulary) in memoryCache {
+            /// 改變資料並且存進ＤＢ
+            for (i, vocabulary) in vocabularies.enumerated() {
                 guard vocabulary.wordEntry.word == wordDetail.word else { continue }
                 vocabulary.kkPronunciation = wordDetail.kkPronunciation
-                if needToSave(existingSentence: vocabulary.wordSentences, newSentence: wordDetail.sentence) {
-                    vocabulary.wordSentences.append(wordDetail.sentence)
-                    promise(.success((i, vocabulary)))
-                }
+                _ = vocabulary.addNewSentence(newSentence: wordDetail.sentence)
+                self.vocabularyManager.saveVocabulay(vocabulary: vocabulary)
+                    .sink { _ in
+                        
+                    } receiveValue: { _ in
+                        promise(.success(i))
+                    }
+                    .store(in: &self.subscriptions)
             }
         }
         .eraseToAnyPublisher()
-    }
-    
-    private func saveChangeVocabulary(changeData: (key: Int, value: VocabularyModel)) -> AnyPublisher<Int, Error> {
-        return vocabularyManager.saveVocabulay(vocabulary: changeData.value)
-            .map({ changeData.key })
-            .eraseToAnyPublisher()
-    }
-    
-    private func saveChangeVocabularies(vocabularies: [VocabularyModel]) -> AnyPublisher<Void, Error> {
-        return vocabularyManager.saveVocabulayPackage(vocabularies: vocabularies)
     }
     
     /// 生成一串數字

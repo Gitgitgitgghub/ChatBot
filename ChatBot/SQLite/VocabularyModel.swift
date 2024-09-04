@@ -43,6 +43,17 @@ class VocabularyModel: Codable, FetchableRecord, PersistableRecord, Hashable {
     func didInsert(_ inserted: InsertionSuccess) {
         id = inserted.rowID
     }
+    
+    func addNewSentence(newSentence: WordSentence) -> Bool {
+        if wordSentences.isEmpty {
+            wordSentences.append(newSentence)
+            return true
+        }else if wordSentences.last?.sentence ?? "" != newSentence.sentence {
+            wordSentences.append(newSentence)
+            return true
+        }
+        return false
+    }
 }
 
 extension VocabularyModel {
