@@ -98,8 +98,19 @@ extension MyVocabularyViewController: UISearchBarDelegate {
         viewModel.transform(inputEvent: .searchVocabularyDatabase(text: searchText))
     }
     
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(true, animated: true)
+    }
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         viewModel.transform(inputEvent: .searchVocabularyDatabase(text: ""))
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        searchBar.setShowsCancelButton(false, animated: true)
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }
 
