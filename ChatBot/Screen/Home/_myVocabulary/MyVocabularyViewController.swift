@@ -63,7 +63,7 @@ class MyVocabularyViewController: BaseUIViewController {
             .store(in: &subscriptions)
         viewModel.loadingStatus
             .sink { [weak self] status in
-                self?.views.showLoading(status: status)
+                self?.views.showLoadingView(status: status, with: "正在搜索中...")
             }
             .store(in: &subscriptions)
     }

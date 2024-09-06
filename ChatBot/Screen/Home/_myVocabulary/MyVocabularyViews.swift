@@ -42,7 +42,6 @@ class MyVocabularyViews: ControllerView {
         $0.isUserInteractionEnabled = true
         $0.textAlignment = .center
     }
-    let loadingView = LoadingView(frame: .init(origin: .zero, size: .init(width: 80, height: 80)), type: .ballScaleMultiple, color: .white, padding: 0)
     
     override func initUI() {
         view.addSubview(tableView)
@@ -50,7 +49,6 @@ class MyVocabularyViews: ControllerView {
         view.addSubview(bottomToolBar)
         view.addSubview(searchBar)
         view.addSubview(emptyLabel)
-        view.addSubview(loadingView)
         searchBar.sizeToFit()
         searchBar.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
@@ -71,20 +69,6 @@ class MyVocabularyViews: ControllerView {
         }
         emptyLabel.snp.makeConstraints { make in
             make.center.equalTo(tableView)
-        }
-        loadingView.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 150, height: 150))
-            make.center.equalToSuperview()
-        }
-    }
-    
-    func showLoading(status: LoadingStatus) {
-        switch status {
-        case .loading(message: _):
-            loadingView.show(withMessage: "正在搜索中...")
-            view.bringSubviewToFront(loadingView)
-        default:
-            loadingView.hide()
         }
     }
     

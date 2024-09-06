@@ -50,24 +50,16 @@ class LoginViewController: BaseUIViewController {
                 self?.views.errorLabel.text = errorMessgae
             }
             .store(in: &subscriptions)
-        viewModel.$isLoading
+        viewModel.loadingStatus
             .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
+                self?.views.showLoadingView(status: status)
                 switch status {
-                case .none:
-                    self?.views.loadingView.isVisible = false
-                    self?.views.loadingView.stopAnimating()
-                case .loading:
-                    self?.views.loadingView.isVisible = true
-                    self?.views.loadingView.startAnimating()
-                case .failure(error: let error):
-                    self?.views.loadingView.isVisible = false
-                    self?.views.loadingView.stopAnimating()
+                case .error(error: let error):
                     self?.loginFailed(errorMessage: error.localizedDescription)
                 case .success:
-                    self?.views.loadingView.isVisible = false
-                    self?.views.loadingView.stopAnimating()
                     self?.loginSuccess()
+                default: break
                 }
             }
             .store(in: &subscriptions)

@@ -38,13 +38,11 @@ class EnglishExamViews: ControllerView {
         $0.backgroundColor = .systemBrown
         $0.cornerRadius = 7
     }
-    let loadingView = LoadingView(frame: .init(origin: .zero, size: .init(width: 80, height: 80)), type: .ballScaleMultiple, color: .white, padding: 0)
     
     override func initUI() {
         view.addSubview(pagerView)
         view.addSubview(timerLabel)
         view.addSubview(pauseButton)
-        view.addSubview(loadingView)
         view.addSubview(addNoteButton)
         timerLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
@@ -63,19 +61,6 @@ class EnglishExamViews: ControllerView {
         pagerView.snp.makeConstraints { make in
             make.top.equalTo(pauseButton.bottom).offset(10)
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
-        }
-        loadingView.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 150, height: 150))
-            make.center.equalToSuperview()
-        }
-    }
-    
-    func showLoading(status: LoadingStatus) {
-        switch status {
-        case .loading(message: _):
-            loadingView.show(withMessage: "AI正在產生題目中")
-        default:
-            loadingView.hide()
         }
     }
     

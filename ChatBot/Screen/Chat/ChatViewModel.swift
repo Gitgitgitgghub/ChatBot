@@ -26,8 +26,6 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     private(set) var estimatedHeightCatches: [Int : CGFloat] = [:]
     /// 聊天室
     private(set) var chatRoom: ChatRoom!
-    /// 載入狀態
-    private(set) var isLoading = CurrentValueSubject<LoadingStatus, Never>(.none)
     
     /// 輸入事件
     enum InputEvent {

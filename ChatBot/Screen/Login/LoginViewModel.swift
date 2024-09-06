@@ -9,15 +9,14 @@ import Foundation
 import Combine
 import OpenAI
 
-class LoginViewModel {
+class LoginViewModel: BaseViewModel<LoginViewModel.InputEvent, LoginViewModel.OutputEvent> {
     
     let validation: UserValidation
-    @Published var isLoading: LoginStatus = .none
     private let inputPublisher = PassthroughSubject<InputEvent, Never>()
-    private var subscriptions = Set<AnyCancellable>()
         
     init(validation: UserValidation) {
         self.validation = validation
+        super.init()
         setupBindings()
     }
     
@@ -31,6 +30,10 @@ class LoginViewModel {
         case loading
         case failure(error: Error)
         case success
+    }
+    
+    enum OutputEvent {
+        
     }
     
     enum InputEvent: Equatable {
@@ -96,9 +99,9 @@ class LoginViewModel {
     }
     
     private func accountLogin() {
-        isLoading = .loading
+        loadingStatus.value = .loading(message: "登入中...")
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            self?.isLoading = .success
+            self?.loadingStatus.value = .success
         }
     }
     
@@ -114,21 +117,12 @@ class LoginViewModel {
         }
         guard let token = token else { return }
         let openAI = OpenAI(apiToken: token)
-        openAI.chats(query: .init(messages: [.init(role: .user, content: "hello")!], model: .gpt3_5Turbo))
-            .subscribe(on: DispatchQueue.global())
+        performAction(openAI.chats(query: .init(messages: [.init(role: .user, content: "hello")!], model: .gpt3_5Turbo)), message: "登入中...")
             .receive(on: DispatchQueue.main)
-            .handleEvents(receiveRequest:  { [weak self] _ in
-                self?.isLoading = .loading
-            })
-            .sink { [weak self] completion in
-                switch completion {
-                case .finished: break
-                case .failure(let error):
-                    self?.isLoading = .failure(error: error)
-                }
-            } receiveValue: { [weak self] _ in
+            .sink { _ in
+                
+            } receiveValue: { _ in
                 AccountManager.shared.saveAPIKey(key: token)
-                self?.isLoading = .success
             }
             .store(in: &subscriptions)
     }

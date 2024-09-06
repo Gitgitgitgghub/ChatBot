@@ -99,15 +99,6 @@ class LogingViews: ControllerView {
         button.layer.masksToBounds = true
         return button
     }()
-    lazy var loadingView: NVActivityIndicatorView = {
-        let view = NVActivityIndicatorView(frame: .zero)
-        view.type = .ballClipRotatePulse
-        view.padding = 30
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .black.withAlphaComponent(0.8)
-        view.cornerRadius = 15
-        return view
-    }()
     
     override func initUI() {
         view.backgroundColor = .white
@@ -120,7 +111,6 @@ class LogingViews: ControllerView {
         view.addSubview(loginButton)
         view.addSubview(errorLabel)
         view.addSubview(switchLoginMethodButton)
-        view.addSubview(loadingView)
         accountTextField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(50)
             make.top.equalToSuperview().inset(250)
@@ -161,10 +151,6 @@ class LogingViews: ControllerView {
         errorLabel.snp.makeConstraints { make in
             make.bottom.equalTo(accountLabel.snp.top).offset(-10)
             make.centerX.equalToSuperview()
-        }
-        loadingView.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 150, height: 150))
-            make.center.equalToSuperview()
         }
     }
     

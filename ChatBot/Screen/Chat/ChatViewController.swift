@@ -124,19 +124,14 @@ class ChatViewController: BaseUIViewController {
             }
             .store(in: &subscriptions)
         // 綁定讀取狀態
-        viewModel.isLoading.merge(with: openai.loadingStatusSubject)
+        viewModel.openai.loadingStatusSubject
             .receive(on: RunLoop.main)
             .sink { [weak self] status in
+                self?.views.showLoadingView(status: status)
                 switch status {
-                case .none:
-                    self?.views.setLoadingViewVisible(false)
-                case .loading(message: let message):
-                    self?.views.setLoadingViewVisible(true, message: message)
-                case .success:
-                    self?.views.setLoadingViewVisible(false)
                 case .error(error: let error):
-                    self?.views.setLoadingViewVisible(false)
                     self?.handleError(error: error)
+                default:break
                 }
             }
             .store(in: &subscriptions)

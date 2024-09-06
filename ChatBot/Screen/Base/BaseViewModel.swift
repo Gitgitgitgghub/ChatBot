@@ -35,7 +35,7 @@ class BaseViewModel<I, O>: NSObject, ViewModelProtocol {
     var outputSubject: PassthroughSubject<O, Never> {
         return _outputSubject
     }
-    @Published var loadingStatus = CurrentValueSubject<LoadingStatus, Never>(.none)
+    var loadingStatus = CurrentValueSubject<LoadingStatus, Never>(.none)
     
     func transform(inputEvent: I) {
         inputSubject.send(inputEvent)

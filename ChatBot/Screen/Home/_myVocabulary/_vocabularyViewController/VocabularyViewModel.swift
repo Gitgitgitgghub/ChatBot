@@ -86,7 +86,13 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     /// 讀取單字更多句子
     func fetchMoreSentence(index: Int) {
         let vocabulary = vocabularies[index]
-        fetchWordDetails(words: [vocabulary])
+        performAction(getPublisherFromCache(wordKey: vocabulary.wordEntry.word), message: "正讀取更多單字")
+            .sink { _ in
+                
+            } receiveValue: { [weak self] index in
+                self?.reloadCurrentIndex(index: index)
+            }
+            .store(in: &subscriptions)
     }
     
     /// 變更naviation title
@@ -145,43 +151,13 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     /// 設定背景讀取單字訊息的流程
     private func setupFetchWordDetailsPipeline() {
         fetchWordDetailsSubject
-            .flatMap { [weak self] words -> AnyPublisher<Int, Error> in
-                guard let self = self else {
-                    return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
-                }
+            .flatMap { [unowned self] words -> AnyPublisher<Int, Error> in
                 return Publishers.Sequence(sequence: words)
-                    .flatMap { word in
-                        let wordKey = word.wordEntry.word
-                        /// 如果有被cache的publisher就使用
-                        if let cachedPublisher = self.cacheManager.getCache(forKey: wordKey) {
-                            return cachedPublisher
-                        } else {
-                            let publisher = self.openAI.fetchSingleWordDetail(word: wordKey)
-                                .flatMap({ [weak self] wordDetail -> AnyPublisher<Int, Error> in
-                                    guard let self = self else {
-                                        return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
-                                    }
-                                    // 處理response 最後會得到該單字的index
-                                    return self.handelWordDetailsResponse(wordDetail: wordDetail)
-                                })
-                                .handleEvents(receiveCompletion: { [weak self] _ in
-                                    guard let `self` = self else { return }
-                                    // 完成後不管成功失敗都要移除
-                                    self.cacheManager.removeCache(forKey: wordKey)
-                                })
-                                .share()
-                                .eraseToAnyPublisher()
-                            self.cacheManager.setCache(publisher, forKey: wordKey)
-                            return publisher
-                        }
+                    .flatMap { [unowned self] word in
+                        self.getPublisherFromCache(wordKey: word.wordEntry.word)
                     }
                     .eraseToAnyPublisher()
             }
-            .handleEvents(receiveSubscription: { [weak self] _ in
-                self?.isFetching = true
-            }, receiveCompletion: { [weak self] _ in
-                self?.isFetching = false
-            })
             .sink { completion in
                 if case .failure(let error) = completion {
                     print("查找單字句子失敗：\(error)")
@@ -190,6 +166,31 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
                 self?.reloadCurrentIndex(index: index)
             }
             .store(in: &subscriptions)
+    }
+    
+    private func getPublisherFromCache(wordKey: String) -> AnyPublisher<Int, Error> {
+        /// 如果有被cache的publisher就使用
+        if let cachedPublisher = self.cacheManager.getCache(forKey: wordKey) {
+            return cachedPublisher
+        } else {
+            let publisher = self.openAI.fetchSingleWordDetail(word: wordKey)
+                .flatMap({ [weak self] wordDetail -> AnyPublisher<Int, Error> in
+                    guard let self = self else {
+                        return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
+                    }
+                    // 處理response 最後會得到該單字的index
+                    return self.handelWordDetailsResponse(wordDetail: wordDetail)
+                })
+                .handleEvents(receiveCompletion: { [weak self] _ in
+                    guard let `self` = self else { return }
+                    // 完成後不管成功失敗都要移除
+                    self.cacheManager.removeCache(forKey: wordKey)
+                })
+                .share()
+                .eraseToAnyPublisher()
+            self.cacheManager.setCache(publisher, forKey: wordKey)
+            return publisher
+        }
     }
     
     private func reloadCurrentIndex(index: Int) {

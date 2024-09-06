@@ -10,6 +10,8 @@ import UIKit
 
 protocol ControllerViewProtocol {
     
+    
+    var loadingView: LoadingView { get set }
     func initUI()
     
 }
@@ -17,10 +19,12 @@ protocol ControllerViewProtocol {
 class ControllerView: NSObject, ControllerViewProtocol {
     
     var view: UIView
+    var loadingView = LoadingView(frame: .init(origin: .zero, size: .init(width: 80, height: 80)), type: .ballScaleMultiple, color: .white, padding: 0)
     
     required init(view: UIView) {
         self.view = view
         super.init()
+        self.addLoadingView()
         initUI()
     }
     
@@ -30,6 +34,33 @@ class ControllerView: NSObject, ControllerViewProtocol {
     
     deinit {
         print("object: \(className) had been deinited")
+    }
+    
+}
+
+//MARK: - ControllerView + loadingView
+extension ControllerView {
+    
+    func addLoadingView() {
+        view.addSubview(loadingView)
+        loadingView.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 150, height: 150))
+            make.center.equalToSuperview()
+        }
+    }
+    
+    func showLoadingView(status: LoadingStatus, with msg: String? = nil) {
+        switch status {
+        case .loading(message: let message):
+            if let message = msg {
+                loadingView.show(withMessage: message)
+            }else {
+                loadingView.show(withMessage: message)
+            }
+            view.bringSubviewToFront(loadingView)
+        default:
+            loadingView.hide()
+        }
     }
     
 }

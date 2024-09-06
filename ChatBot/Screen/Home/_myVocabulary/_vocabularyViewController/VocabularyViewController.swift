@@ -68,6 +68,11 @@ class VocabularyViewController: BaseUIViewController {
                 }
             }
             .store(in: &subscriptions)
+        viewModel.loadingStatus
+            .sink { [weak self] status in
+                self?.views.showLoadingView(status: status, with: "讀取中...")
+            }
+            .store(in: &subscriptions)
     }
     
     private func updateStar(isStar: Bool) {
