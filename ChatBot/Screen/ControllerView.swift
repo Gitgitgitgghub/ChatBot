@@ -10,7 +10,7 @@ import UIKit
 
 protocol ControllerViewProtocol {
     
-    
+    var backgroundColor: UIColor { get set }
     var loadingView: LoadingView { get set }
     func initUI()
     
@@ -18,12 +18,14 @@ protocol ControllerViewProtocol {
 
 class ControllerView: NSObject, ControllerViewProtocol {
     
+    var backgroundColor: UIColor = .systemBackground
     var view: UIView
     var loadingView = LoadingView(frame: .init(origin: .zero, size: .init(width: 80, height: 80)), type: .ballScaleMultiple, color: .white, padding: 0)
     
     required init(view: UIView) {
         self.view = view
         super.init()
+        self.view.backgroundColor = backgroundColor
         self.addLoadingView()
         initUI()
     }

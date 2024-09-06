@@ -13,7 +13,7 @@ class FlipCardViews: ControllerView {
     
     let titleLabel = UILabel().apply {
         $0.text = "每次測驗隨機抽取３０個單字"
-        $0.textColor = .lightGray
+        $0.textColor = .fromAppColors(\.darkCoffeeText)
         $0.textAlignment = .center
     }
     let pagerView = FSPagerView().apply {
@@ -23,12 +23,14 @@ class FlipCardViews: ControllerView {
     }
     let flipCardButton = UIButton(type: .custom).apply {
         $0.setTitle("翻卡", for: .normal)
-        $0.backgroundColor = .systemBrown
+        $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+        $0.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
         $0.cornerRadius = 30
     }
     let examButton = UIButton(type: .custom).apply {
         $0.setTitle("考試", for: .normal)
-        $0.backgroundColor = .systemBrown
+        $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+        $0.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
         $0.cornerRadius = 30
     }
     
@@ -97,10 +99,7 @@ extension FlipCardViews {
             $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
             $0.numberOfLines = 1
         }
-        let speakButton = UIButton(type: .custom).apply{
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.setImage(UIImage(systemName: "speaker.wave.2.fill")?.withTintColor(.systemBrown, renderingMode: .alwaysOriginal), for: .normal)
-        }
+        let speakButton = SpeakButton()
         let starButton = StarButton()
         let functionsStackView = UIStackView().apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -197,9 +196,13 @@ extension FlipCardViews {
         private(set) var vocabulary: VocabularyModel?
         private let originalView = CardView(isFlipped: false).apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+            $0.indexLabel.textColor = .fromAppColors(\.normalText)
+            $0.wordLabel.textColor = .fromAppColors(\.normalText)
         }
         private let flippedView = CardView(isFlipped: true).apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.backgroundColor = .fromAppColors(\.creamBackground)
         }
         private var cardView: CardView {
             return isFlipped ? flippedView: originalView

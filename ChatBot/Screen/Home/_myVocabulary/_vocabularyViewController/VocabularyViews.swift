@@ -18,8 +18,8 @@ class VocabularyViews: ControllerView {
         $0.setTitle("更多句子", for: .normal)
         $0.titleLabel?.font = .boldSystemFont(ofSize: 12)
         $0.cornerRadius = 10
-        $0.backgroundColor = .systemBrown
-        $0.setTitleColor(.white, for: .normal)
+        $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+        $0.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
     }
     lazy var functionsStackView = UIStackView().apply {
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +38,7 @@ class VocabularyViews: ControllerView {
         }
         functionsStackView.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(50)
+            make.height.equalTo(60)
             make.centerX.equalToSuperview()
         }
         starButton.snp.makeConstraints { make in
@@ -131,21 +131,21 @@ extension VocabularyViews {
 //MARK: - 最上方單字資訊的cell
 fileprivate class WordCell: UITableViewCell, SpeechTextDelegate {
     
-    private let wordLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
+    private let wordLabel = PaddingLabel(withInsets: .init(top: 10, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.textColor = .darkGray
+        $0.textColor = .fromAppColors(\.darkCoffeeText)
         $0.font = SystemDefine.Message.defaultTextFont.withSize(22).bold()
         $0.numberOfLines = 1
     }
     private let kkLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.textColor = .darkGray
+        $0.textColor = .fromAppColors(\.darkCoffeeText)
         $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 1
     }
     private let definitionsLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.textColor = .darkGray
+        $0.textColor = .fromAppColors(\.normalText)
         $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 0
     }
@@ -153,9 +153,8 @@ fileprivate class WordCell: UITableViewCell, SpeechTextDelegate {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.backgroundColor = .systemGray
     }
-    var speakButton = UIButton(type: .custom).apply{
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.setImage(.init(systemName: "speaker.wave.2.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
+    var speakButton = SpeakButton().apply {
+        $0.cornerRadius = 15
     }
     private(set) var vocabulary: VocabularyModel?
     
@@ -223,24 +222,24 @@ fileprivate class WordSentenceCell: UITableViewCell, SpeechTextDelegate {
         $0.numberOfLines = 0
         $0.text = "例句:"
         $0.isVisible = false
-        $0.textColor = .systemBrown
+        $0.textColor = .fromAppColors(\.goldText)
     }
     private let sentenceLabel = PaddingLabel(withInsets: .init(top: 10, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.textColor = .darkGray
+        $0.textColor = .fromAppColors(\.darkCoffeeText)
         $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 0
         $0.lineBreakMode = .byWordWrapping
     }
     private let translationLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.textColor = .darkGray
+        $0.textColor = .fromAppColors(\.normalText)
         $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 0
     }
-    var speakButton = UIButton(type: .custom).apply{
+    var speakButton = SpeakButton().apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.setImage(.init(systemName: "speaker.wave.2.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
+        $0.cornerRadius = 15
     }
     private(set) var indexPath: IndexPath?
     private(set) var wordSentence: WordSentence?

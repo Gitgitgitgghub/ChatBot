@@ -34,8 +34,8 @@ class MyVocabularyViews: ControllerView {
         $0.keyboardType = .asciiCapable
     }
     let emptyLabel = UILabel().apply {
-        let attr = NSMutableAttributedString(string: "沒有該單字\n請AI幫你查查", attributes: [.foregroundColor : UIColor.systemBrown])
-        attr.addAttribute(.foregroundColor, value: UIColor.systemGray, range: .init(location: 0, length: 5))
+        let attr = NSMutableAttributedString(string: "沒有該單字\n請AI幫你查查", attributes: [.foregroundColor : UIColor.fromAppColors(\.titleHighlight)])
+        attr.addAttribute(.foregroundColor, value: UIColor.fromAppColors(\.normalText), range: .init(location: 0, length: 5))
         $0.numberOfLines = 2
         $0.attributedText = attr
         $0.isVisible = false
@@ -93,20 +93,20 @@ extension MyVocabularyViews {
         
         private let titleLabel = PaddingLabel(withInsets: .init(top: 0, left: 10, bottom: 0, right: 10)).apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.textColor = .darkGray
+            $0.textColor = .fromAppColors(\.darkCoffeeText)
             $0.numberOfLines = 1
-            $0.backgroundColor = .hex("#f0f0f0")
         }
         private let arrowImageView = UIImageView(image: nil).apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         private let bottomLineView = UIView().apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.backgroundColor = .hex("#e0e0e0")
+            $0.backgroundColor = .fromAppColors(\.secondaryButtonBackground)
         }
         
         override init(frame: CGRect) {
             super.init(frame: frame)
+            backgroundColor = .white
             addSubview(titleLabel)
             addSubview(arrowImageView)
             addSubview(bottomLineView)
@@ -141,19 +141,19 @@ extension MyVocabularyViews {
         
         var wordLabel = PaddingLabel(withInsets: .init(top: 5, left: 10, bottom: 5, right: 10)).apply {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.textColor = .darkGray
+            $0.textColor = .fromAppColors(\.darkCoffeeText)
             $0.numberOfLines = 1
             $0.font = .boldSystemFont(ofSize: 18)
         }
         var definitionLabel = PaddingLabel(withInsets: .init(top: 0, left: 10, bottom: 5, right: 10)).apply{
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.numberOfLines = 0
-            $0.textColor = .lightGray
+            $0.textColor = .fromAppColors(\.normalText)
             $0.font = .systemFont(ofSize: 14)
         }
-        var speakButton = UIButton(type: .custom).apply{
+        var speakButton = SpeakButton().apply{
             $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.setImage(.init(systemName: "speaker.wave.2.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal), for: .normal)
+            $0.cornerRadius = 5
         }
         var starButton = StarButton().apply {
             $0.cornerRadius = 5
@@ -234,14 +234,14 @@ extension MyVocabularyViews {
         
         let flipCardButton = UIButton(type: .custom).apply {
             $0.setTitle("翻卡練習", for: .normal)
-            $0.setTitleColor(.white, for: .normal)
-            $0.backgroundColor = .systemBrown
+            $0.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
+            $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
             $0.cornerRadius = 25
         }
         let examButton = UIButton(type: .custom).apply {
             $0.setTitle("單字測驗", for: .normal)
-            $0.setTitleColor(.white, for: .normal)
-            $0.backgroundColor = .systemBrown
+            $0.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
+            $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
             $0.cornerRadius = 25
         }
         weak var delegate: MyVocabularyViewDelegate?

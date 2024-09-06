@@ -106,6 +106,8 @@
 		32C495622C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495612C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift */; };
 		32C495652C8019A700AB1360 /* GrammarPointSelectorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495642C8019A700AB1360 /* GrammarPointSelectorAlert.swift */; };
 		32C495682C80594200AB1360 /* RadioButtonGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495672C80594200AB1360 /* RadioButtonGroupView.swift */; };
+		32C4956A2C8AF61000AB1360 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495692C8AF61000AB1360 /* AppColors.swift */; };
+		32C4956C2C8B0C2E00AB1360 /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C4956B2C8B0C2E00AB1360 /* SpeakButton.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
 		32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32C77FCF2C18504F00F335FE /* Assets.xcassets */; };
@@ -253,6 +255,8 @@
 		32C495612C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemDefine+EnglishExam.swift"; sourceTree = "<group>"; };
 		32C495642C8019A700AB1360 /* GrammarPointSelectorAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarPointSelectorAlert.swift; sourceTree = "<group>"; };
 		32C495672C80594200AB1360 /* RadioButtonGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioButtonGroupView.swift; sourceTree = "<group>"; };
+		32C495692C8AF61000AB1360 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
+		32C4956B2C8B0C2E00AB1360 /* SpeakButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakButton.swift; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32C77FC82C18504E00F335FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -625,6 +629,7 @@
 			children = (
 				320421962C1933EC00D72203 /* SystemDefine.swift */,
 				32C495612C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift */,
+				32C495692C8AF61000AB1360 /* AppColors.swift */,
 			);
 			path = SystemDefine;
 			sourceTree = "<group>";
@@ -693,6 +698,7 @@
 				327D286E2C5A10DC00F6ED68 /* NoActionTextView.swift */,
 				32B4D7182C77448700CA4C40 /* StarButton.swift */,
 				32C495672C80594200AB1360 /* RadioButtonGroupView.swift */,
+				32C4956B2C8B0C2E00AB1360 /* SpeakButton.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -890,6 +896,7 @@
 			files = (
 				32800EEA2C1C229500FE5786 /* LoginViewController.swift in Sources */,
 				32B7E6D72C6B31FE0032ABFD /* FSPageControl.swift in Sources */,
+				32C4956A2C8AF61000AB1360 /* AppColors.swift in Sources */,
 				32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */,
 				32B7E6DB2C6B31FE0032ABFD /* FSPagerViewLayoutAttributes.swift in Sources */,
 				94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */,
@@ -927,6 +934,7 @@
 				9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */,
 				32B7E6B92C69E5610032ABFD /* MyVocabularyViews.swift in Sources */,
 				32B4D7192C77448700CA4C40 /* StarButton.swift in Sources */,
+				32C4956C2C8B0C2E00AB1360 /* SpeakButton.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
 				32C495682C80594200AB1360 /* RadioButtonGroupView.swift in Sources */,
 				327D28652C57314B00F6ED68 /* SharedGroupStorage.swift in Sources */,

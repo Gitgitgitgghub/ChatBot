@@ -1,14 +1,14 @@
 //
-//  StarButton.swift
+//  SpeakButton.swift
 //  ChatBot
 //
-//  Created by 吳俊諺 on 2024/8/22.
+//  Created by 吳俊諺 on 2024/9/6.
 //
 
 import Foundation
 import UIKit
 
-class StarButton: UIButton {
+class SpeakButton: UIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,8 +24,7 @@ class StarButton: UIButton {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.layer.cornerRadius = 10
         self.backgroundColor = .fromAppColors(\.lightCoffeeButton)
-        self.setImage(UIImage(systemName: "star")?.withTintColor(.fromAppColors(\.secondaryText), renderingMode: .alwaysOriginal), for: .normal)
-        self.setImage(UIImage(systemName: "star.fill")?.withTintColor(.fromAppColors(\.titleHighlight), renderingMode: .alwaysOriginal), for: .selected)
+        self.setImage(UIImage(systemName: "speaker.wave.2.fill")?.withTintColor(.fromAppColors(\.secondaryText), renderingMode: .alwaysOriginal), for: .normal)
         self.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     

@@ -14,20 +14,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         setupNavigationBar()
+        setupTabbar()
         return true
     }
     
     private func setupNavigationBar() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor.red
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.secondaryText)]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.secondaryText)]
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
         UINavigationBar.appearance().compactAppearance = appearance
         UINavigationBar.appearance().compactScrollEdgeAppearance = appearance
         UINavigationBar.appearance().tintColor = UIColor.white
+    }
+    
+    private func setupTabbar() {
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = .fromAppColors(\.secondaryText)
+        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.secondaryText)]
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = .fromAppColors(\.normalText)
+        tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.normalText)]
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        }
     }
 
     // MARK: UISceneSession Lifecycle

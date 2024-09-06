@@ -18,8 +18,8 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("保存", for: .normal)
         button.cornerRadius = 8
-        button.backgroundColor = .systemBlue.withAlphaComponent(0.8)
-        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+        button.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
     }
     var closeButton = UIButton(type: .system).apply { button in
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -29,31 +29,31 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         button.setTitleColor(.white, for: .normal)
     }
     var contentView: UIView = UIView().apply { view in
-        view.backgroundColor = .white
+        view.backgroundColor = .fromAppColors(\.secondaryButtonBackground)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.cornerRadius = 20
     }
     var currentChineseVoiceLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .systemBlue
+        label.textColor = .fromAppColors(\.darkCoffeeText)
         label.textAlignment = .center
     }
     var currentEnglishVoiceLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .systemBlue
+        label.textColor = .fromAppColors(\.darkCoffeeText)
         label.textAlignment = .center
     }
     var chineseVoiceLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "中文語音"
         label.textAlignment = .center
-        label.textColor = .darkGray
+        label.textColor = .fromAppColors(\.normalText)
     }
     var englishVoiceLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "英文語音"
         label.textAlignment = .center
-        label.textColor = .darkGray
+        label.textColor = .fromAppColors(\.normalText)
     }
     var rateSlider = UISlider().apply { rateSlider in
         rateSlider.minimumValue = AVSpeechUtteranceMinimumSpeechRate
@@ -67,12 +67,12 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     var rateLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .systemBlue
+        label.textColor = .fromAppColors(\.darkCoffeeText)
         label.textAlignment = .center
     }
     var pitchLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .systemBlue
+        label.textColor = .fromAppColors(\.darkCoffeeText)
         label.textAlignment = .center
     }
     var speakChineseButton = UIButton(type: .custom).apply { button in
@@ -80,14 +80,14 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         button.setImage(.init(systemName: "speaker.wave.2"), for: .selected)
         button.tintColor = .white
         button.cornerRadius = 5
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
     }
     var speakEnglishButton = UIButton(type: .custom).apply { button in
         button.setImage(.init(systemName: "speaker"), for: .normal)
         button.setImage(.init(systemName: "speaker.wave.2"), for: .selected)
         button.tintColor = .white
         button.cornerRadius = 5
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
     }
     var playingVoiceComponent = 0
 
@@ -98,7 +98,7 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     private func initUI() {
-        view.backgroundColor = .black.withAlphaComponent(0.6)
+        view.backgroundColor = .clear
         view.addSubview(contentView)
         contentView.addSubview(chineseVoiceLabel)
         contentView.addSubview(englishVoiceLabel)

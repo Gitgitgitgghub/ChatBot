@@ -39,7 +39,8 @@ class HomeViews: ControllerView {
         for function in enableFunctions {
             let button = UIButton(type: .custom)
             button.setTitle(function.title, for: .normal)
-            button.backgroundColor = .blue.withAlphaComponent(0.8)
+            button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+            button.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
             button.cornerRadius = 10
             button.tag = function.rawValue
             button.addTarget(self, action: #selector(onFunctionButtonClicked(sender:)), for: .touchUpInside)

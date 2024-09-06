@@ -108,7 +108,7 @@ extension UIColor {
     }
 }
 
-extension UIFont{
+extension UIFont {
     
     func withTraits(_ traits:UIFontDescriptor.SymbolicTraits...) -> UIFont {
         let descriptor = fontDescriptor
