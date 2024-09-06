@@ -53,7 +53,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     /// 當前題目位置
     private(set) var currentIndex: Int = 0
     /// 最多題目數量
-    private let limit = 3
+    private let limit = 10
     /// 計時器
     private let timerManager = TimerManager()
     /// 當前考試狀態
@@ -68,7 +68,6 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
         self.englishQuestionService = EnglishQuestionService()
         questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, englishQuestionService: englishQuestionService, questionType: questionType, vocabularies: vocabularies)
         super.init()
-        self.loadingStatus = self.englishQuestionService.loadingStatusSubject
     }
     
     func bindInputEvent() {
@@ -208,8 +207,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     }
     
     private func fetchQuestion() {
-        questionGenerator
-            .generateQuestion(limit: limit)
+        performAction(questionGenerator.generateQuestion(limit: limit))
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?.outputSubject.send(.toast(message: error.localizedDescription))

@@ -174,7 +174,6 @@ extension EnglishExamViews {
                 let button = dequeueReusableOptionsButton(index: i)
                 button.tag = i
                 button.setTitle(option, for: .normal)
-                button.backgroundColor = .systemBrown
                 button.isUserInteractionEnabled = !isAnswerMode
                 optionsStackView.addArrangedSubview(button)
                 if isAnswerMode {
@@ -188,6 +187,8 @@ extension EnglishExamViews {
                     } else {
                         button.backgroundColor = .systemBrown
                     }
+                }else {
+                    button.backgroundColor = .systemBrown
                 }
             }
         }
@@ -211,8 +212,9 @@ extension EnglishExamViews {
                 $0.cornerRadius = 10
                 $0.isUserInteractionEnabled = true
                 $0.addTarget(self, action: #selector(optionsSelected), for: .touchUpInside)
+                $0.titleLabel?.numberOfLines = 0
                 $0.snp.makeConstraints { make in
-                    make.height.equalTo(40)
+                    make.height.greaterThanOrEqualTo(40)
                     make.width.equalTo(250)
                 }
             }

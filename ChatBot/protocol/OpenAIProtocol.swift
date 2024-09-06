@@ -47,7 +47,8 @@ extension OpenAIProtocol {
     func performAPICall<T>(_ publisher: AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
         loadingStatusSubject.send(.loading())
         return publisher
-            .timeout(.seconds(20), scheduler: RunLoop.main, customError: { OpenAIError.timeout })
+            .timeout(.seconds(10), scheduler: RunLoop.main, customError: { OpenAIError.timeout })
+            .retry(3)
             .handleEvents(receiveCompletion: { [weak self] completion in
                 switch completion {
                 case .finished:

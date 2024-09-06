@@ -50,6 +50,7 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGeneratorProtocol {
         }
     }
     
+    /// 產生文法題
     func generateGrammarQuestion(point: TOEICGrammarPoint?, limit: Int) -> AnyPublisher<[EnglishExamQuestion], any Error> {
         return englishQuestionService.fetchGrammarQuestion(grammarPoint: point, limit: limit)
     }

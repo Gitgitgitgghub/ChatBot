@@ -16,9 +16,9 @@ class EnglishQuestionService: OpenAIService {
         let clozeQuestionsPublishers = vocabularies.map { vocabulary in
             self.fetchSingleVocabularyClozeQuestion(vocabulary: vocabulary)
         }
-        return performAPICall(Publishers.MergeMany(clozeQuestionsPublishers)
+        return Publishers.MergeMany(clozeQuestionsPublishers)
             .collect()
-            .eraseToAnyPublisher())
+            .eraseToAnyPublisher()
     }
 
 
@@ -33,13 +33,19 @@ class EnglishQuestionService: OpenAIService {
           "correctAnswer": "[正確答案]"
         }
         """
-        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt3_5Turbo, responseFormat: .jsonObject)
+        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt4_turbo, responseFormat: .jsonObject)
         let publisher = openAI.chats(query: query)
             .tryMap({ chatResult in
                 var question = try self.decodeChatResult(VocabularyExamQuestion.self, from: chatResult)
                 question.original = vocabulary
                 return EnglishExamQuestion.vocabulayExamQuestion(data: question)
             })
+            .catch({ _ in
+                return Just(nil)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            })
+            .compactMap({ $0 })
             .handleEvents(receiveSubscription: { _ in
                 print("查克漏字題目： \(vocabulary.wordEntry.word)")
             }, receiveCancel: {
@@ -48,16 +54,16 @@ class EnglishQuestionService: OpenAIService {
             .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-        return publisher
+        return performAPICall(publisher)
     }
     
     func fetchGrammarQuestion(grammarPoint: TOEICGrammarPoint?, limit: Int) -> AnyPublisher<[EnglishExamQuestion], Error> {
         let publishers = (0..<limit).map { _ in
             fetchSingleGrammarQuestion(grammarPoint: grammarPoint)
         }
-        return performAPICall(Publishers.MergeMany(publishers)
+        return Publishers.MergeMany(publishers)
             .collect()
-            .eraseToAnyPublisher())
+            .eraseToAnyPublisher()
     }
     
     private func fetchSingleGrammarQuestion(grammarPoint: TOEICGrammarPoint?) -> AnyPublisher<EnglishExamQuestion, Error> {
@@ -66,11 +72,11 @@ class EnglishQuestionService: OpenAIService {
         let grammar = "針對以下語法點: \(grammarPointSubType)"
         let prompt = """
             請生成一個符合 TOEIC 英語考試的語法題目，格式為 JSON \(grammar)。
-            請確保語法題目是獨特且多樣化的，涵蓋不同的語法主題。句子結構、選項、正確答案和問題翻譯應該每次都不同，並且應提供正確答案的解釋（理由），解釋部分應使用繁體中文。
+            請確保語法題目是獨特且多樣化的，涵蓋不同的語法主題。句子結構、選項，並且應提供正確答案的解釋（理由），解釋部分應使用繁體中文。
             JSON 結構應嚴格遵循以下格式：
             {
               "questionText": "[問題，包含___的句子]",
-              "questionTranslation": "[問題的完整繁體中文翻譯]",
+              "questionTranslation": "[問題含正確選項的完整繁體中文翻譯]",
               "options": ["[選項 1]", "[選項 2]", "[選項 3]", "[選項 4]"],
               "correctAnswer": "[正確選項，必須是上述選項之一]",
               "reason": "[正確答案的解釋，使用繁體中文]"
@@ -82,7 +88,8 @@ class EnglishQuestionService: OpenAIService {
         }else {
             grammarPointDescription = "\(grammarPoint.rawValue)-\(grammarPointSubType)"
         }
-        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt3_5Turbo, responseFormat: .jsonObject)
+        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt4_turbo, responseFormat: .jsonObject)
+        let startTime = Date()
         let publisher = openAI.chats(query: query)
             .tryMap({ chatResult in
                 var question = try self.decodeChatResult(GrammarExamQuestion.self, from: chatResult)
@@ -90,15 +97,26 @@ class EnglishQuestionService: OpenAIService {
                 question.ensureOptionsValid()
                 return EnglishExamQuestion.grammarExamQuestion(data: question)
             })
+            .catch({ _ in
+                return Just(nil)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            })
+            .compactMap({ $0 })
             .handleEvents(receiveSubscription: { _ in
                 print("Fetching grammar question...")
-            }, receiveCancel: {
-                print("Grammar question fetch canceled.")
+            }, receiveCompletion: { comepletion in
+                if case .failure(let error) = comepletion {
+                    print("Grammar question fetch error \(error.localizedDescription).")
+                }
+                let endTime = Date()
+                let duration = endTime.timeIntervalSince(startTime)
+                print("Grammar question fetch finished. Duration: \(duration) seconds.")
             })
             .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-        return publisher
+        return performAPICall(publisher)
     }
 
     

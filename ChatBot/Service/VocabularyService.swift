@@ -27,14 +27,10 @@ class VocabularyService: OpenAIService {
     /// 因為一次帶多個給ai慢到會timeout
     /// 所以改採並行機制
     func fetchWordDetails(words: [String]) -> AnyPublisher<[WordDetail], Error> {
-        let publishers = words.compactMap { word in
-            return fetchSingleWordDetail(word: word)
-                .eraseToAnyPublisher()
-        }
-        let mergePublisher = Publishers.MergeMany(publishers)
+        let publishers = Publishers.Sequence(sequence: words)
+            .flatMap({ self.fetchSingleWordDetail(word: $0) })
+        return publishers
             .collect()
-            .eraseToAnyPublisher()
-        return mergePublisher
             .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -166,15 +162,16 @@ class VocabularyService: OpenAIService {
                 let response = try self.decodeChatResult(WordDetail.self, from: chatResult)
                 return response
             })
-            .handleEvents(receiveSubscription: { _ in
-                print("查單字： \(word)")
-            }, receiveCancel: {
-                print("取消查單字： \(word)")
+            .catch({ _ in
+                return Just(nil)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
             })
+            .compactMap({ $0 })
             .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-        return publisher
+        return performAPICall(publisher)
     }
     
 }
