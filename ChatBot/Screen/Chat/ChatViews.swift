@@ -22,6 +22,7 @@ class ChatViews: ControllerView {
         tableView.keyboardDismissMode = .interactive
         tableView.allowsSelection = false
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.backgroundColor = .white
         return tableView
     }()
     let chatInputView = ChatInputView().apply { view in
@@ -29,11 +30,11 @@ class ChatViews: ControllerView {
     }
     
     override func initUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .fromAppColors(\.lightCoffeeButton)
         view.addSubview(messageTableView)
         view.addSubview(chatInputView)
         chatInputView.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
+            make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
             make.height.equalTo(50)
         }
         messageTableView.snp.makeConstraints { make in
@@ -71,20 +72,18 @@ extension ChatViews {
         weak var messageCellProtocol: MessageCellProtocol?
         let messageTextView = UITextView().apply { textView in
             textView.translatesAutoresizingMaskIntoConstraints = false
-            textView.textColor = .white
             textView.textAlignment = .center
             textView.dataDetectorTypes = .link
             textView.isScrollEnabled = false
-            textView.backgroundColor = .clear
             textView.isFindInteractionEnabled = true
             textView.isUserInteractionEnabled = true
             textView.isEditable = false
             textView.cornerRadius = 10
         }
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light)).apply { view in
-                view.translatesAutoresizingMaskIntoConstraints = false
-                view.cornerRadius = 10
-            }
+            view.translatesAutoresizingMaskIntoConstraints = false
+            view.cornerRadius = 10
+        }
         var chatMessage: ChatMessage?
         var attr: NSAttributedString?
         var indexPath: IndexPath?
@@ -104,7 +103,7 @@ extension ChatViews {
         
         func initUI() {
             messageTextView.delegate = self
-            messageTextView.backgroundColor = .systemBlue
+            messageTextView.backgroundColor = SystemDefine.Message.aiMgsBackgroundColor
             messageTextView.attributedText = defaultAttr
             contentView.addSubview(messageTextView)
             contentView.addSubview(blurView)
@@ -189,7 +188,7 @@ extension ChatViews {
                 make.width.lessThanOrEqualTo(SystemDefine.Message.maxWidth)
                 make.trailing.equalToSuperview().inset(10)
             }
-            messageTextView.backgroundColor = .systemGreen
+            messageTextView.backgroundColor = SystemDefine.Message.userMgsBackgroundColor
         }
     }
     

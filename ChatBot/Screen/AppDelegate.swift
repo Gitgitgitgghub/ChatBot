@@ -22,20 +22,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .fromAppColors(\.lightCoffeeButton)
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.secondaryText)]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.secondaryText)]
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.darkCoffeeText)]
+        appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.darkCoffeeText)]
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
         UINavigationBar.appearance().compactAppearance = appearance
         UINavigationBar.appearance().compactScrollEdgeAppearance = appearance
-        UINavigationBar.appearance().tintColor = UIColor.white
+        UINavigationBar.appearance().tintColor =  UIColor.fromAppColors(\.darkCoffeeText)
     }
     
     private func setupTabbar() {
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.backgroundColor = .fromAppColors(\.lightCoffeeButton)
-        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = .fromAppColors(\.secondaryText)
-        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.secondaryText)]
+        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = .fromAppColors(\.creamBackground)
+        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.creamBackground)]
         tabBarAppearance.stackedLayoutAppearance.normal.iconColor = .fromAppColors(\.normalText)
         tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.fromAppColors(\.normalText)]
         UITabBar.appearance().standardAppearance = tabBarAppearance

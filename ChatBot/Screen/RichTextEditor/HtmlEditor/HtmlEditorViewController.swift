@@ -10,12 +10,6 @@ import WebKit
 import Photos
 import ZMarkupParser
 
-protocol HtmlEditorViewControllerDelegate: AnyObject {
-    
-    func didSaveAttributedString(innerHtml: String)
-    
-}
-
 class HtmlEditorViewController: BaseUIViewController {
     
     lazy var webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
@@ -31,7 +25,7 @@ class HtmlEditorViewController: BaseUIViewController {
         }
     var content: Data?
     var inputBackgroundColor: UIColor
-    weak var delegate: HtmlEditorViewControllerDelegate?
+    var completion: ((_ result: NSAttributedString?) -> ())?
     
     /// webview call
     enum Task: String, CaseIterable {
@@ -43,9 +37,9 @@ class HtmlEditorViewController: BaseUIViewController {
         case addImage
     }
     
-    init(content: Data?, inputBackgroundColor: UIColor, delegate: HtmlEditorViewControllerDelegate) {
+    init(content: Data?, inputBackgroundColor: UIColor, completion: @escaping ((_ result: NSAttributedString?) -> ())) {
         self.content = content
-        self.delegate = delegate
+        self.completion = completion
         self.inputBackgroundColor = inputBackgroundColor
         super.init(nibName: nil, bundle: nil)
     }
@@ -94,9 +88,9 @@ class HtmlEditorViewController: BaseUIViewController {
     
     @objc private func save() {
         webView.evaluateJavaScript("document.getElementById('text-input').innerHTML") { [weak self] result, error in
-            if let htmlContent = result as? String {
+            if let htmlContent = result as? String, let attr = NSMutableAttributedString(htmlString: htmlContent)?.convertPx2Px() {
                 print("save: \(htmlContent)")
-                self?.delegate?.didSaveAttributedString(innerHtml: htmlContent)
+                self?.completion?(attr)
             } else if let error = error {
                 print("[DEBUG]: \(#function) \(error.localizedDescription)")
             }

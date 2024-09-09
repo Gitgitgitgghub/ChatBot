@@ -55,6 +55,18 @@ class UserValidation {
     func setupBindings() {
         bindErrorMessage()
         bindLoginEnable()
+        bindloginMethodChange()
+    }
+    
+    func bindloginMethodChange() {
+        $loginMethod
+            .sink { [unowned self] _ in
+                self.account = ""
+                self.password = ""
+                self.confirmPassword = ""
+                self.errorMessage = ""
+            }
+            .store(in: &subscriptions)
     }
     
     /// 處理可否點選登入
@@ -67,7 +79,7 @@ class UserValidation {
                 case .account:
                     return isAllPass && !self.account.isEmpty && !self.password.isEmpty
                 case .key:
-                    return isAllPass
+                    return isAllPass && self.account.isNotEmpty
                 }
             })
             .sink(receiveValue: { [unowned self] isEnable in

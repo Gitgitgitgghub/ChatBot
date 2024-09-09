@@ -16,12 +16,7 @@ extension NSMutableAttributedString {
             .documentType: NSAttributedString.DocumentType.html,
             .characterEncoding: String.Encoding.utf8.rawValue
         ]
-        let attributedString = try? NSMutableAttributedString(data: htmlStringData, options: options, documentAttributes: nil)
-        if let attributedString = attributedString?.convertPx2Px() {
-            self.init(attributedString: attributedString)
-        }else {
-            return nil
-        }
+        try? self.init(data: htmlStringData, options: options, documentAttributes: nil)
     }
     
     convenience init?(htmlString: String) {
@@ -31,7 +26,7 @@ extension NSMutableAttributedString {
         self.init(htmlStringData: data)
     }
     
-    private func convertPx2Px() -> NSMutableAttributedString {
+    func convertPx2Px() -> NSMutableAttributedString {
         enumerateAttribute(.font, in: NSMakeRange(0, self.length), options: .init(rawValue: 0)) {
             (value, range, stop) in
             if let font = value as? UIFont {

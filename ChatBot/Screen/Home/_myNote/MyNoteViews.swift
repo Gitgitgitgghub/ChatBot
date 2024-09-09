@@ -20,10 +20,8 @@ class MyNoteViews: ControllerView {
     }
     var addNoteButton = UIButton(type: .custom).apply {
         $0.cornerRadius = 25
-        $0.setImage(.init(systemName: "plus"), for: .normal)
-        $0.backgroundColor = .white
-        $0.layer.borderColor = UIColor.lightGray.cgColor
-        $0.layer.borderWidth = 1
+        $0.setImage(.init(systemName: "plus")?.withTintColor(.fromAppColors(\.darkCoffeeText), renderingMode: .alwaysOriginal).resizeToFit(maxWidth: 25, maxHeight: 25), for: .normal)
+        $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
     }
     
     override func initUI() {
@@ -47,32 +45,33 @@ extension MyNoteViews {
         
         private var titleLabel = UILabel().apply { label in
             label.numberOfLines = 1
-            label.textColor = .darkGray
+            label.textColor = .fromAppColors(\.darkCoffeeText)
         }
         private lazy var textView = UITextView().apply {
-            $0.textColor = .darkGray.withAlphaComponent(0.8)
+            //$0.textColor = .darkGray.withAlphaComponent(0.8)
             $0.cornerRadius = 10
-            $0.backgroundColor = .systemBlue
+            $0.backgroundColor = SystemDefine.Message.aiMgsBackgroundColor
             $0.isUserInteractionEnabled = false
             $0.isScrollEnabled = true
         }
         private var lastUpdateLabel = UILabel().apply { label in
             label.numberOfLines = 1
-            label.textColor = .systemRed
-            label.font = .preferredFont(forTextStyle: .title3).withSize(14)
+            label.textColor = .fromAppColors(\.normalText)
+            label.font = .boldSystemFont(ofSize: 14)
         }
         private lazy var commentImageView: UIImageView = {
             let imageView = UIImageView()
             imageView.translatesAutoresizingMaskIntoConstraints = false
-            imageView.image = .init(systemName: "rectangle.and.pencil.and.ellipsis")?.withRenderingMode(.alwaysOriginal).withTintColor(.darkGray)
+            imageView.image = .init(systemName: "rectangle.and.pencil.and.ellipsis")?.withRenderingMode(.alwaysOriginal).withTintColor(.fromAppColors(\.coffeeBackground))
             return imageView
         }()
         private lazy var commentCountLabel: UILabel = {
             let label = UILabel()
             label.translatesAutoresizingMaskIntoConstraints = false
             label.text = ": 0"
-            label.textColor = .systemGray
+            label.textColor = .fromAppColors(\.darkCoffeeText)
             label.numberOfLines = 1
+            label.font = .boldSystemFont(ofSize: 14)
             return label
         }()
         private(set) var myNote: MyNote?
@@ -112,14 +111,13 @@ extension MyNoteViews {
                 make.height.equalTo(20)
             }
             commentCountLabel.snp.makeConstraints { make in
-                make.trailing.equalTo(lastUpdateLabel.snp.leading).offset(-5)
-                make.height.equalTo(20)
-                make.bottom.equalTo(lastUpdateLabel)
+                make.trailing.equalToSuperview().inset(10)
+                make.centerY.equalTo(titleLabel)
             }
             commentImageView.snp.makeConstraints { make in
+                make.size.equalTo(CGSize(width: 18, height: 18))
                 make.trailing.equalTo(commentCountLabel.snp.leading).offset(-2)
-                make.size.equalTo(CGSize(width: 20, height: 20))
-                make.bottom.equalTo(commentCountLabel)
+                make.centerY.equalTo(commentCountLabel)
             }
         }
         

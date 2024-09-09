@@ -19,8 +19,10 @@ class NoteViews: ControllerView {
         tableView.rowHeight = UITableView.automaticDimension
     }
     let addCommentButton = UIButton(type: .custom).apply {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.setBackgroundImage(.init(systemName: "note.text.badge.plus"), for: .normal)
+        var image: UIImage? = .init(systemName: "note.text.badge.plus")?.withTintColor(.fromAppColors(\.darkCoffeeText), renderingMode: .alwaysOriginal).resizeToFit(maxWidth: 25, maxHeight: 25)
+        $0.setImage(image, for: .normal)
+        $0.cornerRadius = 25
+        $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
     }
     
     override func initUI() {
@@ -72,7 +74,7 @@ extension NoteViews {
         func initUI() {
             noteTextView.delegate = self
             noteTextView.layoutManager.delegate = self
-            noteTextView.backgroundColor = .systemBlue
+            noteTextView.backgroundColor = SystemDefine.Message.aiMgsBackgroundColor
             contentView.addSubview(noteTextView)
             noteTextView.snp.remakeConstraints { make in
                 make.top.bottom.equalToSuperview().inset(10)
@@ -125,7 +127,7 @@ extension NoteViews {
         func initUI() {
             noteTextView.delegate = self
             noteTextView.layoutManager.delegate = self
-            noteTextView.backgroundColor = .systemGreen
+            noteTextView.backgroundColor =  SystemDefine.Message.userMgsBackgroundColor
             contentView.addSubview(noteTextView)
             noteTextView.snp.remakeConstraints { make in
                 make.top.bottom.equalToSuperview().inset(10)

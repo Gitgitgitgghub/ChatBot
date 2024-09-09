@@ -108,6 +108,7 @@
 		32C495682C80594200AB1360 /* RadioButtonGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495672C80594200AB1360 /* RadioButtonGroupView.swift */; };
 		32C4956A2C8AF61000AB1360 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495692C8AF61000AB1360 /* AppColors.swift */; };
 		32C4956C2C8B0C2E00AB1360 /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C4956B2C8B0C2E00AB1360 /* SpeakButton.swift */; };
+		32C4956E2C8E92BD00AB1360 /* AnimationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C4956D2C8E92BD00AB1360 /* AnimationButton.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
 		32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32C77FCF2C18504F00F335FE /* Assets.xcassets */; };
@@ -257,6 +258,7 @@
 		32C495672C80594200AB1360 /* RadioButtonGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioButtonGroupView.swift; sourceTree = "<group>"; };
 		32C495692C8AF61000AB1360 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 		32C4956B2C8B0C2E00AB1360 /* SpeakButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakButton.swift; sourceTree = "<group>"; };
+		32C4956D2C8E92BD00AB1360 /* AnimationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationButton.swift; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32C77FC82C18504E00F335FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -699,6 +701,7 @@
 				32B4D7182C77448700CA4C40 /* StarButton.swift */,
 				32C495672C80594200AB1360 /* RadioButtonGroupView.swift */,
 				32C4956B2C8B0C2E00AB1360 /* SpeakButton.swift */,
+				32C4956D2C8E92BD00AB1360 /* AnimationButton.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -949,6 +952,7 @@
 				32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */,
 				32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */,
 				326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */,
+				32C4956E2C8E92BD00AB1360 /* AnimationButton.swift in Sources */,
 				32B7E6B72C69DD090032ABFD /* VocabularyManager.swift in Sources */,
 				323E88A82C353D2200401F50 /* MainTabBarController.swift in Sources */,
 				32B7E6C02C6B277E0032ABFD /* VocabularyViewModel.swift in Sources */,

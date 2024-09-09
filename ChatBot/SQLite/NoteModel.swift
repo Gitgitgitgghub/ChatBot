@@ -29,25 +29,18 @@ class MyNote: Codable, FetchableRecord, PersistableRecord {
         self.documentType = documentType
     }
     
-    func setAttributedString(htmlString: String) {
-        self.lastUpdate = .now
-        let documentType: NSAttributedString.DocumentType = .html
+    func setAttributeStringData(attr: NSAttributedString, documentType: NSAttributedString.DocumentType) {
         self.documentType = documentType.rawValue
-        guard let data = htmlString.data(using: .utf8) else {
-            print("Failed to convert HTML string to Data")
-            return
-        }
-        self.attributedStringData = data
-    }
-    
-    func setAttributedString(attr: NSAttributedString) {
+        self.lastUpdate = .now
         do {
-            let documentType: NSAttributedString.DocumentType = .rtfd
-            self.lastUpdate = .now
-            self.attributedStringData = try attr.archivedData()
-            self.documentType = documentType.rawValue
+            if documentType == .html {
+                self.attributedStringData = try attr.data(from: NSRange(location: 0, length: attr.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+            }else {
+                
+                self.attributedStringData = try attr.archivedData()
+            }
         }catch {
-            print("setAttributedString error: \(error.localizedDescription)")
+            print("setAttributeStringData error: \(error.localizedDescription)")
         }
     }
     
@@ -130,25 +123,18 @@ class MyComment: Codable, FetchableRecord, PersistableRecord {
         self.documentType = documentType
     }
     
-    func setAttributedString(htmlString: String) {
-        self.lastUpdate = .now
-        let documentType: NSAttributedString.DocumentType = .html
+    func setAttributeStringData(attr: NSAttributedString, documentType: NSAttributedString.DocumentType) {
         self.documentType = documentType.rawValue
-        guard let data = htmlString.data(using: .utf8) else {
-            print("Failed to convert HTML string to Data")
-            return
-        }
-        self.attributedStringData = data
-    }
-    
-    func setAttributedString(attr: NSAttributedString) {
+        self.lastUpdate = .now
         do {
-            let documentType: NSAttributedString.DocumentType = .rtfd
-            self.lastUpdate = .now
-            self.attributedStringData = try attr.archivedData()
-            self.documentType = documentType.rawValue
+            if documentType == .html {
+                self.attributedStringData = try attr.data(from: NSRange(location: 0, length: attr.length), documentAttributes: [.documentType: documentType, .characterEncoding: String.Encoding.utf8.rawValue])
+            }else {
+                
+                self.attributedStringData = try attr.archivedData()
+            }
         }catch {
-            print("setAttributedString error: \(error.localizedDescription)")
+            print("setAttributeStringData error: \(error.localizedDescription)")
         }
     }
     ///required init(row: Row)

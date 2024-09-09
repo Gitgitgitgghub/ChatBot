@@ -18,7 +18,10 @@ class HistoryViews : ControllerView {
         tableView.rowHeight = UITableView.automaticDimension
     }
     var editButton = UIButton(type: .custom).apply { button in
-        button.setBackgroundImage(.init(systemName: "square.and.pencil"), for: .normal)
+        var image: UIImage? = .init(systemName: "square.and.pencil")?.withTintColor(.fromAppColors(\.darkCoffeeText), renderingMode: .alwaysOriginal).resizeToFit(maxWidth: 25, maxHeight: 25)
+        button.setImage(image, for: .normal)
+        button.cornerRadius = 25
+        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
     }
     
     override func initUI() {
@@ -28,7 +31,7 @@ class HistoryViews : ControllerView {
             make.edges.equalToSuperview()
         }
         editButton.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 30, height: 30))
+            make.size.equalTo(CGSize(width: 50, height: 50))
             make.trailing.bottom.equalToSuperview().inset(15)
         }
     }
@@ -41,14 +44,16 @@ extension HistoryViews {
         
         private var roleLabel = UILabel().apply { label in
             label.numberOfLines = 1
+            label.textColor = .fromAppColors(\.darkCoffeeText)
         }
         private var messageLabel = UILabel().apply { label in
             label.numberOfLines = 3
-            label.textColor = .darkGray.withAlphaComponent(0.8)
+            label.textColor = .fromAppColors(\.normalText)
         }
         private var lastUpdateLabel = UILabel().apply { label in
             label.numberOfLines = 1
-            label.textColor = .red.withAlphaComponent(0.8)
+            label.textColor = .fromAppColors(\.secondaryText)
+            label.font = .boldSystemFont(ofSize: 14)
         }
         private(set) var chatRoom: ChatRoom?
         private let dateFormatter = DateFormatter().apply { formatter in
@@ -66,6 +71,7 @@ extension HistoryViews {
         }
         
         private func initUI() {
+            backgroundColor = .fromAppColors(\.secondaryButtonBackground)
             contentView.addSubview(roleLabel)
             contentView.addSubview(messageLabel)
             contentView.addSubview(lastUpdateLabel)
@@ -97,13 +103,10 @@ extension HistoryViews {
                     switch lastMessage.role {
                     case .system, .tool:
                         roleLabel.text = "系統："
-                        roleLabel.textColor = .gray.withAlphaComponent(0.8)
                     case .user:
                         roleLabel.text = "你："
-                        roleLabel.textColor = .green.withAlphaComponent(0.8)
                     case .assistant:
                         roleLabel.text = "AI："
-                        roleLabel.textColor = .blue.withAlphaComponent(0.8)
                     }
                     messageLabel.text = lastMessage.message
                 }

@@ -29,31 +29,31 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         button.setTitleColor(.white, for: .normal)
     }
     var contentView: UIView = UIView().apply { view in
-        view.backgroundColor = .fromAppColors(\.secondaryButtonBackground)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.cornerRadius = 20
+        view.backgroundColor = .systemBackground
     }
     var currentChineseVoiceLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .fromAppColors(\.darkCoffeeText)
+        label.textColor = .fromAppColors(\.normalText)
         label.textAlignment = .center
     }
     var currentEnglishVoiceLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .fromAppColors(\.darkCoffeeText)
+        label.textColor = .fromAppColors(\.normalText)
         label.textAlignment = .center
     }
     var chineseVoiceLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "中文語音"
         label.textAlignment = .center
-        label.textColor = .fromAppColors(\.normalText)
+        label.textColor = .fromAppColors(\.darkCoffeeText)
     }
     var englishVoiceLabel = UILabel().apply { label in
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "英文語音"
         label.textAlignment = .center
-        label.textColor = .fromAppColors(\.normalText)
+        label.textColor = .fromAppColors(\.darkCoffeeText)
     }
     var rateSlider = UISlider().apply { rateSlider in
         rateSlider.minimumValue = AVSpeechUtteranceMinimumSpeechRate
@@ -75,19 +75,11 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         label.textColor = .fromAppColors(\.darkCoffeeText)
         label.textAlignment = .center
     }
-    var speakChineseButton = UIButton(type: .custom).apply { button in
-        button.setImage(.init(systemName: "speaker"), for: .normal)
-        button.setImage(.init(systemName: "speaker.wave.2"), for: .selected)
-        button.tintColor = .white
+    var speakChineseButton = SpeakButton().apply { button in
         button.cornerRadius = 5
-        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
     }
-    var speakEnglishButton = UIButton(type: .custom).apply { button in
-        button.setImage(.init(systemName: "speaker"), for: .normal)
-        button.setImage(.init(systemName: "speaker.wave.2"), for: .selected)
-        button.tintColor = .white
+    var speakEnglishButton = SpeakButton().apply { button in
         button.cornerRadius = 5
-        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
     }
     var playingVoiceComponent = 0
 
@@ -98,7 +90,7 @@ class VoicePickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     private func initUI() {
-        view.backgroundColor = .clear
+        view.backgroundColor = .black.withAlphaComponent(0.6)
         view.addSubview(contentView)
         contentView.addSubview(chineseVoiceLabel)
         contentView.addSubview(englishVoiceLabel)

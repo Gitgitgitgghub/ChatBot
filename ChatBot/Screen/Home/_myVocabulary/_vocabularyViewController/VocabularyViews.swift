@@ -224,18 +224,19 @@ fileprivate class WordSentenceCell: UITableViewCell, SpeechTextDelegate {
         $0.isVisible = false
         $0.textColor = .fromAppColors(\.goldText)
     }
-    private let sentenceLabel = PaddingLabel(withInsets: .init(top: 10, left: 15, bottom: 5, right: 10)).apply{
+    private let sentenceLabel = UILabel().apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .fromAppColors(\.darkCoffeeText)
         $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 0
-        $0.lineBreakMode = .byWordWrapping
+        $0.lineBreakMode = .byCharWrapping
     }
-    private let translationLabel = PaddingLabel(withInsets: .init(top: 5, left: 15, bottom: 5, right: 10)).apply{
+    private let translationLabel = UILabel().apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .fromAppColors(\.normalText)
         $0.font = SystemDefine.Message.defaultTextFont.withSize(18).bold()
         $0.numberOfLines = 0
+        $0.lineBreakMode = .byCharWrapping
     }
     var speakButton = SpeakButton().apply{
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -263,12 +264,12 @@ fileprivate class WordSentenceCell: UITableViewCell, SpeechTextDelegate {
         }
         sentenceLabel.snp.makeConstraints { make in
             make.top.equalTo(sentenceTitleLabel.snp.bottom).offset(10)
-            make.leading.equalToSuperview()
-            make.trailing.equalTo(speakButton.snp.leading)
+            make.leading.equalToSuperview().inset(15)
+            make.trailing.equalTo(speakButton.snp.leading).offset(-10)
         }
         translationLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(sentenceLabel.snp.bottom).priority(.medium)
+            make.leading.trailing.equalToSuperview().inset(15)
+            make.top.equalTo(speakButton.snp.bottom).offset(10)
             make.bottom.equalToSuperview()
         }
         speakButton.snp.makeConstraints { make in

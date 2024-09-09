@@ -15,8 +15,8 @@ class LogingViews: ControllerView {
     lazy var accountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .black
-        label.text = "Account"
+        label.textColor = .fromAppColors(\.darkCoffeeText)
+        label.text = "帳號"
         return label
     }()
     lazy var errorLabel: UILabel = {
@@ -28,63 +28,51 @@ class LogingViews: ControllerView {
     lazy var pwLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .black
-        label.text = "Password"
+        label.textColor = .fromAppColors(\.darkCoffeeText)
+        label.text = "密碼"
         return label
     }()
     lazy var confirmPwLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .black
-        label.text = "Confirm Password"
+        label.textColor = .fromAppColors(\.darkCoffeeText)
+        label.text = "確認密碼"
         return label
     }()
     lazy var accountTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "input your account"
+        textField.placeholder = "請輸入帳號"
         textField.keyboardType = .default
         textField.returnKeyType = .done
         textField.borderStyle = .roundedRect
-        textField.layer.borderColor = UIColor.gray.cgColor
-        textField.layer.borderWidth = 1
-        textField.layer.cornerRadius = 10
-        textField.layer.masksToBounds = true
         return textField
     }()
     lazy var pwTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "input your password"
+        textField.placeholder = "請輸入密碼"
         textField.keyboardType = .default
         textField.returnKeyType = .done
         textField.borderStyle = .roundedRect
-        textField.layer.borderColor = UIColor.gray.cgColor
-        textField.layer.borderWidth = 1
-        textField.layer.cornerRadius = 10
-        textField.layer.masksToBounds = true
         return textField
     }()
     lazy var confirmPwTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "confirm your password"
+        textField.placeholder = "請確認你的密碼"
         textField.keyboardType = .default
         textField.returnKeyType = .done
         textField.borderStyle = .roundedRect
-        textField.layer.borderColor = UIColor.gray.cgColor
-        textField.layer.borderWidth = 1
-        textField.layer.cornerRadius = 10
-        textField.layer.masksToBounds = true
         return textField
     }()
     
     lazy var loginButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Login", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.setTitleColor(.gray, for: .disabled)
-        button.backgroundColor = .blue.withAlphaComponent(0.8)
+        button.setTitle("登入", for: .normal)
+        button.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
+        button.setTitleColor(.fromAppColors(\.secondaryText), for: .disabled)
+        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = true
         return button
@@ -92,16 +80,18 @@ class LogingViews: ControllerView {
     lazy var switchLoginMethodButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("切換登入方式", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.setTitleColor(.gray, for: .disabled)
-        button.backgroundColor = .blue.withAlphaComponent(0.8)
+        button.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
+        button.setTitleColor(.fromAppColors(\.secondaryText), for: .disabled)
+        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = true
         return button
     }()
+    override var backgroundColor: UIColor {
+        return .fromAppColors(\.secondaryButtonBackground)
+    }
     
     override func initUI() {
-        view.backgroundColor = .white
         view.addSubview(accountLabel)
         view.addSubview(pwLabel)
         view.addSubview(confirmPwLabel)
@@ -112,29 +102,29 @@ class LogingViews: ControllerView {
         view.addSubview(errorLabel)
         view.addSubview(switchLoginMethodButton)
         accountTextField.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(50)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalToSuperview().inset(250)
             make.height.equalTo(40)
         }
         accountLabel.snp.makeConstraints { make in
-            make.leading.equalTo(accountTextField).inset(3)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(accountTextField.snp.top).offset(-5)
         }
         pwLabel.snp.makeConstraints { make in
-            make.leading.equalTo(accountLabel)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalTo(accountTextField.snp.bottom).offset(5)
         }
         pwTextField.snp.makeConstraints { make in
-            make.leading.equalTo(accountTextField)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.size.equalTo(accountTextField)
             make.top.equalTo(pwLabel.snp.bottom).offset(5)
         }
         confirmPwLabel.snp.makeConstraints { make in
-            make.leading.equalTo(accountLabel)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalTo(pwTextField.snp.bottom).offset(5)
         }
         confirmPwTextField.snp.makeConstraints { make in
-            make.leading.equalTo(accountTextField)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.size.equalTo(accountTextField)
             make.top.equalTo(confirmPwLabel.snp.bottom).offset(5)
         }
@@ -159,8 +149,8 @@ class LogingViews: ControllerView {
         pwLabel.isVisible = method == .account
         confirmPwLabel.isVisible = method == .account
         confirmPwTextField.isVisible = method == .account
-        accountLabel.text = method == .account ? "Account" : "Key"
-        accountTextField.placeholder = method == .account ? "input your account" : "input your key"
+        accountLabel.text = method == .account ? "帳號" : "金鑰"
+        accountTextField.placeholder = method == .account ? "請輸入帳號" : "請輸入金鑰"
         accountTextField.text = ""
         confirmPwTextField.text = ""
         confirmPwTextField.text = ""

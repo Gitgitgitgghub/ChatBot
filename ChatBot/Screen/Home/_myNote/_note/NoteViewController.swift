@@ -75,8 +75,8 @@ class NoteViewController: BaseUIViewController {
                     if reload {
                         self.views.tableView.reloadData()
                     }
-                case .editUsingHtmlEditor(editData: let editData, let isEditNote):
-                    self.openEditorVc(isHtml: true, editData: editData, isEditNote: isEditNote)
+                case .openEditor(editData: let editData, isNote: let isEditNote, useHtmlEdotir: let useHtmlEdotir):
+                    self.openEditorVc(isHtml: useHtmlEdotir, editData: editData, isEditNote: isEditNote)
                 case .deleteNoteSuccess:
                     self.showToast(message: "刪除成功，１秒後反回上一頁", autoDismiss: 1) { [weak self] in
                         self?.navigationController?.popViewController(animated: true)
@@ -84,8 +84,6 @@ class NoteViewController: BaseUIViewController {
                 case .deleteCommentSuccess:
                     self.showToast(message: "刪除筆記成功", autoDismiss: 1)
                     self.views.tableView.reloadSections(.init(integer: 1), with: .automatic)
-                case .editUsingTextViewEditor(editData: let editData, isNote: let isNote):
-                    self.openEditorVc(isHtml: false, editData: editData, isEditNote: isNote)
                 }
             }
             .store(in: &subscriptions)
@@ -94,25 +92,23 @@ class NoteViewController: BaseUIViewController {
     /// 開啟編輯畫面
     private func openEditorVc(isHtml: Bool, editData: Data?, isEditNote: Bool) {
         if isHtml {
-            let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen, delegate: self))
+            let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, inputBackgroundColor:  SystemDefine.Message.aiMgsBackgroundColor, completion: { [weak self] result in
+                self?.viewModel.transform(inputEvent: .modifyNote(attr: result))
+            }))
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true)
         }else {
-            let vc = ScreenLoader.loadScreen(screen: .textEditor(content: editData, inputBackgroundColor: isEditNote ? .systemBlue : .systemGreen, delegate: self))
+            let vc = ScreenLoader.loadScreen(screen: .textEditor(content: editData, inputBackgroundColor:  SystemDefine.Message.userMgsBackgroundColor, delegate: self))
             navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
 
 //MARK: - 處理編輯器點選儲存
-extension NoteViewController: TextEditorViewControllerDelegate, HtmlEditorViewControllerDelegate {
+extension NoteViewController: TextEditorViewControllerDelegate {
     
     func onSave(title: String?, attributedString: NSAttributedString?) {
-        viewModel.transform(inputEvent: .modifyNoteByNSAttributedString(attr: attributedString))
-    }
-    
-    func didSaveAttributedString(innerHtml: String) {
-        viewModel.transform(inputEvent: .modifyNote(content: innerHtml))
+        viewModel.transform(inputEvent: .modifyNote(attr: attributedString))
     }
     
 }

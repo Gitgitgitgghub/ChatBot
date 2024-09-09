@@ -10,7 +10,7 @@ import UIKit
 
 protocol ControllerViewProtocol {
     
-    var backgroundColor: UIColor { get set }
+    //var backgroundColor: UIColor { get }
     var loadingView: LoadingView { get set }
     func initUI()
     
@@ -18,7 +18,9 @@ protocol ControllerViewProtocol {
 
 class ControllerView: NSObject, ControllerViewProtocol {
     
-    var backgroundColor: UIColor = .systemBackground
+    var backgroundColor: UIColor {
+        return .systemBackground 
+    }
     var view: UIView
     var loadingView = LoadingView(frame: .init(origin: .zero, size: .init(width: 80, height: 80)), type: .ballScaleMultiple, color: .white, padding: 0)
     

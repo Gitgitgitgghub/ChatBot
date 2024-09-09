@@ -18,9 +18,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
         /// 新增自己的筆記
         case addComment
         /// 變更內容
-        case modifyNote(content: String)
-        /// 變更內容
-        case modifyNoteByNSAttributedString(attr: NSAttributedString?)
+        case modifyNote(attr: NSAttributedString?)
         /// 刪除comment
         case deleteComment(indexPath: IndexPath)
         /// 刪除筆記
@@ -29,8 +27,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
     
     enum OutputEvent {
         case toast(message: String, reload: Bool)
-        case editUsingHtmlEditor(editData: Data?, isNote: Bool)
-        case editUsingTextViewEditor(editData: Data?, isNote: Bool)
+        case openEditor(editData: Data?, isNote: Bool, useHtmlEdotir: Bool)
         case deleteNoteSuccess
         case deleteCommentSuccess
     }
@@ -55,10 +52,8 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
         inputSubject
             .sink { [weak self] event in
                 switch event {
-                case .modifyNote(content: let content):
-                    self?.modifyNote(content: content)
-                case .modifyNoteByNSAttributedString(attr: let attr):
-                    self?.modifyNoteByNSAttributedString(attr: attr)
+                case .modifyNote(attr: let attr):
+                    self?.modifyNote(attr: attr)
                 case .deleteNote:
                     self?.deleteNote()
                 case .deleteComment(indexPath: let indexPath):
@@ -116,11 +111,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
             usingHtml = myNote.stringDocumentType == .html
         default: return
         }
-        if usingHtml {
-            outputSubject.send(.editUsingHtmlEditor(editData: editData, isNote: isEditNote))
-        }else {
-            outputSubject.send(.editUsingTextViewEditor(editData: editData, isNote: isEditNote))
-        }
+        outputSubject.send(.openEditor(editData: editData, isNote: isEditNote, useHtmlEdotir: usingHtml))
     }
     
     private func saveNote(note: MyNote, actionName: String) {
@@ -137,37 +128,25 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
     }
     
     /// 更改筆記內容包含comment
-    private func modifyNote(content: String) {
-        guard let action = inputEvent else { return }
-        switch action {
-        case .editNote:
-            myNote.setAttributedString(htmlString:content)
-            saveNote(note: myNote, actionName: "修改筆記")
-        case .editComment(let indexPath):
-            guard let comment = myNote.comments.getOrNil(index: indexPath.row) else { return }
-            comment.setAttributedString(htmlString:content)
-            saveNote(note: myNote, actionName: "修改筆記")
-        case .addComment:
-            guard let comment = MyComment(htmlString: content) else { return }
-            myNote.comments.append(comment)
-            saveNote(note: myNote, actionName: "新增筆記")
-        default: break
-        }
-    }
-    
-    private func modifyNoteByNSAttributedString(attr: NSAttributedString?) {
-        guard let action = inputEvent else { return }
+    private func modifyNote(attr: NSAttributedString?) {
         guard let attr = attr else { return }
+        guard let action = inputEvent else { return }
         switch action {
         case .editNote:
-            myNote.setAttributedString(attr: attr)
+            myNote.setAttributeStringData(attr: attr, documentType: myNote.stringDocumentType)
             saveNote(note: myNote, actionName: "修改筆記")
         case .editComment(let indexPath):
             guard let comment = myNote.comments.getOrNil(index: indexPath.row) else { return }
-            comment.setAttributedString(attr: attr)
+            comment.setAttributeStringData(attr: attr, documentType: comment.stringDocumentType)
             saveNote(note: myNote, actionName: "修改筆記")
         case .addComment:
-            guard let comment = MyComment(attributedString: attr) else { return }
+            let myComment: MyComment?
+            if myNote.stringDocumentType == .html {
+                myComment = .init(htmlString: attr)
+            }else {
+                myComment = .init(attributedString: attr)
+            }
+            guard let comment = myComment else { return }
             myNote.comments.append(comment)
             saveNote(note: myNote, actionName: "新增筆記")
         default: break

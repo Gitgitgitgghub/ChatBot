@@ -71,6 +71,10 @@ extension SystemDefine {
                 "Georgia",
                 "Courier New"
             ]
+        /// ai訊息的背景顏色
+        static let aiMgsBackgroundColor = UIColor.fromAppColors(\.coffeeBackground)
+        /// 用戶訊息的背景顏色
+        static let userMgsBackgroundColor = UIColor.fromAppColors(\.lightCoffeeButton)
     }
     
     
