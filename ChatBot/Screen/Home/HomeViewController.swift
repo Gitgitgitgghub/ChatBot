@@ -32,6 +32,8 @@ class HomeViewController: BaseUIViewController {
                     print("你選擇了: \(selectedGrammarPoint?.rawValue ?? "nil")")
                     ScreenLoader.toScreen(screen: .englishExam(questionType: .grammar(point: selectedGrammarPoint), vocabularies: []), viewController: self)
                 }
+            case .readingTest:
+                ScreenLoader.toScreen(screen: .englishExam(questionType: .reading, vocabularies: []), viewController: self)
             }
         }
     }
@@ -44,7 +46,7 @@ class HomeViewController: BaseUIViewController {
             vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .normal))
         case .GrammarCorrection:
             vc = ScreenLoader.loadScreen(screen: .chat(lauchModel: .prompt(title: function.title, prompt: function.prompt)))
-        case .GrammarExam: return
+        default: return
         }
         navigationController?.pushViewController(vc, animated: true)
     }

@@ -17,7 +17,7 @@ extension SystemDefine {
     struct EnglishExam {
         
         //MARK: - 問題類型
-        enum QuestionType: CaseIterable {
+        enum QuestionType: CaseIterable, Equatable {
             
             /// 單純的單字測驗
             case vocabularyWord(letter: String, sortOption: SystemDefine.EnglishExam.SortOption)
@@ -25,6 +25,8 @@ extension SystemDefine {
             case vocabularyCloze(letter: String, sortOption: SystemDefine.EnglishExam.SortOption)
             /// 文法題
             case grammar(point: TOEICGrammarPoint?)
+            /// 閱讀測驗
+            case reading
             
             static var allCases: [QuestionType] {
                 return [
@@ -41,6 +43,8 @@ extension SystemDefine {
                     return "克漏字選擇"
                 case .grammar:
                     return "文法測驗"
+                case .reading:
+                    return "閱讀測驗"
                 }
             }
         }

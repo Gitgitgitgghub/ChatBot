@@ -24,7 +24,6 @@ extension ExamQuestionProtocol {
     
     
     func isCorrect() -> Bool {
-        guard let userSelecedAnswer = self.userSelecedAnswer else { return false }
         return userSelecedAnswer == correctAnswer
     }
     

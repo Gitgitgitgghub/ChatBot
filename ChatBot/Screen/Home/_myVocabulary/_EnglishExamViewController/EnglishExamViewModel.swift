@@ -27,8 +27,8 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     }
     
     enum OutputEvent {
-        case indexChange(string: String)
-        case scrollToNextQuestion
+        case indexChange(newIndex: Int)
+        case scrollToNextQuestion(index: Int)
         case updateTimer(string: NSAttributedString)
         case toast(message: String)
     }
@@ -152,8 +152,24 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
         startExam()
     }
     
+    /// 重做錯題
     private func retakeExam() {
-        questions = wrongAnswerQuestions
+        var newQuestions: [EnglishExamQuestion]
+        switch questionType {
+        case .vocabularyWord:
+            newQuestions = []
+        case .vocabularyCloze:
+            newQuestions = []
+        case .grammar:
+            newQuestions = []
+        case .reading:
+            // 閱讀測驗第一題是文章所以一定要加入
+            newQuestions = [questions.first!]
+        }
+        // 重新作答要清掉用戶選擇的選項
+        wrongAnswerQuestions = wrongAnswerQuestions.map({ $0.clearAnswer() })
+        newQuestions.append(contentsOf: wrongAnswerQuestions)
+        questions = newQuestions
         correctAnswerQuestions = []
         wrongAnswerQuestions = []
         timerManager.resetTimer()
@@ -169,8 +185,8 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
             }else {
                 wrongAnswerQuestions.append(updatedQuestion)
             }
-            if hasNextQuestion() {
-                outputSubject.send(.scrollToNextQuestion)
+            if let nextIndex = hasNextQuestion() {
+                outputSubject.send(.scrollToNextQuestion(index: nextIndex))
             }else {
                 examState = .ended(correctCount: correctAnswerQuestions.count, wrongCount: wrongAnswerQuestions.count)
                 timerManager.stopTimer()
@@ -195,15 +211,24 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
         }
     }
     
-    /// 是否還有下一題
-    private func hasNextQuestion() -> Bool {
-        return currentIndex < questions.count - 1
+    /// 是否還有下一題，優先返回下一題再來才是沒作答的題目
+    /// 返回nil 就是作答完畢
+    private func hasNextQuestion() -> Int? {
+        let isLast = currentIndex == questions.count - 1
+        let firstUnseletedQuestionIndex = questions.firstIndex(where: { $0.userSelecedAnswer == nil })
+        // 全部作答完畢
+        if firstUnseletedQuestionIndex == nil {
+            return nil
+        }else if !isLast {
+            // 並非在最後一題返回下一題index
+            return currentIndex + 1
+        }
+        return firstUnseletedQuestionIndex
     }
     
     private func currentIndexChange(currentIndex: Int) {
         self.currentIndex = currentIndex
-        let title = "\(questionType.title)-第\(currentIndex + 1)/\(questions.count)題"
-        outputSubject.send(.indexChange(string: title))
+        outputSubject.send(.indexChange(newIndex: currentIndex))
     }
     
     private func fetchQuestion() {

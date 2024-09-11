@@ -42,9 +42,10 @@ class BaseViewModel<I, O>: NSObject, ViewModelProtocol {
     }
     
     func performAction<T>(_ publisher: AnyPublisher<T, Error>, message: String = "") -> AnyPublisher<T, Error> {
+        loadingStatus.send(.loading(message: message))
         return publisher
             .handleEvents(receiveSubscription: { [weak self] _ in
-                self?.loadingStatus.send(.loading(message: message))
+                //self?.loadingStatus.send(.loading(message: message))
             }, receiveCompletion: { [weak self] completion in
                 switch completion {
                 case .finished:

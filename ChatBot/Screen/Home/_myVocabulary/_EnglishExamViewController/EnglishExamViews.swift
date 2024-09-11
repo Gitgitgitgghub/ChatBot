@@ -29,7 +29,6 @@ class EnglishExamViews: ControllerView {
     let pagerView = FSPagerView().apply {
         $0.transformer = .init(type: .depth)
         $0.interitemSpacing = 20
-        $0.isScrollEnabled = false
     }
     let addNoteButton = UIButton(type: .custom).apply {
         $0.setTitle("加入筆記", for: .normal)
@@ -38,12 +37,26 @@ class EnglishExamViews: ControllerView {
         $0.backgroundColor = .systemBrown
         $0.cornerRadius = 7
     }
+    let questionIndicatorView = QuestionPageIndicatorView()
+    private(set) var questionType: SystemDefine.EnglishExam.QuestionType
+    
+    
+    init(view: UIView, questionType: SystemDefine.EnglishExam.QuestionType) {
+        self.questionType = questionType
+        super.init(view: view)
+        initUI()
+    }
+    
+    required init(view: UIView) {
+        fatalError("init(view:) has not been implemented")
+    }
     
     override func initUI() {
         view.addSubview(pagerView)
         view.addSubview(timerLabel)
         view.addSubview(pauseButton)
         view.addSubview(addNoteButton)
+        view.addSubview(questionIndicatorView)
         timerLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.leading.equalToSuperview().inset(10)
@@ -58,9 +71,18 @@ class EnglishExamViews: ControllerView {
             make.trailing.equalTo(pauseButton.snp.leading).offset(-5)
             make.size.equalTo(CGSize(width: 90, height: 30))
         }
-        pagerView.snp.makeConstraints { make in
+        questionIndicatorView.snp.makeConstraints { make in
+            let height = 30
+            make.height.equalTo(height)
+            make.leading.trailing.equalToSuperview()
             make.top.equalTo(pauseButton.bottom).offset(10)
+        }
+        pagerView.snp.makeConstraints { make in
+            make.top.equalTo(questionIndicatorView.bottom).offset(10)
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
+        }
+        questionIndicatorView.pageChangeListener = { [weak self] pageIndex in
+            self?.pagerView.scrollToItem(at: pageIndex, animated: true)
         }
     }
     
@@ -72,6 +94,162 @@ protocol QuestionCardDelegate: AnyObject {
 }
 
 extension EnglishExamViews {
+    
+    //MARK: 問題指示器 QuestionIndicatorView
+    class QuestionPageIndicatorView: UIView, UICollectionViewDelegate, UICollectionViewDataSource {
+        
+        let previousButton = UIButton(type: .custom).apply {
+            $0.setImage(.init(systemName: "arrow.backward")?.withTintColor(.fromAppColors(\.darkCoffeeText), renderingMode: .alwaysOriginal), for: .normal)
+            $0.cornerRadius = 15
+            $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+            $0.isVisible = false
+        }
+        let nextButton = UIButton(type: .custom).apply {
+            $0.setImage(.init(systemName: "arrow.forward")?.withTintColor(.fromAppColors(\.darkCoffeeText), renderingMode: .alwaysOriginal), for: .normal)
+            $0.cornerRadius = 15
+            $0.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+            $0.isVisible = false
+        }
+        lazy var collectionView: UICollectionView = {
+            let layout = UICollectionViewFlowLayout()
+            layout.itemSize = .init(width: 30, height: 30)
+            layout.minimumLineSpacing = 5
+            layout.scrollDirection = .horizontal
+            let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+            collectionView.translatesAutoresizingMaskIntoConstraints = false
+            collectionView.collectionViewLayout = layout
+            return collectionView
+        }()
+        private(set) var questionNumbers: [String] = []
+        private(set) var currentPage = 0
+        
+        var pageChangeListener: ((_ page: Int) -> ())?
+        
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            initUI()
+        }
+        
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        
+        private func initUI() {
+            addSubview(previousButton)
+            addSubview(nextButton)
+            addSubview(collectionView)
+            previousButton.snp.makeConstraints { make in
+                make.size.equalTo(CGSize(width: 30, height: 30))
+                make.centerY.equalToSuperview()
+                make.leading.equalToSuperview().inset(30)
+            }
+            nextButton.snp.makeConstraints { make in
+                make.size.equalTo(CGSize(width: 30, height: 30))
+                make.centerY.equalToSuperview()
+                make.trailing.equalToSuperview().inset(30)
+            }
+            collectionView.snp.makeConstraints { make in
+                make.top.bottom.equalToSuperview()
+                make.leading.equalTo(previousButton.trailing).offset(5)
+                make.trailing.equalTo(nextButton.leading).offset(-5)
+            }
+            collectionView.register(cellType: Cell.self)
+            collectionView.delegate = self
+            collectionView.dataSource = self
+            previousButton.addTarget(self, action: #selector(buttonClicked(sender:)), for: .touchUpInside)
+            nextButton.addTarget(self, action: #selector(buttonClicked(sender:)), for: .touchUpInside)
+        }
+        
+        func setQuestionNumbers(questionNumbers: [String]) {
+            self.questionNumbers = questionNumbers
+            self.currentPage = 0
+            collectionView.reloadData()
+            if questionNumbers.isNotEmpty {
+                previousButton.isVisible = true
+                nextButton.isVisible = true
+                collectionView.selectItem(at: .init(item: currentPage, section: 0), animated: false, scrollPosition: .left)
+            }
+        }
+        
+        func setCurrentPage(pageIndex: Int) {
+            guard pageIndex != currentPage && pageIndex < questionNumbers.count else { return }
+            currentPage = pageIndex
+            collectionView.selectItem(at: .init(item: currentPage, section: 0), animated: false, scrollPosition: .left)
+        }
+        
+        @objc private func buttonClicked(sender: UIButton) {
+            if sender == previousButton && currentPage > 0 {
+                currentPage -= 1
+            }else if sender == nextButton && currentPage < questionNumbers.count - 1 {
+                currentPage += 1
+            }else {
+                return
+            }
+            pageSelected()
+        }
+        
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+            return questionNumbers.count
+        }
+        
+        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            let cell = collectionView.dequeueReusableCell(with: Cell.self, for: indexPath)
+            let questionNumber = questionNumbers[indexPath.item]
+            cell.label.text = questionNumber
+            cell.cornerRadius = 15
+            return cell
+        }
+        
+        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+            let cell = collectionView.dequeueReusableCell(with: Cell.self, for: indexPath)
+            let questionNumber = questionNumbers[indexPath.item]
+            if let pageIndex = questionNumbers.firstIndex(of: questionNumber), pageIndex != currentPage {
+                currentPage = pageIndex
+                pageSelected()
+            }
+        }
+        
+        private func pageSelected() {
+            collectionView.selectItem(at: .init(item: currentPage, section: 0), animated: false, scrollPosition: .left)
+            pageChangeListener?(currentPage)
+        }
+        
+        fileprivate class Cell: UICollectionViewCell {
+            
+            let label = UILabel().apply {
+                $0.translatesAutoresizingMaskIntoConstraints = true
+                $0.font = .boldSystemFont(ofSize: 14)
+                $0.textAlignment = .center
+                $0.textColor = .fromAppColors(\.darkCoffeeText)
+            }
+            override var isSelected: Bool {
+                didSet {
+                    if isSelected {
+                        self.backgroundColor = .fromAppColors(\.creamBackground)
+                    } else {
+                        self.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+                    }
+                }
+            }
+            
+            override init(frame: CGRect) {
+                super.init(frame: frame)
+                backgroundColor = .fromAppColors(\.lightCoffeeButton)
+                addSubview(label)
+            }
+            
+            required init?(coder: NSCoder) {
+                fatalError("init(coder:) has not been implemented")
+            }
+            
+            override func layoutSubviews() {
+                super.layoutSubviews()
+                label.frame = self.bounds
+            }
+            
+        }
+        
+    }
     
     //MARK: - 問題卡片
     class QuestionCard: UIView {
@@ -164,6 +342,14 @@ extension EnglishExamViews {
             case .grammarExamQuestion(_):
                 questionLabel.textAlignment = .left
                 questionLabel.font = .systemFont(ofSize: 18, weight: .bold)
+            case .readingExamQuestion(let data):
+                if data.isArticle() {
+                    questionLabel.textAlignment = .left
+                    questionLabel.font = .systemFont(ofSize: 18, weight: .semibold)
+                }else {
+                    questionLabel.textAlignment = .left
+                    questionLabel.font = .systemFont(ofSize: 18, weight: .bold)
+                }
             }
         }
         
@@ -175,6 +361,7 @@ extension EnglishExamViews {
                 button.tag = i
                 button.setTitle(option, for: .normal)
                 button.isUserInteractionEnabled = !isAnswerMode
+                button.setTitleColor(.white, for: .normal)
                 optionsStackView.addArrangedSubview(button)
                 if isAnswerMode {
                     //按钮颜色 正確答案綠色 用戶選擇的但答錯紅色 其他為咖啡色
@@ -188,7 +375,12 @@ extension EnglishExamViews {
                         button.backgroundColor = .systemBrown
                     }
                 }else {
-                    button.backgroundColor = .systemBrown
+                    if option == question.userSelecedAnswer {
+                        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+                        button.backgroundColor = .fromAppColors(\.darkCoffeeText)
+                    }else {
+                        button.backgroundColor = .systemBrown
+                    }
                 }
             }
         }
@@ -215,7 +407,7 @@ extension EnglishExamViews {
                 $0.titleLabel?.numberOfLines = 0
                 $0.snp.makeConstraints { make in
                     make.height.greaterThanOrEqualTo(40)
-                    make.width.equalTo(250)
+                    make.width.equalTo(UIScreen.main.bounds.width - 100)
                 }
             }
             return button
@@ -239,6 +431,10 @@ extension EnglishExamViews {
                 questionAnswerLabel.font = .boldSystemFont(ofSize: 18)
                 questionAnswerLabel.isVisible = true
                 questionAnswerLabel.text = data.displayReason
+            case .readingExamQuestion(data: let data):
+                questionAnswerLabel.font = .boldSystemFont(ofSize: 18)
+                questionAnswerLabel.isVisible = true
+                questionAnswerLabel.text = data.reason
             }
         }
         

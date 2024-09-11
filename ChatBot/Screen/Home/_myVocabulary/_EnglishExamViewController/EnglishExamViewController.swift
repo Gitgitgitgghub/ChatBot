@@ -12,7 +12,7 @@ import UIKit
 class EnglishExamViewController: BaseUIViewController {
     
     private let viewModel: EnglishExamViewModel
-    private lazy var views = EnglishExamViews(view: self.view)
+    private lazy var views = EnglishExamViews(view: self.view, questionType: self.viewModel.questionType)
     private var pagerView: FSPagerView {
         return views.pagerView
     }
@@ -56,10 +56,10 @@ class EnglishExamViewController: BaseUIViewController {
             .sink { [weak self] event in
                 guard let `self` = self else { return }
                 switch event {
-                case .indexChange(string: let string):
-                    self.indexChange(string: string)
-                case .scrollToNextQuestion:
-                    self.pagerView.scrollToItem(at: self.pagerView.currentIndex + 1, animated: true)
+                case .indexChange(let newIndex):
+                    self.indexChange(newIndex: newIndex)
+                case .scrollToNextQuestion(let index):
+                    self.pagerView.scrollToItem(at: index, animated: true)
                 case .updateTimer(string: let string):
                     self.views.timerLabel.attributedText = string
                 case .toast(message: let message):
@@ -86,16 +86,10 @@ class EnglishExamViewController: BaseUIViewController {
     private func examState(state: EnglishExamViewModel.ExamState) {
         switch state {
         case .preparing: 
-            break
+            views.pauseButton.isEnabled = false
+            views.addNoteButton.isEnabled = false
         case .ready:
-            let vc = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
-            vc.message = "點擊開始考試"
-            vc.addAction(.init(title: "開始考試", style: .default, handler: { _ in
-                self.viewModel.transform(inputEvent: .startExam)
-            }))
-            present(vc, animated: true)
-            pagerView.isScrollEnabled = false
-            pagerView.reloadData()
+            setupReadyUI()
         case .started: break
         case .paused:
             let vc = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
@@ -110,10 +104,23 @@ class EnglishExamViewController: BaseUIViewController {
         case .ended(correctCount: let correctCount, wrongCount: let wrongCount):
             self.showExamResult(correctCount: correctCount, wrongCount: wrongCount)
         case .answerMode:
-            pagerView.isScrollEnabled = true
             pagerView.reloadData()
             pagerView.scrollToItem(at: 0, animated: false)
         }
+    }
+    
+    /// 設定 examState ＝ ready ui
+    private func setupReadyUI() {
+        let vc = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
+        vc.message = "點擊開始考試"
+        vc.addAction(.init(title: "開始考試", style: .default, handler: { _ in
+            self.viewModel.transform(inputEvent: .startExam)
+        }))
+        present(vc, animated: true)
+        views.pauseButton.isEnabled = true
+        views.addNoteButton.isEnabled = true
+        pagerView.reloadData()
+        views.questionIndicatorView.setQuestionNumbers(questionNumbers: viewModel.questions.questionNumbers())
     }
     
     private func setAddNoteButtonVisible(state: EnglishExamViewModel.ExamState) {
@@ -131,8 +138,8 @@ class EnglishExamViewController: BaseUIViewController {
         }
     }
     
-    private func indexChange(string: String) {
-        title = string
+    private func indexChange(newIndex: Int) {
+        views.questionIndicatorView.setCurrentPage(pageIndex: newIndex)
     }
     
     private func showExamResult(correctCount: Int, wrongCount: Int) {

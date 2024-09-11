@@ -47,7 +47,13 @@ class VocabularyWordQuestionGenerator: EnglishQuestionGeneratorProtocol {
             return generateClozeQuestion(limit: limit)
         case .grammar(let point):
             return generateGrammarQuestion(point: point, limit: limit)
+        case .reading:
+            return generateReadingQuestion()
         }
+    }
+    
+    func generateReadingQuestion() -> AnyPublisher<[EnglishExamQuestion], any Error> {
+        return englishQuestionService.fetchTOEICReadingQuestion()
     }
     
     /// 產生文法題

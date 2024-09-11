@@ -119,6 +119,40 @@ class EnglishQuestionService: OpenAIService {
         return performAPICall(publisher)
     }
 
+
+    func fetchTOEICReadingQuestion() -> AnyPublisher<[EnglishExamQuestion], Error> {
+        let prompt = """
+        請生成一篇模仿 TOEIC 英語考試閱讀測驗的文章，並按照以下 JSON 格式返回結果。文章應該包含一篇短文及其中文翻譯，並附帶五個相關的問題，每個問題有四個選項，並標明正確答案。問題應該涵蓋不同的閱讀理解技能，例如細節理解、推理、句子重組等。
+        返回的 JSON 結構應嚴格遵循以下格式：
+
+        {
+          "article": "[英文短文]",
+          "articleTranslation": "[中文翻譯]",
+          "questions": [
+            {
+              "questionText": "[問題文本]",
+              "options": ["[選項1]", "[選項2]", "[選項3]", "[選項4]"],
+              "correctAnswer": "[正確選項文本]",
+              "reason": "[正確答案的解釋，應使用繁體中文]"
+            }
+          ]
+        }
+        請確保文章和問題是獨特的，並提供符合多益考試難度的題目及解釋，並且確保有五個問題。
+        """
+
+        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt4_o, responseFormat: .jsonObject)
+        return openAI.chats(query: query)
+            .tryMap { [weak self] chatResult in
+                guard let `self` = self else { throw OpenAIError.selfDeallocated }
+                let questions = try self.decodeChatResult(ReadingExamArticle.self, from: chatResult)
+                    .toReadingExamQuestions()
+                return questions
+            }
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
     
 }
 

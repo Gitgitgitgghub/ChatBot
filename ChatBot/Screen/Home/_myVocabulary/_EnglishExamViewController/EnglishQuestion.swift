@@ -14,12 +14,15 @@ enum EnglishExamQuestion: ExamQuestionProtocol {
     
     case vocabulayExamQuestion(data: VocabularyExamQuestion)
     case grammarExamQuestion(data: GrammarExamQuestion)
+    case readingExamQuestion(data: ReadingExamQuestion)
     
     var questionText: String {
         switch self {
         case .vocabulayExamQuestion(let data):
             return data.questionText
         case .grammarExamQuestion(let data):
+            return data.questionText
+        case .readingExamQuestion(data: let data):
             return data.questionText
         }
     }
@@ -29,6 +32,8 @@ enum EnglishExamQuestion: ExamQuestionProtocol {
             return data.options
         case .grammarExamQuestion(let data):
             return data.options
+        case .readingExamQuestion(let data):
+            return data.options
         }
     }
     var correctAnswer: String {
@@ -36,6 +41,8 @@ enum EnglishExamQuestion: ExamQuestionProtocol {
         case .vocabulayExamQuestion(let data):
             return data.correctAnswer
         case .grammarExamQuestion(let data):
+            return data.correctAnswer
+        case .readingExamQuestion(let data):
             return data.correctAnswer
         }
     }
@@ -46,7 +53,30 @@ enum EnglishExamQuestion: ExamQuestionProtocol {
             return data.userSelecedAnswer
         case .grammarExamQuestion(let data):
             return data.userSelecedAnswer
+        case .readingExamQuestion(let data):
+            return data.userSelecedAnswer
         }
+    }
+}
+
+extension Array where Element == EnglishExamQuestion {
+    
+    func questionNumbers() -> [String] {
+        var result: [String] = []
+        for (index, question) in self.enumerated() {
+            switch question {
+            // 閱讀測驗
+            case .readingExamQuestion(let data):
+                if data.isArticle() {
+                    result.append("題")
+                } else {
+                    result.append("\(index)")
+                }
+            default:
+                result.append("\(index + 1)")
+            }
+        }
+        return result
     }
 }
 
@@ -61,8 +91,15 @@ extension EnglishExamQuestion {
         case .grammarExamQuestion(var data):
             data.userSelecedAnswer = selectedOption
             updatedQuestion = .grammarExamQuestion(data: data)
+        case .readingExamQuestion(var data):
+            data.userSelecedAnswer = selectedOption
+            updatedQuestion = .readingExamQuestion(data: data)
         }
         return (updatedQuestion, updatedQuestion.isCorrect())
+    }
+    
+    func clearAnswer() -> EnglishExamQuestion {
+        return selectAnswer(nil).updatedQuestion
     }
     
     /// 是否允許加入筆記
@@ -72,15 +109,19 @@ extension EnglishExamQuestion {
             return false
         case .grammarExamQuestion:
             return true
+        case .readingExamQuestion:
+            return true
         }
     }
     
     func convertToNote() -> MyNote? {
         switch self {
-        case .vocabulayExamQuestion(let data):
+        case .vocabulayExamQuestion(_):
             return nil
         case .grammarExamQuestion(let data):
             return data.convertToNote()
+        case .readingExamQuestion(data: let data):
+            return nil
         }
     }
     
@@ -181,6 +222,49 @@ struct VocabularyExamQuestion: Codable {
         try container.encode(options, forKey: .options)
         try container.encode(correctAnswer, forKey: .correctAnswer)
         try container.encodeIfPresent(userSelecedAnswer, forKey: .userSelecedAnswer)
+    }
+}
+
+//MARK: - 閱讀測驗
+struct ReadingExamArticle: Codable {
+    
+    let article: String
+    let articleTranslation: String
+    let questions: [ReadingExamQuestion]
+    
+    /// 將article也轉換成ReadingExamQuestion方便處理
+    func toReadingExamQuestions() -> [EnglishExamQuestion] {
+        let articleQuestion = EnglishExamQuestion.readingExamQuestion(data: ReadingExamQuestion(
+            questionText: self.article,
+            options: [],
+            correctAnswer: "",
+            userSelecedAnswer: "",
+            reason: articleTranslation
+        ))
+        var allQuestions = [articleQuestion]
+        allQuestions.append(contentsOf: questions.map({ EnglishExamQuestion.readingExamQuestion(data: $0) }))
+        return allQuestions
+    }
+    
+    func printQuestion() {
+        print("文章:\n\(article)")
+        print("-------------------------------------------------------------")
+        for question in questions {
+            question.printQuestion()
+        }
+    }
+}
+
+struct ReadingExamQuestion: Codable, ExamQuestionProtocol {
+    
+    var questionText: String
+    var options: [String]
+    var correctAnswer: String
+    var userSelecedAnswer: String?
+    var reason: String
+    
+    func isArticle() -> Bool {
+        return options.isEmpty && correctAnswer.isEmpty
     }
 }
 
