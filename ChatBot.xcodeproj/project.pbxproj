@@ -109,6 +109,7 @@
 		32C4956A2C8AF61000AB1360 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495692C8AF61000AB1360 /* AppColors.swift */; };
 		32C4956C2C8B0C2E00AB1360 /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C4956B2C8B0C2E00AB1360 /* SpeakButton.swift */; };
 		32C4956E2C8E92BD00AB1360 /* AnimationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C4956D2C8E92BD00AB1360 /* AnimationButton.swift */; };
+		32C495702C927BEF00AB1360 /* ServiceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C4956F2C927BEF00AB1360 /* ServiceKey.swift */; };
 		32C77FC72C18504E00F335FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC62C18504E00F335FE /* AppDelegate.swift */; };
 		32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C77FC82C18504E00F335FE /* SceneDelegate.swift */; };
 		32C77FD02C18504F00F335FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32C77FCF2C18504F00F335FE /* Assets.xcassets */; };
@@ -259,6 +260,7 @@
 		32C495692C8AF61000AB1360 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 		32C4956B2C8B0C2E00AB1360 /* SpeakButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakButton.swift; sourceTree = "<group>"; };
 		32C4956D2C8E92BD00AB1360 /* AnimationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationButton.swift; sourceTree = "<group>"; };
+		32C4956F2C927BEF00AB1360 /* ServiceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceKey.swift; sourceTree = "<group>"; };
 		32C77FC32C18504E00F335FE /* ChatBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C77FC62C18504E00F335FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32C77FC82C18504E00F335FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -632,6 +634,7 @@
 				320421962C1933EC00D72203 /* SystemDefine.swift */,
 				32C495612C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift */,
 				32C495692C8AF61000AB1360 /* AppColors.swift */,
+				32C4956F2C927BEF00AB1360 /* ServiceKey.swift */,
 			);
 			path = SystemDefine;
 			sourceTree = "<group>";
@@ -902,6 +905,7 @@
 				32C4956A2C8AF61000AB1360 /* AppColors.swift in Sources */,
 				32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */,
 				32B7E6DB2C6B31FE0032ABFD /* FSPagerViewLayoutAttributes.swift in Sources */,
+				32C495702C927BEF00AB1360 /* ServiceKey.swift in Sources */,
 				94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */,
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
 				32B7E6B12C69CF040032ABFD /* MyVocabularyViewController.swift in Sources */,

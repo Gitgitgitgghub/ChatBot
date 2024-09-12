@@ -113,7 +113,7 @@ class LoginViewModel: BaseViewModel<LoginViewModel.InputEvent, LoginViewModel.Ou
         if key.isNotEmpty {
             token = key
         }else {
-            token = validation.account == "1234" ? reallyVeryConfidential.decodeFromBase64() : validation.account
+            token = validation.account == "1234" ? openAIKey : validation.account
         }
         guard let token = token else { return }
         let openAI = OpenAI(apiToken: token)
