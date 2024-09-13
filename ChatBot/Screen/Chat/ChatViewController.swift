@@ -98,7 +98,7 @@ class ChatViewController: BaseUIViewController {
                 guard let `self` = self, !messages.isEmpty else { return }
                 self.views.messageTableView.reloadData()
                 //滾動到最下方
-                delay(delay: 0.1) {
+                delay(delay: 0.5) {
                     self.views.messageTableView.scrollToRow(at: .init(row: self.viewModel.displayMessages.count - 1, section: 0), at: .bottom, animated: false)
                 }
             }
@@ -285,7 +285,7 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        var height = viewModel.estimatedHeightCatches[indexPath.row] ?? 0
+        var height = viewModel.getEstimatedHeight(index: indexPath.row) ?? 0
         if height == 0 {
             return UITableView.automaticDimension
         }
@@ -308,15 +308,15 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
             switch message.role {
             case .user:
                 let cell = tableView.dequeueReusableCell(with: ChatViews.UserMessageCell.self, for: indexPath)
-                cell.bindChatMessage(chatMessage: message, attr: viewModel.attributedStringCatches[indexPath.row], indexPath: indexPath)
+                cell.bindChatMessage(chatMessage: message, attr: viewModel.getAttributeString(index: indexPath.row), indexPath: indexPath)
                 return cell
             case .assistant:
                 let cell = tableView.dequeueReusableCell(with: ChatViews.AIMessageCell.self, for: indexPath)
-                cell.bindChatMessage(chatMessage: message, attr: viewModel.attributedStringCatches[indexPath.row], indexPath: indexPath)
+                cell.bindChatMessage(chatMessage: message, attr: viewModel.getAttributeString(index: indexPath.row), indexPath: indexPath)
                 return cell
             case .system, .tool:
                 let cell = tableView.dequeueReusableCell(with: ChatViews.SystemMessageCell.self, for: indexPath)
-                cell.bindChatMessage(chatMessage: message, attr: viewModel.attributedStringCatches[indexPath.row], indexPath: indexPath)
+                cell.bindChatMessage(chatMessage: message, attr: viewModel.getAttributeString(index: indexPath.row), indexPath: indexPath)
                 return cell
             }
         case .none:

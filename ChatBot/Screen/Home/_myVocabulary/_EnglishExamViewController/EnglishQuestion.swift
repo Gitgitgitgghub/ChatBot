@@ -59,6 +59,7 @@ enum EnglishExamQuestion: ExamQuestionProtocol {
     }
 }
 
+//MARK: 對[EnglishExamQuestion] extension
 extension Array where Element == EnglishExamQuestion {
     
     func questionNumbers() -> [String] {
@@ -78,6 +79,32 @@ extension Array where Element == EnglishExamQuestion {
         }
         return result
     }
+    
+    // 還原成ReadingExamArticle
+    func restoreReadingExamArticle() -> ReadingExamArticle? {
+        var articleText: String?
+        var articleTranslation: String?
+        var readingQuestions: [ReadingExamQuestion] = []
+        for question in self {
+            if case .readingExamQuestion(let data) = question {
+                if data.isArticle() {
+                    articleText = data.questionText
+                    articleTranslation = data.reason
+                } else {
+                    readingQuestions.append(data)
+                }
+            }
+        }
+        guard let articleText = articleText, let articleTranslation = articleTranslation else {
+            return nil
+        }
+        return ReadingExamArticle(
+            article: articleText,
+            articleTranslation: articleTranslation,
+            questions: readingQuestions
+        )
+    }
+
 }
 
 extension EnglishExamQuestion {
@@ -101,30 +128,6 @@ extension EnglishExamQuestion {
     func clearAnswer() -> EnglishExamQuestion {
         return selectAnswer(nil).updatedQuestion
     }
-    
-    /// 是否允許加入筆記
-    func enableNote() -> Bool {
-        switch self {
-        case .vocabulayExamQuestion:
-            return false
-        case .grammarExamQuestion:
-            return true
-        case .readingExamQuestion:
-            return true
-        }
-    }
-    
-    func convertToNote() -> MyNote? {
-        switch self {
-        case .vocabulayExamQuestion(_):
-            return nil
-        case .grammarExamQuestion(let data):
-            return data.convertToNote()
-        case .readingExamQuestion(data: let data):
-            return nil
-        }
-    }
-    
 }
 
 struct GrammarExamQuestion: Codable {
@@ -244,6 +247,34 @@ struct ReadingExamArticle: Codable {
         var allQuestions = [articleQuestion]
         allQuestions.append(contentsOf: questions.map({ EnglishExamQuestion.readingExamQuestion(data: $0) }))
         return allQuestions
+    }
+    
+    func convertToNote() -> MyNote? {
+        let title = "閱讀測驗"
+        let noteBody = NSMutableAttributedString(string: article + "\n\n" + articleTranslation, attributes: [.font: SystemDefine.Message.defaultTextFont,
+                                                                        .foregroundColor: UIColor.white])
+        guard let note = MyNote(title: title, attributedString: noteBody)
+        else { return nil }
+        for question in questions {
+            let questionText = question.questionText
+            let reasonText = "\n\n\(question.reason)"
+            var optionText = ""
+            for option in question.options {
+                optionText += "\n\n\(option)"
+            }
+            let body = questionText + reasonText + optionText
+            let attr = NSMutableAttributedString(string: body,
+                                                 attributes: [.font: SystemDefine.Message.defaultTextFont,
+                                                                            .foregroundColor: UIColor.white])
+            if let range = body.range(of: question.correctAnswer) {
+                let nsRange = NSRange(range, in: body)
+                attr.addAttribute(.foregroundColor, value: UIColor.systemGreen, range: nsRange)
+            }
+            if let comment = MyComment(attributedString: attr) {
+                note.comments.append(comment)
+            }
+        }
+        return note
     }
     
     func printQuestion() {

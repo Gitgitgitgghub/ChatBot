@@ -44,6 +44,8 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     
     private let vocabularyManager = VocabularyManager.share
     private(set) var questionType: QuestionType
+    /// 原始題目(獲取後不進行編輯)
+    private(set) var originalQuestions: [EnglishExamQuestion] = []
     /// 當前題目
     private(set) var questions: [EnglishExamQuestion] = []
     /// 回答正確的題目
@@ -115,7 +117,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     }
     
     private func addToNote() {
-        guard let note = questions.getOrNil(index: currentIndex)?.convertToNote() else {
+        guard let note = getNote() else {
             outputSubject.send(.toast(message: "該題型未開放加入筆記"))
             return }
         NoteManager.shared.saveNote(note)
@@ -127,6 +129,18 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
                 self?.outputSubject.send(.toast(message: "儲存成功"))
             }
             .store(in: &subscriptions)
+    }
+    
+    private func getNote() -> MyNote? {
+        guard let question = questions.getOrNil(index: currentIndex) else { return nil}
+        switch question {
+        case .vocabulayExamQuestion(_):
+            return nil
+        case .grammarExamQuestion(let data):
+            return data.convertToNote()
+        case .readingExamQuestion:
+            return originalQuestions.restoreReadingExamArticle()?.convertToNote()
+        }
     }
     
     private func switchAnswerMode() {
@@ -240,6 +254,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
             } receiveValue: { [weak self] questions in
                 guard let `self` = self else { return }
                 self.questions = questions
+                self.originalQuestions = questions
                 examState = .ready
             }
             .store(in: &subscriptions)

@@ -8,13 +8,16 @@ import Combine
 protocol AttributedStringParsable {
     /// string轉AttributedString
     func convertStringToAttributedString(string: String) -> AnyPublisher<NSAttributedString, Error>
-    /// string array轉AttributedString array
+    /// string array轉AttributedString array 這邊有做chche
     func convertStringsToAttributedStrings(stringWithTags: [(tag: Int, string: String)]) -> AnyPublisher<(tag: Int, attr: NSAttributedString), Error>
     /// data轉AttributedString
     func convertDataToAttributedString(data: Data) -> AnyPublisher<NSAttributedString?, Error>
 }
 
 class AttributedStringParser: AttributedStringParsable {
+    
+    private let publisherCache = CacheManager<Int, AnyPublisher<(tag: Int, attr: NSAttributedString), Error>>()
+    private let backgroundQueue = DispatchQueue(label: "attributedstringparser.background", qos: .background, attributes: .concurrent)
     
     func convertDataToAttributedString(data: Data) -> AnyPublisher<NSAttributedString?, any Error> {
         return Future { promise in
@@ -34,9 +37,18 @@ class AttributedStringParser: AttributedStringParsable {
     
     func convertStringsToAttributedStrings(stringWithTags: [(tag: Int, string: String)]) -> AnyPublisher<(tag: Int, attr: NSAttributedString), Error> {
         let publishers = stringWithTags.map { (tag, string) in
-            convertStringToAttributedString(string: string)
-                .map { attributedString in (tag: tag, attr: attributedString) }
-                .eraseToAnyPublisher()
+            if let publisher = self.publisherCache.getCache(forKey: tag) {
+                return publisher
+            }else {
+                let publisher = convertStringToAttributedString(string: string)
+                    .map { attributedString in (tag: tag, attr: attributedString) }
+                    .handleEvents(receiveCompletion: { [weak self] _ in
+                        self?.publisherCache.removeCache(forKey: tag)
+                    })
+                    .eraseToAnyPublisher()
+                self.publisherCache.setCache(publisher, forKey: tag)
+                return publisher
+            }
         }
         // 這邊用merge是因為真實資料轉換可能花費長短不一
         return Publishers.MergeMany(publishers)
@@ -54,6 +66,7 @@ class AttributedStringParser: AttributedStringParsable {
                 }
             }
         }
+        .share()
         .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
     }
@@ -132,58 +145,6 @@ class AttributedStringParser: AttributedStringParsable {
         } catch {
             throw error
         }
-    }
-    
-    //MARK: - 這些都是實驗性質的code
-    /// 最大同時解析幾個
-    private let maxTaskCount = 10
-    private let taskSubject = PassthroughSubject<AnyPublisher<NSAttributedString, Error>, Never>()
-    private var cancellable: AnyCancellable?
-    private let backgroundQueue = DispatchQueue(label: "attributedstringparser.background", qos: .background, attributes: .concurrent)
-    private var taskCount = 0
-    
-    init() {
-        setup()
-    }
-    
-    
-    private func setup() {
-        cancellable = taskSubject
-            .flatMap(maxPublishers: .max(maxTaskCount)) { publisher in
-                publisher
-                    .handleEvents(receiveSubscription: { _ in
-                        self.incrementRunningTasks()
-                    }, receiveCompletion: { _ in
-                        self.decrementRunningTasks()
-                    }) {
-                        self.taskCount = 0
-                    }
-            }
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    print("All tasks completed")
-                case .failure(let error):
-                    print("Task failed with error: \(error)")
-                }
-            }, receiveValue: { _ in
-                print("task count \(self.taskCount)")
-            })
-    }
-    
-    private func incrementRunningTasks() {
-        self.taskCount += 1
-        print("Current running tasks: \(self.taskCount)")
-    }
-    
-    private func decrementRunningTasks() {
-        self.taskCount -= 1
-        print("Current running tasks: \(self.taskCount)")
-    }
-    
-    private func cancelTasks() {
-        cancellable?.cancel()
-        setup()
     }
 }
 

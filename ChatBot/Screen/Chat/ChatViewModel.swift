@@ -22,8 +22,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     private let proloadBatchCount = 20
     /// 展示資料
     @Published var displayMessages: [ChatMessage] = []
-    private(set) var attributedStringCatches: [Int : NSAttributedString] = [:]
-    private(set) var estimatedHeightCatches: [Int : CGFloat] = [:]
+    private var attributedStringCatches = CacheManager<Int, NSAttributedString>()
+    private var estimatedHeightCatches = CacheManager<Int, CGFloat>()
     /// 聊天室
     private(set) var chatRoom: ChatRoom!
     
@@ -109,10 +109,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                 switch inputEvent {
                 case .sendMessage:
                     self.sendMessageEvent()
-                case .createImage:
-                    self.createImaheEvent()
-                case .editImage:
-                    self.editImageEvent()
+                case .createImage: break
+                case .editImage: break
                 case .preloadAttributedString(let startIndex):
                     self.preloadAttributedStringEvent(startIndex: startIndex)
                 case .saveMessages:
@@ -124,6 +122,15 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                 }
             }
             .store(in: &subscriptions)
+        setupPreloadPipeline()
+    }
+    
+    func getAttributeString(index: Int) -> NSAttributedString? {
+        return attributedStringCatches.getCache(forKey: index)
+    }
+    
+    func getEstimatedHeight(index: Int) -> CGFloat? {
+        return estimatedHeightCatches.getCache(forKey: index)
     }
     
     /// 主要處理launchMode 數據該怎麼初始化
@@ -155,6 +162,53 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         return currentIndex == displayMessages.count - 11 || (currentIndex == 0 && displayMessages.isEmpty)
     }
     
+    private let preloadSubject = PassthroughSubject<[Int], Never> ()
+    
+    /// 設定預加載流程
+    private func setupPreloadPipeline() {
+        preloadSubject
+            .flatMap { [weak self] numbers -> AnyPublisher<[Int], Never> in
+                guard let `self` = self else {
+                    return Just([])
+                        .eraseToAnyPublisher()
+                }
+                // 1. 先過濾出有緩存的部分
+                let cachedNumbers = numbers.filter { self.attributedStringCatches.getCache(forKey: $0) != nil }
+                // 2. 取得沒有緩存的部分
+                let uncachedNumbers = numbers.filter { self.attributedStringCatches.getCache(forKey: $0) == nil }
+                // 3. 如果全部都有緩存，直接回傳
+                if uncachedNumbers.isEmpty {
+                    print("🔴沒有資料可以加載")
+                    return Just(cachedNumbers)
+                        .eraseToAnyPublisher()
+                }
+                // 4. 需要轉換的字串資料，這邊我們假設有一個可以對應 tag 和 string 的陣列
+                let stringsToConvert = uncachedNumbers.map { tag in
+                    return (tag: tag, string: self.displayMessages.getOrNil(index: tag)?.message ?? "")
+                }
+                print("需要執行預加載共：\(uncachedNumbers.count)筆")
+                // 5. 呼叫 convertStringsToAttributedStrings 進行轉換，並合併已緩存的結果
+                return self.parser.convertStringsToAttributedStrings(stringWithTags: stringsToConvert)
+                    .map { result -> [Int] in
+                        // 轉換完畢後，將結果存入緩存
+                        self.attributedStringCatches.setCache(result.attr, forKey: result.tag)
+                        self.estimatedHeightCatches.setCache(result.attr.estimatedHeightForAttributedString(), forKey: result.tag)
+                        return cachedNumbers + [result.tag]
+                    }
+                    .collect()
+                    .map { $0.flatMap { $0 } }
+                    .catch { error -> AnyPublisher<[Int], Never> in
+                        print("Error converting strings: \(error)")
+                        return Just([]).eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .sink(receiveValue: { [weak self] indexs in
+                self?.outputSubject.send(.parseComplete(indexs: indexs.map{ IndexPath(row: $0, section: 0) }))
+            })
+            .store(in: &subscriptions)
+    }
+    
     /// 生成一串數字
     /// 例如: start 50 ,count 10 會給 [50, 49, 51, 48, 52, 47, 53, 46, 54, 45]
     /// - Parameters:
@@ -175,75 +229,10 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         }
         return numbersArray
     }
-    
-    /// 取得需要加載資料的publisher
-    /// 需要多產生一個Int當tag的原因是因為
-    /// parser.convertStringsToAttributedStrings 是merge所以變成無序回來順序已經不是傳進去的樣子了
-    private func getPreloadDataPublisher(startIndex: Int) -> Future<[(Int, String)], Error> {
-        return Future { promise in
-            DispatchQueue.global(qos: .background).async {
-                var preloadData: [(Int, String)] = []
-                let preloadIndexs = self.generateAlternatingNumbers(start: startIndex, count: self.proloadBatchCount)
-                for index in preloadIndexs {
-                    if let message = self.displayMessages.getOrNil(index: index), self.attributedStringCatches[index] == nil {
-                        preloadData.append((index ,message.message))
-                    }
-                }
-                if preloadData.isEmpty {
-                    print("🔴沒有資料可以加載")
-                }
-                promise(.success(preloadData))
-            }
-        }
-    }
-
-    private func convertToAttributedStrings(data: [(Int, String)]) -> AnyPublisher<[(tag: Int, attr: NSAttributedString)], Error> {
-        if data.isEmpty {
-            return Empty(completeImmediately: true).eraseToAnyPublisher()
-        }
-        // 這邊是.collect(data.count) 所以只會有一個receiveValue
-        // 如果拿掉的話要做流的處理debounce之類的
-        return parser.convertStringsToAttributedStrings(stringWithTags: data)
-            .collect(data.count)
-            .eraseToAnyPublisher()
-    }
 
     /// 預加載AttributedString事件
     private func preloadAttributedStringEvent(startIndex: Int) {
-        // 這邊獨立出來方便隨時取消
-        parserSubscription?.cancel()
-        parserSubscription = getPreloadDataPublisher(startIndex: startIndex)
-            .flatMap { [weak self] data -> AnyPublisher<[(tag: Int, attr: NSAttributedString)], Error> in
-                guard let self = self else {
-                    return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
-                }
-                print("需要執行預加載： 從：\(startIndex) 共：\(data.count)筆")
-                return self.convertToAttributedStrings(data: data)
-            }
-            .receive(on: DispatchQueue.main)
-            .handleEvents(receiveCancel: {
-                print("🔴加載事件被取消")
-            })
-            .sink(receiveCompletion: { completion in
-                if case let .failure(error) = completion {
-                    print("preloadAttributedStringEvent Error:", error.localizedDescription)
-                }
-            }, receiveValue: { [weak self] results in
-                self?.handlePreloadResult(results)
-            })
-    }
-
-    /// 處理預加載完後的事件
-    private func handlePreloadResult(_ results: [(tag: Int, attr: NSAttributedString)]) {
-        var indexPaths: [IndexPath] = []
-        for result in results {
-            let index = result.tag
-            let attributedString = result.attr
-            attributedStringCatches[index] = attributedString
-            estimatedHeightCatches[index] = attributedString.estimatedHeightForAttributedString()
-            indexPaths.append(IndexPath(row: index, section: 0))
-        }
-        outputSubject.send(.parseComplete(indexs: indexPaths))
+        preloadSubject.send(generateAlternatingNumbers(start: startIndex, count: self.proloadBatchCount))
     }
 
     /// 綁定重新發送訊息事件
@@ -254,7 +243,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     }
     
     private func saveMessageToMyNote(noteTitle: String?, indexPath: IndexPath) {
-        guard let attr = attributedStringCatches[indexPath.row] else { return }
+        guard let attr = attributedStringCatches.getCache(forKey: indexPath.row) else { return }
         guard let note = MyNote(title: noteTitle ?? "My Note", htmlString: attr) else { return }
         NoteManager.shared.saveNote(note)
             .sink { [weak self] completion in
@@ -309,8 +298,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             .map({  [weak self] attr in
                 guard let `self` = self else { return }
                 let index = self.displayMessages.count
-                self.attributedStringCatches[index] = attr
-                self.estimatedHeightCatches[index] = attr.estimatedHeightForAttributedString()
+                self.attributedStringCatches.setCache(attr, forKey: index)
+                self.estimatedHeightCatches.setCache(attr.estimatedHeightForAttributedString(), forKey: index)
                 self.displayMessages.append(newMessage)
                 return ()
             })
@@ -336,62 +325,5 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                 self?.outputSubject.send(.saveChatMessageSuccess)
             }
             .store(in: &subscriptions)
-    }
-    
-    /// 綁定編輯圖片事件
-    private func editImageEvent() {
-//        inputSubject
-//            .filter { event in
-//                return event == .editImage && !unwrap(self.inputMessage, "").isEmpty
-//            }
-//            .map({ _ in
-//                return self.inputMessage!
-//            })
-//            .handleEvents(receiveSubscription: { _ in
-//
-//            }, receiveOutput: { [weak self] output in
-//                self?.messages.append(.userChatQuery(message: output))
-//            })
-//            .flatMap { message in
-//                return self.openai.editImage(info: self.pickedImageInfo!, prompt: message, size: ._512)
-//            }
-//            .sink { completion in
-//                switch completion {
-//                case .finished:
-//                    break
-//                case .failure(let error):
-//                    print("failure: \(error.localizedDescription)")
-//                }
-//            } receiveValue: { [weak self] imageResult in
-//                self?.messages.append(.imageResult(prompt: unwrap(self?.inputMessage, ""), data: imageResult))
-//                self?.inputMessage = ""
-//            }
-//            .store(in: &subscriptions)
-    }
-    
-    /// 綁定創造圖片事件
-    private func createImaheEvent() {
-//        inputSubject
-//            .filter { event in
-//                return event == .createImage && !unwrap(self.inputMessage, "").isEmpty
-//            }
-//            .map({ _ in
-//                return self.inputMessage!
-//            })
-//            .handleEvents(receiveSubscription: { _ in
-//
-//            }, receiveOutput: { [weak self] output in
-//                self?.messages.append(.userChatQuery(message: output))
-//            })
-//            .flatMap { message in
-//                return self.openai.createImage(prompt: message, size: ._1024)
-//            }
-//            .sink { _ in
-//
-//            } receiveValue: { [weak self] imageResult in
-//                self?.messages.append(.imageResult(prompt: unwrap(self?.inputMessage, ""), data: imageResult))
-//                self?.inputMessage = ""
-//            }
-//            .store(in: &subscriptions)
     }
 }
