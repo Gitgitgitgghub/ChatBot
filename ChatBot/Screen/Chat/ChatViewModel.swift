@@ -11,17 +11,18 @@ import Combine
 import UIKit
 
 class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPutEvent> {
+   
+    
     /// 啟動模式
     @Published var chatLaunchMode: ChatViewController.ChatLaunchMode
-    let openai: OpenAIProtocol
-    private var parserSubscription: AnyCancellable? = nil
     @Published var inputMessage: String? = "mock"
     @Published var pickedImageInfo: [UIImagePickerController.InfoKey : Any]?
+    /// 展示資料
+    @Published var displayMessages: [ChatMessage] = []
     private let parser = AttributedStringParser()
     /// 一次要解析多少筆
     private let proloadBatchCount = 20
-    /// 展示資料
-    @Published var displayMessages: [ChatMessage] = []
+    private let chatService: AIChatManager
     private var attributedStringCatches = CacheManager<Int, NSAttributedString>()
     private var estimatedHeightCatches = CacheManager<Int, CGFloat>()
     /// 聊天室
@@ -45,10 +46,11 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     }
 
     
-    init(openai: OpenAIProtocol, chatLaunchMode: ChatViewController.ChatLaunchMode) {
-        self.openai = openai
+    init(service: AIServiceProtocol, chatLaunchMode: ChatViewController.ChatLaunchMode) {
+        self.chatService = .init(service: service)
         self.chatLaunchMode = chatLaunchMode
         super.init()
+        self.setupPreloadPipeline()
         self.handleLaunchMode()
     }
     
@@ -92,7 +94,8 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         var mocks: [ChatMessage] = []
         for _ in 0...100 {
             let message = Bool.random() ? mockString : mockString2
-            let chatMessage = ChatMessage(message: message, type: .mock, role: .assistant)
+            let chatMessage = ChatMessage(message: message, role: .user)
+            chatMessage.type = .mock
             mocks.append(chatMessage)
         }
         displayMessages.append(contentsOf: mocks)
@@ -122,7 +125,6 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                 }
             }
             .store(in: &subscriptions)
-        setupPreloadPipeline()
     }
     
     func getAttributeString(index: Int) -> NSAttributedString? {
@@ -151,7 +153,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             }
         case .prompt(_, prompt: let prompt):
             self.chatRoom = .init(lastUpdate: .now)
-            let message = ChatMessage(message: prompt, type: .message, role: .system)
+            let message = ChatMessage(message: prompt, role: .user)
             displayMessages.append(message)
             preloadAttributedStringEvent(startIndex: self.displayMessages.count - 1)
         }
@@ -175,7 +177,10 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                 // 1. 先過濾出有緩存的部分
                 let cachedNumbers = numbers.filter { self.attributedStringCatches.getCache(forKey: $0) != nil }
                 // 2. 取得沒有緩存的部分
-                let uncachedNumbers = numbers.filter { self.attributedStringCatches.getCache(forKey: $0) == nil }
+                let uncachedNumbers = numbers.filter {
+                    self.attributedStringCatches.getCache(forKey: $0) == nil &&
+                    self.displayMessages.getOrNil(index: $0)?.message != nil
+                }
                 // 3. 如果全部都有緩存，直接回傳
                 if uncachedNumbers.isEmpty {
                     print("🔴沒有資料可以加載")
@@ -208,31 +213,10 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             })
             .store(in: &subscriptions)
     }
-    
-    /// 生成一串數字
-    /// 例如: start 50 ,count 10 會給 [50, 49, 51, 48, 52, 47, 53, 46, 54, 45]
-    /// - Parameters:
-    ///   - start: 從哪裡開始
-    ///   - count: 要生成幾個
-    /// - Returns: 一串數字
-    private func generateAlternatingNumbers(start: Int, count: Int) -> [Int] {
-        var numbersArray: [Int] = []
-        let currentNumber = start
-        for i in 0..<count {
-            if i % 2 == 0 {
-                // 偶数索引，递增
-                numbersArray.append(currentNumber + i / 2)
-            } else {
-                // 奇数索引，递减
-                numbersArray.append(currentNumber - (i / 2 + 1))
-            }
-        }
-        return numbersArray
-    }
 
     /// 預加載AttributedString事件
     private func preloadAttributedStringEvent(startIndex: Int) {
-        preloadSubject.send(generateAlternatingNumbers(start: startIndex, count: self.proloadBatchCount))
+        preloadSubject.send(Array.generateAlternatingNumbers(start: startIndex, count: self.proloadBatchCount))
     }
 
     /// 綁定重新發送訊息事件
@@ -262,7 +246,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     /// 綁定送出文字訊息事件
     private func sendMessageEvent(appendInputMessage: Bool = true) {
         guard let inputMessage = inputMessage, !inputMessage.isEmpty else { return }
-        let chatMessage = ChatMessage(message: inputMessage, type: .message, role: .user)
+        let chatMessage = ChatMessage(message: inputMessage, role: .user)
         if inputMessage == "mock" {
             mock()
             return
@@ -274,11 +258,11 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         Just<Void>(())
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
+        for message in displayMessages {
+            print(message.role)
+        }
         publisher
-            .flatMap({ self.openai.chatQuery(messages: self.displayMessages, model: .gpt4_o) })
-            .map({ chatRsutlt in
-                return ChatMessage(message: chatRsutlt.choices.first?.message.content?.string ?? "", timestamp: Date(), type: .message, role: chatRsutlt.choices.first?.message.role ?? .assistant)
-            })
+            .flatMap({ self.chatService.chat(messages: self.displayMessages) })
             .flatMap({ chatMessage in
                 print("回應訊息： \(String(describing: chatMessage.message))")
                 return self.appendNewMessage(newMessage: chatMessage)

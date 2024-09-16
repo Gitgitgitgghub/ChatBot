@@ -12,7 +12,7 @@ import AVFAudio
 /// 帳號相關
 extension DefaultsKeys {
     
-    static var userApiKey = DefaultsKey<String>("userApiKey")
+    static var userApiKey = DefaultsKey<Data>("userApiKey")
     
 }
 

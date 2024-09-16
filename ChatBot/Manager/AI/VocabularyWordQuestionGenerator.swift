@@ -8,22 +8,19 @@
 import Foundation
 import Combine
 
-
-
-
 class VocabularyWordQuestionGenerator: EnglishQuestionGeneratorProtocol {
     
     typealias QuestionType = SystemDefine.EnglishExam.QuestionType
     
     private let vocabularyManager: VocabularyManager
-    private let englishQuestionService: EnglishQuestionService
+    private let englishQuestionService: AIEnglishQuestonServiceProtocol
     private var questionType: QuestionType
     private var letter: String?
     private var sortOption: SystemDefine.EnglishExam.SortOption?
     ///
     private(set) var vocabularies: [VocabularyModel]
     
-    init(vocabularyManager: VocabularyManager, englishQuestionService: EnglishQuestionService, questionType: QuestionType, vocabularies: [VocabularyModel] = []) {
+    init(vocabularyManager: VocabularyManager, englishQuestionService: AIEnglishQuestonServiceProtocol, questionType: QuestionType, vocabularies: [VocabularyModel] = []) {
         self.vocabularyManager = vocabularyManager
         self.englishQuestionService = englishQuestionService
         self.questionType = questionType

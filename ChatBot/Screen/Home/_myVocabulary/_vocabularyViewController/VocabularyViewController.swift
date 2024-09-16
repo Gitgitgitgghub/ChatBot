@@ -17,7 +17,7 @@ class VocabularyViewController: BaseUIViewController {
     }
     
     init(vocabularies: [VocabularyModel], startIndex: Int) {
-        self.viewModel = .init(vocabularies: vocabularies, startIndex: startIndex, openAI: VocabularyService())
+        self.viewModel = .init(vocabularies: vocabularies, startIndex: startIndex)
         super.init(nibName: nil, bundle: nil)
     }
     

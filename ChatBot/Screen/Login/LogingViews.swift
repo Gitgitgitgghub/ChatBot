@@ -87,6 +87,16 @@ class LogingViews: ControllerView {
         button.layer.masksToBounds = true
         return button
     }()
+    lazy var platformButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("OpenAI", for: .normal)
+        button.setTitleColor(.fromAppColors(\.darkCoffeeText), for: .normal)
+        button.backgroundColor = .fromAppColors(\.lightCoffeeButton)
+        button.layer.cornerRadius = 10
+        button.layer.masksToBounds = true
+        button.isVisible = false
+        return button
+    }()
     override var backgroundColor: UIColor {
         return .fromAppColors(\.secondaryButtonBackground)
     }
@@ -101,10 +111,16 @@ class LogingViews: ControllerView {
         view.addSubview(loginButton)
         view.addSubview(errorLabel)
         view.addSubview(switchLoginMethodButton)
+        view.addSubview(platformButton)
         accountTextField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalToSuperview().inset(250)
             make.height.equalTo(40)
+        }
+        platformButton.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 150, height: 40))
+            make.trailing.equalTo(accountTextField)
+            make.top.equalTo(accountTextField.bottom).offset(10)
         }
         accountLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
@@ -149,11 +165,17 @@ class LogingViews: ControllerView {
         pwLabel.isVisible = method == .account
         confirmPwLabel.isVisible = method == .account
         confirmPwTextField.isVisible = method == .account
+        platformButton.isVisible = method == .key
         accountLabel.text = method == .account ? "帳號" : "金鑰"
         accountTextField.placeholder = method == .account ? "請輸入帳號" : "請輸入金鑰"
         accountTextField.text = ""
         confirmPwTextField.text = ""
         confirmPwTextField.text = ""
+    }
+    
+    func switchPlatform(platform: AIPlatform) {
+        platformButton.setTitle("\(platform)", for: .normal)
+        accountTextField.text = ""
     }
     
 }

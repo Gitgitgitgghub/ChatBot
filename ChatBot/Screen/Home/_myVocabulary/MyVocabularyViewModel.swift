@@ -46,7 +46,7 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         case normalMode
         case searchMode
     }
-    private let vocabularyService = VocabularyService()
+    private let vocabularyServiceManager = AIVocabularyServiceManager(service: AIServiceManager.shared.service as! AIVocabularyServiceProtocol)
     private let vocabularyManager = VocabularyManager.share
     /// 資料源
     private(set) var sectionDatas: [SectionData] = []
@@ -235,7 +235,7 @@ extension MyVocabularyViewModel {
             startSearchDatabase(text: word) { [weak self] isEmpty in
                 guard let `self` = self else { return }
                 if isEmpty {
-                    performAction(vocabularyService.fetchVocabularyData(forWord: word))
+                    performAction(vocabularyServiceManager.fetchVocabularyData(forWord: word))
                         .sink { [weak self] completion in
                             if case .failure(let failure) = completion {
                                 print("fetchVocabularyData failure: \(failure.localizedDescription)")
@@ -255,7 +255,7 @@ extension MyVocabularyViewModel {
     /// 先檢查有無此單字再做查詢
     private func checkSpellingAndFetchVocabularyModel() {
         guard searchSubject.value.isNotEmpty else { return }
-        performAction(vocabularyService.fetchVocabularyModel(forWord: searchSubject.value))
+        performAction(vocabularyServiceManager.fetchVocabularyModel(forWord: searchSubject.value))
             .sink { [weak self] completion in
                 if case .failure(let failure) = completion {
                     print("checkSpellingAndFetchVocabularyModel failure: \(failure.localizedDescription)")

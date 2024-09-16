@@ -1,27 +1,15 @@
 //
-//  VocabularyService.swift
+//  AIVocabularyServiceProtocol+.swift
 //  ChatBot
 //
-//  Created by 吳俊諺 on 2024/8/13.
+//  Created by 吳俊諺 on 2024/9/13.
 //
 
 import Foundation
-import OpenAI
 import Combine
+import OpenAI
 
-class VocabularyService: OpenAIService {
-    
-    
-    struct WordDetail: Codable, Equatable {
-        static func == (lhs: VocabularyService.WordDetail, rhs: VocabularyService.WordDetail) -> Bool {
-            return lhs.kkPronunciation == rhs.kkPronunciation &&
-            lhs.sentence == rhs.sentence
-        }
-        
-        let word: String
-        let kkPronunciation: String
-        let sentence: WordSentence
-    }
+extension AIVocabularyServiceProtocol {
     
     /// 查詢多單字 kk音標，句子，翻譯
     /// 因為一次帶多個給ai慢到會timeout
@@ -37,7 +25,7 @@ class VocabularyService: OpenAIService {
     }
     
     /// 拼字檢查，若錯誤可獲取相關建議的單字
-    func checkSpelling(forWord word: String) -> AnyPublisher<Result<String, OpenAIError>, Error> {
+    func checkSpelling(forWord word: String) -> AnyPublisher<Result<String, AIServiceError>, Error> {
         let prompt = """
             Please verify if the word "\(word)" is a valid English word. If the word is correct and exists in the English language, return it as 'correctWord'.
             If the word is incorrect, misspelled, or does not exist in English, return 'correctWord' as null and provide a suggested correct spelling in the 'suggestion' field.
@@ -49,17 +37,12 @@ class VocabularyService: OpenAIService {
               "suggestion": "[Suggested correct word, or null if no valid suggestion]"
             }
             """
-        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt4_turbo, responseFormat: .jsonObject)
-        let publisher = openAI.chats(query: query)
-            .tryMap { [weak self] chatResult -> Result<String, OpenAIError> in
+        let publisher = chat(prompt: prompt, responseFormat: .json)
+            .tryMap { [weak self] chatMessage -> Result<String, AIServiceError> in
                 guard let `self` = self else {
-                    throw OpenAIError.selfDeallocated
+                    throw AIServiceError.selfDeallocated
                 }
-                struct SuggestionResponse: Codable {
-                    let correctWord: String?
-                    let suggestion: String?
-                }
-                let suggestion = try self.decodeChatResult(SuggestionResponse.self, from: chatResult)
+                let suggestion = try self.decodeChatResult(SuggestionResponse.self, from: chatMessage.message)
                 if let correctWord = suggestion.correctWord, correctWord != "correctWord" {
                     return .success(correctWord)
                 } else {
@@ -67,7 +50,7 @@ class VocabularyService: OpenAIService {
                 }
             }
             .eraseToAnyPublisher()
-        return performAPICall(publisher)
+        return publisher
     }
 
     
@@ -94,33 +77,27 @@ class VocabularyService: OpenAIService {
                 "kkPronunciation": "[KK pronunciation of the word]"
             }
             """
-        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt3_5Turbo, responseFormat: .jsonObject)
-        let publisher = openAI.chats(query: query)
-            .tryMap { [weak self] chatResult in
+        let publisher = chat(prompt: prompt, responseFormat: .json)
+            .tryMap { [weak self] chatMessage in
                 guard let `self` = self else {
-                    throw OpenAIError.selfDeallocated
+                    throw AIServiceError.selfDeallocated
                 }
-                struct ResponseVocabularyModel: Codable {
-                    var wordEntry: WordEntry
-                    var wordSentences: [WordSentence]
-                    var kkPronunciation: String
-                }
-                if let text = chatResult.choices.first?.message.content?.string, text.contains("查無此單字") {
-                    throw OpenAIError.wordNotFound()
+                if chatMessage.message.contains("查無此單字") {
+                    throw AIServiceError.wordNotFound()
                 } else {
-                    let tempVocabularyModel = try self.decodeChatResult(ResponseVocabularyModel.self, from: chatResult)
+                    let tempVocabularyModel = try self.decodeChatResult(ResponseVocabularyModel.self, from: chatMessage.message)
                     return VocabularyModel(wordEntry: tempVocabularyModel.wordEntry, wordSentences: tempVocabularyModel.wordSentences, kkPronunciation: tempVocabularyModel.kkPronunciation)
                 }
             }
             .eraseToAnyPublisher()
-        return performAPICall(publisher)
+        return publisher
     }
     
-    func fetchVocabularyModel(forWord word: String) -> AnyPublisher<Result<VocabularyModel, OpenAIError>, Error> {
+    func fetchVocabularyModel(forWord word: String) -> AnyPublisher<Result<VocabularyModel, AIServiceError>, Error> {
         let publisher = checkSpelling(forWord: word)
-            .flatMap { [weak self] result -> AnyPublisher<Result<VocabularyModel, OpenAIError>, Error> in
+            .flatMap { [weak self] result -> AnyPublisher<Result<VocabularyModel, AIServiceError>, Error> in
                 guard let `self` = self else {
-                    return Just(.failure(OpenAIError.selfDeallocated))
+                    return Just(.failure(AIServiceError.selfDeallocated))
                         .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
                 }
@@ -136,7 +113,7 @@ class VocabularyService: OpenAIService {
                 }
             }
             .eraseToAnyPublisher()
-        return performAPICall(publisher)
+        return publisher
     }
 
     
@@ -156,10 +133,9 @@ class VocabularyService: OpenAIService {
             }
         }
         """
-        let query = ChatQuery(messages: [.init(role: .user, content: prompt)!], model: .gpt3_5Turbo, responseFormat: .jsonObject)
-        let publisher = openAI.chats(query: query)
-            .tryMap({ chatResult in
-                let response = try self.decodeChatResult(WordDetail.self, from: chatResult)
+        let publisher = chat(prompt: prompt, responseFormat: .json)
+            .tryMap({ chatMessage in
+                let response = try self.decodeChatResult(WordDetail.self, from: chatMessage.message)
                 return response
             })
             .catch({ _ in
@@ -171,7 +147,7 @@ class VocabularyService: OpenAIService {
             .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-        return performAPICall(publisher)
+        return publisher
     }
     
 }

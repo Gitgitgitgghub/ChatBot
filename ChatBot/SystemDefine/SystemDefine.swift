@@ -46,8 +46,15 @@ class SystemDefine {
 }
 
 typealias LoadingStatus = SystemDefine.LoadingStatus
+typealias AIPlatform = SystemDefine.AIPLatform
 
 extension SystemDefine {
+    
+    //MARK: AI平台
+    enum AIPLatform: Codable {
+        case openAI
+        case geminiAI
+    }
     
     //MARK: - 訊息類相關變數
     struct Message {

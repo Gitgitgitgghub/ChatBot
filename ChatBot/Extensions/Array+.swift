@@ -55,4 +55,31 @@ extension Array {
     mutating func replaceFirst(with: Element) {
         replace(index: 0, with: with)
     }
+    
 }
+
+extension Array where Element == Int {
+    
+    /// 生成一串數字
+    /// 例如: start 50 ,count 10 會給 [50, 49, 51, 48, 52, 47, 53, 46, 54, 45]
+    /// - Parameters:
+    ///   - start: 從哪裡開始
+    ///   - count: 要生成幾個
+    /// - Returns: 一串數字
+    static func generateAlternatingNumbers(start: Int, count: Int) -> [Int] {
+        var numbersArray: [Int] = []
+        let currentNumber = start
+        for i in 0..<count {
+            if i % 2 == 0 {
+                // 偶数索引，递增
+                numbersArray.append(currentNumber + i / 2)
+            } else {
+                // 奇数索引，递减
+                numbersArray.append(currentNumber - (i / 2 + 1))
+            }
+        }
+        return numbersArray
+    }
+
+}
+

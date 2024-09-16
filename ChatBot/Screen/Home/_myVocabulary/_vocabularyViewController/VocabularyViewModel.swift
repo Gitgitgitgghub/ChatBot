@@ -27,19 +27,17 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     
     let vocabularies: [VocabularyModel]
     let startIndex: Int
-    let openAI: VocabularyService
+    let vocabularyServiceManager = AIVocabularyServiceManager(service: AIServiceManager.shared.service as! AIVocabularyServiceProtocol)
     let vocabularyManager = VocabularyManager.share
     private(set) var displayEnable = false
     private(set) var isFetching = false
     private(set) var currentIndex: Int = 0
     private var fetchWordDetailsSubject = PassthroughSubject<[VocabularyModel], Never>()
     private var cacheManager = CacheManager<String, AnyPublisher<Int, Error>>()
-    //private var memoryCache: [Int: VocabularyModel] = [:]
     
-    init(vocabularies: [VocabularyModel], startIndex: Int, openAI: VocabularyService) {
+    init(vocabularies: [VocabularyModel], startIndex: Int) {
         self.vocabularies = vocabularies
         self.startIndex = startIndex
-        self.openAI = openAI
         self.currentIndex = startIndex
     }
     
@@ -129,7 +127,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     
     private func fetchVocabularies(index: Int) {
         let startIndex = index
-        let numbers = generateAlternatingNumbers(start: startIndex, count: 3)
+        let numbers = Array.generateAlternatingNumbers(start: startIndex, count: 3)
         var temp: [VocabularyModel] = []
         for number in numbers {
             if let vocabulary = self.vocabularies.getOrNil(index: number) {
@@ -173,7 +171,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
         if let cachedPublisher = self.cacheManager.getCache(forKey: wordKey) {
             return cachedPublisher
         } else {
-            let publisher = self.openAI.fetchSingleWordDetail(word: wordKey)
+            let publisher = self.vocabularyServiceManager.fetchSingleWordDetail(word: wordKey)
                 .flatMap({ [weak self] wordDetail -> AnyPublisher<Int, Error> in
                     guard let self = self else {
                         return Fail(error: NSError(domain: "self is nil", code: -1, userInfo: nil)).eraseToAnyPublisher()
@@ -201,7 +199,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     /// 處理ai回覆的資料
     /// 找到對應的voicabularies並把sentnece設定進去
     /// 回傳該單字對應的index
-    private func handelWordDetailsResponse(wordDetail: VocabularyService.WordDetail) -> AnyPublisher<Int, Error> {
+    private func handelWordDetailsResponse(wordDetail: WordDetail) -> AnyPublisher<Int, Error> {
         Future { [weak self] promise in
             guard let self = self else {
                 promise(.failure(NSError(domain: "self is nil", code: -1, userInfo: nil)))
@@ -222,27 +220,6 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
             }
         }
         .eraseToAnyPublisher()
-    }
-    
-    /// 生成一串數字
-    /// 例如: start 50 ,count 10 會給 [50, 49, 51, 48, 52, 47, 53, 46, 54, 45]
-    /// - Parameters:
-    ///   - start: 從哪裡開始
-    ///   - count: 要生成幾個
-    /// - Returns: 一串數字
-    private func generateAlternatingNumbers(start: Int, count: Int) -> [Int] {
-        var numbersArray: [Int] = []
-        let currentNumber = start
-        for i in 0..<count {
-            if i % 2 == 0 {
-                // 偶数索引，递增
-                numbersArray.append(currentNumber + i / 2)
-            } else {
-                // 奇数索引，递减
-                numbersArray.append(currentNumber - (i / 2 + 1))
-            }
-        }
-        return numbersArray
     }
     
 }

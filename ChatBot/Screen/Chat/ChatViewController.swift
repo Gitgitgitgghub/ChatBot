@@ -13,8 +13,7 @@ import NVActivityIndicatorView
 
 class ChatViewController: BaseUIViewController {
     
-    private let openai = OpenAIService()
-    private lazy var viewModel = ChatViewModel(openai: openai, chatLaunchMode: self.chatLaunchMode)
+    private lazy var viewModel = ChatViewModel(service: AIServiceManager.shared.service, chatLaunchMode: self.chatLaunchMode)
     private lazy var views = ChatViews(view: self.view)
     private var updatePublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
     private let chatLaunchMode: ChatLaunchMode
@@ -48,7 +47,6 @@ class ChatViewController: BaseUIViewController {
             }
         }
     }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
@@ -124,7 +122,7 @@ class ChatViewController: BaseUIViewController {
             }
             .store(in: &subscriptions)
         // 綁定讀取狀態
-        viewModel.openai.loadingStatusSubject
+        viewModel.loadingStatus
             .receive(on: RunLoop.main)
             .sink { [weak self] status in
                 self?.views.showLoadingView(status: status)
@@ -310,11 +308,11 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
                 let cell = tableView.dequeueReusableCell(with: ChatViews.UserMessageCell.self, for: indexPath)
                 cell.bindChatMessage(chatMessage: message, attr: viewModel.getAttributeString(index: indexPath.row), indexPath: indexPath)
                 return cell
-            case .assistant:
+            case .ai:
                 let cell = tableView.dequeueReusableCell(with: ChatViews.AIMessageCell.self, for: indexPath)
                 cell.bindChatMessage(chatMessage: message, attr: viewModel.getAttributeString(index: indexPath.row), indexPath: indexPath)
                 return cell
-            case .system, .tool:
+            case .unknown:
                 let cell = tableView.dequeueReusableCell(with: ChatViews.SystemMessageCell.self, for: indexPath)
                 cell.bindChatMessage(chatMessage: message, attr: viewModel.getAttributeString(index: indexPath.row), indexPath: indexPath)
                 return cell
@@ -330,7 +328,7 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
         let message = viewModel.displayMessages[indexPath.row]
         print("contextMenuConfigurationForRowAt \(message.role)")
         switch message.role {
-        case .assistant:
+        case .ai:
             return .init(actionProvider:  { menuElements in
                 let action1 = UIAction(title: "朗讀", image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off) { (action) in
                     self.speakMessage(message: message.message)

@@ -62,13 +62,10 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     @Published private(set) var examState: ExamState = .preparing
     /// 題目產生器
     private var questionGenerator: EnglishQuestionGeneratorProtocol
-    /// englishQuestionService
-    private let englishQuestionService: EnglishQuestionService
     
     init(questionType: QuestionType, vocabularies: [VocabularyModel]) {
         self.questionType = questionType
-        self.englishQuestionService = EnglishQuestionService()
-        questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, englishQuestionService: englishQuestionService, questionType: questionType, vocabularies: vocabularies)
+        questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, englishQuestionService: AIServiceManager.shared.service as! AIEnglishQuestonServiceProtocol, questionType: questionType, vocabularies: vocabularies)
         super.init()
     }
     
@@ -132,7 +129,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     }
     
     private func getNote() -> MyNote? {
-        guard let question = questions.getOrNil(index: currentIndex) else { return nil}
+        guard let question = questions.getOrNil(index: currentIndex) else { return nil }
         switch question {
         case .vocabulayExamQuestion(_):
             return nil

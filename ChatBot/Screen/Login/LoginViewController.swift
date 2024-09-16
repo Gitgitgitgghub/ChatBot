@@ -37,6 +37,7 @@ class LoginViewController: BaseUIViewController {
         views.confirmPwTextField.delegate = self
         views.loginButton.addTarget(self, action: #selector(loginButtonClicked), for: .touchUpInside)
         views.switchLoginMethodButton.addTarget(self, action: #selector(switchMethodButtonClick), for: .touchUpInside)
+        views.platformButton.addTarget(self, action: #selector(swtichPlatform), for: .touchUpInside)
     }
     
     private func bind() {
@@ -68,6 +69,11 @@ class LoginViewController: BaseUIViewController {
                 self.views.switchLoginMethod(method: method)
             }
             .store(in: &subscriptions)
+        viewModel.validation.$platform
+            .sink { [unowned self] platform in
+                self.views.switchPlatform(platform: platform)
+            }
+            .store(in: &subscriptions)
     }
     
     /// 登入成功替換掉畫面
@@ -81,6 +87,10 @@ class LoginViewController: BaseUIViewController {
         let alert = UIAlertController(title: "登入失敗", message: errorMessage, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "確定", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
+    }
+    
+    @objc private func swtichPlatform() {
+        viewModel.trasformInput(input: .switchAIPlatform)
     }
     
     @objc private func switchMethodButtonClick() {

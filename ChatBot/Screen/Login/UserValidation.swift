@@ -16,6 +16,7 @@ class UserValidation {
     @Published var errorMessage = ""
     @Published var isLoginButtonEnabled = false
     @Published var loginMethod: LoginViewController.LogingMethod = .account
+    @Published var platform: AIPlatform = .openAI
     private var subscriptions = Set<AnyCancellable>()
     
     init() {
@@ -65,6 +66,11 @@ class UserValidation {
                 self.password = ""
                 self.confirmPassword = ""
                 self.errorMessage = ""
+            }
+            .store(in: &subscriptions)
+        $platform
+            .sink { [unowned self] _ in
+                self.account = ""
             }
             .store(in: &subscriptions)
     }

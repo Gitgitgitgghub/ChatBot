@@ -101,11 +101,11 @@ extension HistoryViews {
                 try DatabaseManager.shared.dbQueue.read { db in
                     guard let lastMessage = try chatRoom.messages.fetchAll(db).last else { return }
                     switch lastMessage.role {
-                    case .system, .tool:
+                    case .unknown:
                         roleLabel.text = "系統："
                     case .user:
                         roleLabel.text = "你："
-                    case .assistant:
+                    case .ai:
                         roleLabel.text = "AI："
                     }
                     messageLabel.text = lastMessage.message

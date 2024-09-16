@@ -14,7 +14,7 @@
 		3204219E2C19405500D72203 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3204219D2C19405500D72203 /* SnapKit */; };
 		322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2CFE2C194A65007A8075 /* NSObject+.swift */; };
 		322A2D012C194C88007A8075 /* UITableView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D002C194C88007A8075 /* UITableView+.swift */; };
-		322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */; };
+		322A2D042C1974DC007A8075 /* AIServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D032C1974DC007A8075 /* AIServiceProtocol.swift */; };
 		322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322A2D052C198BA8007A8075 /* MessageModel.swift */; };
 		323E88A62C35251000401F50 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 323E88A52C35251000401F50 /* NVActivityIndicatorView */; };
 		323E88A82C353D2200401F50 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E88A72C353D2200401F50 /* MainTabBarController.swift */; };
@@ -65,10 +65,18 @@
 		32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */; };
 		32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F0C2C2405EC00FE5786 /* UIImage+.swift */; };
 		32800F122C251E5400FE5786 /* AttributedStringParsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32800F112C251E5400FE5786 /* AttributedStringParsable.swift */; };
+		328B312D2C93CD1D00013CF8 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 328B312C2C93CD1D00013CF8 /* GoogleGenerativeAI */; };
+		328B312F2C9413BD00013CF8 /* GeminiAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B312E2C9413BD00013CF8 /* GeminiAIService.swift */; };
+		328B31312C9432D600013CF8 /* AIChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31302C9432D600013CF8 /* AIChatManager.swift */; };
+		328B31342C943A8C00013CF8 /* AIVocabularyServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31332C943A8C00013CF8 /* AIVocabularyServiceManager.swift */; };
+		328B31362C94406D00013CF8 /* AIVocabularyServiceProtocol+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31352C94406D00013CF8 /* AIVocabularyServiceProtocol+.swift */; };
+		328B313A2C97DDAA00013CF8 /* AIVocabularyServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31392C97DDAA00013CF8 /* AIVocabularyServiceProtocol.swift */; };
+		328B313D2C97DEC900013CF8 /* AIEnglishQuestonServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B313C2C97DEC900013CF8 /* AIEnglishQuestonServiceProtocol.swift */; };
+		328B313F2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B313E2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift */; };
+		328B31412C97FF3400013CF8 /* AIServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31402C97FF3400013CF8 /* AIServiceManager.swift */; };
 		329B3F842C796DBE004D7570 /* EnglishQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F832C796DBE004D7570 /* EnglishQuestion.swift */; };
 		329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F852C7C2F2E004D7570 /* TimerManager.swift */; };
 		329B3F882C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */; };
-		329B3F8A2C7DD802004D7570 /* EnglishQuestionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F892C7DD802004D7570 /* EnglishQuestionService.swift */; };
 		329B3F8C2C7F1377004D7570 /* ExamQuestionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F8B2C7F1377004D7570 /* ExamQuestionProtocol.swift */; };
 		32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */; };
 		32B4D70C2C7446B100CA4C40 /* FlipCardViewContoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */; };
@@ -101,7 +109,6 @@
 		32B7E6DC2C6B31FE0032ABFD /* FSPagerViewObjcCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D32C6B31FE0032ABFD /* FSPagerViewObjcCompat.m */; };
 		32B7E6DD2C6B31FE0032ABFD /* FSPageViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D42C6B31FE0032ABFD /* FSPageViewLayout.swift */; };
 		32B7E6DE2C6B31FE0032ABFD /* FSPageViewTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6D52C6B31FE0032ABFD /* FSPageViewTransformer.swift */; };
-		32B7E6E02C6B54FF0032ABFD /* VocabularyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6DF2C6B54FF0032ABFD /* VocabularyService.swift */; };
 		32B7E6E42C6DC1150032ABFD /* DataCacheProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */; };
 		32C495622C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495612C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift */; };
 		32C495652C8019A700AB1360 /* GrammarPointSelectorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C495642C8019A700AB1360 /* GrammarPointSelectorAlert.swift */; };
@@ -168,7 +175,7 @@
 		3204219A2C193B4100D72203 /* ChatViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViews.swift; sourceTree = "<group>"; };
 		322A2CFE2C194A65007A8075 /* NSObject+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSObject+.swift"; sourceTree = "<group>"; };
 		322A2D002C194C88007A8075 /* UITableView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+.swift"; sourceTree = "<group>"; };
-		322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIProtocol.swift; sourceTree = "<group>"; };
+		322A2D032C1974DC007A8075 /* AIServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIServiceProtocol.swift; sourceTree = "<group>"; };
 		322A2D052C198BA8007A8075 /* MessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
 		323E88A72C353D2200401F50 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		323E88AB2C353DE800401F50 /* HistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewController.swift; sourceTree = "<group>"; };
@@ -214,10 +221,17 @@
 		32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenAIProtocol+ ImageFileHandler.swift"; sourceTree = "<group>"; };
 		32800F0C2C2405EC00FE5786 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
 		32800F112C251E5400FE5786 /* AttributedStringParsable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedStringParsable.swift; sourceTree = "<group>"; };
+		328B312E2C9413BD00013CF8 /* GeminiAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiAIService.swift; sourceTree = "<group>"; };
+		328B31302C9432D600013CF8 /* AIChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIChatManager.swift; sourceTree = "<group>"; };
+		328B31332C943A8C00013CF8 /* AIVocabularyServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIVocabularyServiceManager.swift; sourceTree = "<group>"; };
+		328B31352C94406D00013CF8 /* AIVocabularyServiceProtocol+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AIVocabularyServiceProtocol+.swift"; sourceTree = "<group>"; };
+		328B31392C97DDAA00013CF8 /* AIVocabularyServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIVocabularyServiceProtocol.swift; sourceTree = "<group>"; };
+		328B313C2C97DEC900013CF8 /* AIEnglishQuestonServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIEnglishQuestonServiceProtocol.swift; sourceTree = "<group>"; };
+		328B313E2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AIEnglishQuestonServiceProtocol+.swift"; sourceTree = "<group>"; };
+		328B31402C97FF3400013CF8 /* AIServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIServiceManager.swift; sourceTree = "<group>"; };
 		329B3F832C796DBE004D7570 /* EnglishQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishQuestion.swift; sourceTree = "<group>"; };
 		329B3F852C7C2F2E004D7570 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
 		329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyWordQuestionGenerator.swift; sourceTree = "<group>"; };
-		329B3F892C7DD802004D7570 /* EnglishQuestionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishQuestionService.swift; sourceTree = "<group>"; };
 		329B3F8B2C7F1377004D7570 /* ExamQuestionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamQuestionProtocol.swift; sourceTree = "<group>"; };
 		32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTextDelegate.swift; sourceTree = "<group>"; };
 		32B4D70B2C7446B100CA4C40 /* FlipCardViewContoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCardViewContoller.swift; sourceTree = "<group>"; };
@@ -252,7 +266,6 @@
 		32B7E6D32C6B31FE0032ABFD /* FSPagerViewObjcCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPagerViewObjcCompat.m; sourceTree = "<group>"; };
 		32B7E6D42C6B31FE0032ABFD /* FSPageViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPageViewLayout.swift; sourceTree = "<group>"; };
 		32B7E6D52C6B31FE0032ABFD /* FSPageViewTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSPageViewTransformer.swift; sourceTree = "<group>"; };
-		32B7E6DF2C6B54FF0032ABFD /* VocabularyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyService.swift; sourceTree = "<group>"; };
 		32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCacheProtocol.swift; sourceTree = "<group>"; };
 		32C495612C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemDefine+EnglishExam.swift"; sourceTree = "<group>"; };
 		32C495642C8019A700AB1360 /* GrammarPointSelectorAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarPointSelectorAlert.swift; sourceTree = "<group>"; };
@@ -301,6 +314,7 @@
 				32800F072C22A45900FE5786 /* Kingfisher in Frameworks */,
 				327D28682C5739C300F6ED68 /* ZMarkupParser in Frameworks */,
 				323E88A62C35251000401F50 /* NVActivityIndicatorView in Frameworks */,
+				328B312D2C93CD1D00013CF8 /* GoogleGenerativeAI in Frameworks */,
 				320421952C19331500D72203 /* OpenAI in Frameworks */,
 				3241BE4E2C44B1B90047BB71 /* GRDB in Frameworks */,
 				326F728E2C2A5CDE00B06DF8 /* SDWebImage in Frameworks */,
@@ -441,17 +455,17 @@
 		32690FC92C3D2EC300700192 /* Manager */ = {
 			isa = PBXGroup;
 			children = (
+				328B31322C94388E00013CF8 /* AI */,
 				3241BE4F2C44B3FC0047BB71 /* DatabaseManager.swift */,
 				32690FD02C3E679200700192 /* SpeechVoiceManager.swift */,
 				3241BE472C3F841E0047BB71 /* AccountManager.swift */,
 				946F7A392C466F38007DC7A8 /* NoteManager.swift */,
+				32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */,
 				946F7A3B2C466FAA007DC7A8 /* ChatRoomManager.swift */,
 				942395EA2C56A95000E65150 /* ImageManager.swift */,
 				327D28642C57314B00F6ED68 /* SharedGroupStorage.swift */,
-				32B7E6B62C69DD090032ABFD /* VocabularyManager.swift */,
 				94215CAA2C73851000F4DDF1 /* CacheManager.swift */,
 				329B3F852C7C2F2E004D7570 /* TimerManager.swift */,
-				329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -526,7 +540,7 @@
 		32800F102C251DAF00FE5786 /* protocol */ = {
 			isa = PBXGroup;
 			children = (
-				322A2D032C1974DC007A8075 /* OpenAIProtocol.swift */,
+				328B313B2C97DE5700013CF8 /* AI */,
 				32800F112C251E5400FE5786 /* AttributedStringParsable.swift */,
 				32690FC52C3CE62A00700192 /* ImageFileHandler.swift */,
 				943CFF922C5CE44B00B96812 /* CollectionViewLeftAlignedLayout.swift */,
@@ -536,6 +550,29 @@
 				329B3F8B2C7F1377004D7570 /* ExamQuestionProtocol.swift */,
 			);
 			path = protocol;
+			sourceTree = "<group>";
+		};
+		328B31322C94388E00013CF8 /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				328B31302C9432D600013CF8 /* AIChatManager.swift */,
+				328B31332C943A8C00013CF8 /* AIVocabularyServiceManager.swift */,
+				329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */,
+				328B31402C97FF3400013CF8 /* AIServiceManager.swift */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
+		328B313B2C97DE5700013CF8 /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				322A2D032C1974DC007A8075 /* AIServiceProtocol.swift */,
+				328B31392C97DDAA00013CF8 /* AIVocabularyServiceProtocol.swift */,
+				328B31352C94406D00013CF8 /* AIVocabularyServiceProtocol+.swift */,
+				328B313C2C97DEC900013CF8 /* AIEnglishQuestonServiceProtocol.swift */,
+				328B313E2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift */,
+			);
+			path = AI;
 			sourceTree = "<group>";
 		};
 		32B4D70D2C7446DB00CA4C40 /* _flipCardViewContoller */ = {
@@ -713,9 +750,8 @@
 			isa = PBXGroup;
 			children = (
 				32E264312C1BDA8D0083EC63 /* OpenAIService.swift */,
+				328B312E2C9413BD00013CF8 /* GeminiAIService.swift */,
 				32800F0A2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift */,
-				32B7E6DF2C6B54FF0032ABFD /* VocabularyService.swift */,
-				329B3F892C7DD802004D7570 /* EnglishQuestionService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -755,6 +791,7 @@
 				323E88A52C35251000401F50 /* NVActivityIndicatorView */,
 				3241BE4D2C44B1B90047BB71 /* GRDB */,
 				327D28672C5739C300F6ED68 /* ZMarkupParser */,
+				328B312C2C93CD1D00013CF8 /* GoogleGenerativeAI */,
 			);
 			productName = ChatBot;
 			productReference = 32C77FC32C18504E00F335FE /* ChatBot.app */;
@@ -836,6 +873,7 @@
 				323E88A42C35251000401F50 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				3241BE4C2C44B1B90047BB71 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				327D28662C5734BB00F6ED68 /* XCRemoteSwiftPackageReference "ZMarkupParser" */,
+				328B312B2C93CD1D00013CF8 /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
 			);
 			productRefGroup = 32C77FC42C18504E00F335FE /* Products */;
 			projectDirPath = "";
@@ -908,6 +946,7 @@
 				32C495702C927BEF00AB1360 /* ServiceKey.swift in Sources */,
 				94A6CFC22C39E13100B1E4E3 /* BaseViewModel.swift in Sources */,
 				32800F0D2C2405EC00FE5786 /* UIImage+.swift in Sources */,
+				328B313D2C97DEC900013CF8 /* AIEnglishQuestonServiceProtocol.swift in Sources */,
 				32B7E6B12C69CF040032ABFD /* MyVocabularyViewController.swift in Sources */,
 				32E2642F2C1AA9D10083EC63 /* PaddingLabel.swift in Sources */,
 				323E88B22C354BA200401F50 /* HomeViews.swift in Sources */,
@@ -925,9 +964,11 @@
 				32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */,
 				32B7E6DC2C6B31FE0032ABFD /* FSPagerViewObjcCompat.m in Sources */,
 				32B7E6AF2C69C3650032ABFD /* WordModels.swift in Sources */,
+				328B312F2C9413BD00013CF8 /* GeminiAIService.swift in Sources */,
 				327D286F2C5A10DC00F6ED68 /* NoActionTextView.swift in Sources */,
 				320421972C1933EC00D72203 /* SystemDefine.swift in Sources */,
 				329B3F842C796DBE004D7570 /* EnglishQuestion.swift in Sources */,
+				328B313F2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift in Sources */,
 				3204219B2C193B4100D72203 /* ChatViews.swift in Sources */,
 				94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */,
 				32B7E6AD2C69C2C10032ABFD /* TOEICWordDecoder.swift in Sources */,
@@ -936,6 +977,7 @@
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */,
 				32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */,
+				328B31412C97FF3400013CF8 /* AIServiceManager.swift in Sources */,
 				329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */,
 				9455D8072C491966007AC9C2 /* MyNoteViewModel.swift in Sources */,
 				9455D8052C4918F6007AC9C2 /* MyNoteViews.swift in Sources */,
@@ -953,6 +995,7 @@
 				946F7A3A2C466F38007DC7A8 /* NoteManager.swift in Sources */,
 				32B7E6A42C607F500032ABFD /* TextEditorViewModel.swift in Sources */,
 				3241BE482C3F841E0047BB71 /* AccountManager.swift in Sources */,
+				328B31342C943A8C00013CF8 /* AIVocabularyServiceManager.swift in Sources */,
 				32800F092C22AC5F00FE5786 /* UIImageView+KF.swift in Sources */,
 				32800EED2C1C233D00FE5786 /* LogingViews.swift in Sources */,
 				326F72922C2E910C00B06DF8 /* NSAttributedString+.swift in Sources */,
@@ -961,13 +1004,13 @@
 				323E88A82C353D2200401F50 /* MainTabBarController.swift in Sources */,
 				32B7E6C02C6B277E0032ABFD /* VocabularyViewModel.swift in Sources */,
 				32B7E6BE2C6B27750032ABFD /* VocabularyViews.swift in Sources */,
+				328B31362C94406D00013CF8 /* AIVocabularyServiceProtocol+.swift in Sources */,
 				32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */,
 				32B4D71E2C78332000CA4C40 /* EnglishExamViewModel.swift in Sources */,
 				32B7E6B32C69CF360032ABFD /* MyVocabularyViewModel.swift in Sources */,
-				322A2D042C1974DC007A8075 /* OpenAIProtocol.swift in Sources */,
+				322A2D042C1974DC007A8075 /* AIServiceProtocol.swift in Sources */,
 				32800EF12C1FE74600FE5786 /* UserValidation.swift in Sources */,
 				32B7E6DD2C6B31FE0032ABFD /* FSPageViewLayout.swift in Sources */,
-				32B7E6E02C6B54FF0032ABFD /* VocabularyService.swift in Sources */,
 				32800F0B2C23D4C500FE5786 /* OpenAIProtocol+ ImageFileHandler.swift in Sources */,
 				32800EF72C2023B400FE5786 /* LoadingView.swift in Sources */,
 				3241BE442C3F81D80047BB71 /* UserDefault+.swift in Sources */,
@@ -990,6 +1033,7 @@
 				3241BE462C3F82410047BB71 /* DefaultKeys.swift in Sources */,
 				322A2CFF2C194A65007A8075 /* NSObject+.swift in Sources */,
 				320421992C19343E00D72203 /* ChatViewModel.swift in Sources */,
+				328B31312C9432D600013CF8 /* AIChatManager.swift in Sources */,
 				32690FCB2C3D2F0600700192 /* SettingViewController.swift in Sources */,
 				32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */,
 				32B4D70F2C745F4500CA4C40 /* FlipCardViews.swift in Sources */,
@@ -1006,12 +1050,12 @@
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				32B7E6DE2C6B31FE0032ABFD /* FSPageViewTransformer.swift in Sources */,
 				3241BE552C4DF0C70047BB71 /* NoteViewModel.swift in Sources */,
-				329B3F8A2C7DD802004D7570 /* EnglishQuestionService.swift in Sources */,
 				942395EB2C56A95000E65150 /* ImageManager.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
 				32D54DA62C787D9C000A9E97 /* ExamQuestionSelectorViewController.swift in Sources */,
 				323E88AC2C353DE800401F50 /* HistoryViewController.swift in Sources */,
 				32E264322C1BDA8D0083EC63 /* OpenAIService.swift in Sources */,
+				328B313A2C97DDAA00013CF8 /* AIVocabularyServiceProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1393,6 +1437,14 @@
 				minimumVersion = 7.12.0;
 			};
 		};
+		328B312B2C93CD1D00013CF8 /* XCRemoteSwiftPackageReference "generative-ai-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/generative-ai-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.6;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1430,6 +1482,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 32800F052C22A45900FE5786 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		328B312C2C93CD1D00013CF8 /* GoogleGenerativeAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 328B312B2C93CD1D00013CF8 /* XCRemoteSwiftPackageReference "generative-ai-swift" */;
+			productName = GoogleGenerativeAI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

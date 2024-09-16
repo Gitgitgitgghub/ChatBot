@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 
-extension OpenAIProtocol {
+extension AIServiceProtocol {
     
     func getImageFromInfo(info: [UIImagePickerController.InfoKey : Any]) throws -> UIImage {
         if let selectedImage = info[.originalImage] as? UIImage {

@@ -201,7 +201,6 @@ extension EnglishExamViews {
         }
         
         func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-            let cell = collectionView.dequeueReusableCell(with: Cell.self, for: indexPath)
             let questionNumber = questionNumbers[indexPath.item]
             if let pageIndex = questionNumbers.firstIndex(of: questionNumber), pageIndex != currentPage {
                 currentPage = pageIndex
