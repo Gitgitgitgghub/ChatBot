@@ -23,6 +23,10 @@ enum AIServiceError: Error {
     /// 不明錯誤
     case unknown
     case selfDeallocated
+    /// data是空的
+    case emptyData
+    /// 偵測到語言非英文
+    case nonEnglishDetected(detectedLanguage: String)
 
 }
 

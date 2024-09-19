@@ -34,6 +34,8 @@ class HomeViewController: BaseUIViewController {
                 }
             case .readingTest:
                 ScreenLoader.toScreen(screen: .englishExam(questionType: .reading, vocabularies: []), viewController: self)
+            case .conversation:
+                ScreenLoader.toScreen(screen: .conversation, viewController: self)
             }
         }
     }

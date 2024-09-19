@@ -9,6 +9,7 @@ import Foundation
 import OpenAI
 import Combine
 import UIKit
+import NaturalLanguage
 
 
 class OpenAIService: AIServiceProtocol {
@@ -73,6 +74,52 @@ class OpenAIService: AIServiceProtocol {
 //                .eraseToAnyPublisher()
 //        }
 //    }
+    
+}
+
+extension OpenAIService: AIAudioServiceProtocol {
+    
+    func speechToText(url: URL, detectEnglish: Bool = false) -> AnyPublisher<String, Error> {
+        guard let data = try? Data(contentsOf: url) else {
+            return Fail(outputType: String.self, failure: AIServiceError.emptyData)
+                .eraseToAnyPublisher()
+        }
+        let query = AudioTranscriptionQuery(file: data, fileType: .m4a, model: .whisper_1)
+        return openAI.audioTranscriptions(query: query)
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: RunLoop.main)
+            .tryMap { [weak self] response in
+                guard let `self` = self else {
+                    throw AIServiceError.selfDeallocated
+                }
+                if detectEnglish {
+                    let detectedLanguage = detectLanguage(for: response.text)
+                    if detectedLanguage == "en" {
+                        return response.text
+                    } else {
+                        throw AIServiceError.nonEnglishDetected(detectedLanguage: detectedLanguage)
+                    }
+                }
+                return response.text
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func textToSpeech(text: String)  -> AnyPublisher<Data, Error> {
+        let query = AudioSpeechQuery(model: .tts_1, input: text, voice: .alloy, responseFormat: .aac, speed: 1)
+        return openAI.audioCreateSpeech(query: query)
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: RunLoop.main)
+            .map({ $0.audio })
+            .eraseToAnyPublisher()
+    }
+    
+    /// 偵測文本語言
+    func detectLanguage(for text: String) -> String {
+        let recognizer = NLLanguageRecognizer()
+        recognizer.processString(text)
+        return recognizer.dominantLanguage?.rawValue ?? "unknown"
+    }
     
 }
 

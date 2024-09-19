@@ -74,6 +74,15 @@
 		328B313D2C97DEC900013CF8 /* AIEnglishQuestonServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B313C2C97DEC900013CF8 /* AIEnglishQuestonServiceProtocol.swift */; };
 		328B313F2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B313E2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift */; };
 		328B31412C97FF3400013CF8 /* AIServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31402C97FF3400013CF8 /* AIServiceManager.swift */; };
+		328B31442C9A963100013CF8 /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31432C9A963100013CF8 /* ConversationViewController.swift */; };
+		328B31462C9A9E6400013CF8 /* SystemDefine+HomeEnableFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31452C9A9E6400013CF8 /* SystemDefine+HomeEnableFunction.swift */; };
+		328B31482C9AA16800013CF8 /* RecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31472C9AA16800013CF8 /* RecordingView.swift */; };
+		328B314A2C9AA20500013CF8 /* ConversationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31492C9AA20500013CF8 /* ConversationViews.swift */; };
+		328B314C2C9ABB2700013CF8 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B314B2C9ABB2700013CF8 /* AudioManager.swift */; };
+		328B314E2C9AC15F00013CF8 /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B314D2C9AC15F00013CF8 /* ConversationViewModel.swift */; };
+		328B31502C9AC50F00013CF8 /* AIAudioServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B314F2C9AC50F00013CF8 /* AIAudioServiceProtocol.swift */; };
+		328B31522C9BB4E900013CF8 /* AIAudioServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31512C9BB4E900013CF8 /* AIAudioServiceManager.swift */; };
+		328B31542C9BF7BD00013CF8 /* AudioPlayProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31532C9BF7BD00013CF8 /* AudioPlayProtocol.swift */; };
 		329B3F842C796DBE004D7570 /* EnglishQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F832C796DBE004D7570 /* EnglishQuestion.swift */; };
 		329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F852C7C2F2E004D7570 /* TimerManager.swift */; };
 		329B3F882C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */; };
@@ -229,6 +238,15 @@
 		328B313C2C97DEC900013CF8 /* AIEnglishQuestonServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIEnglishQuestonServiceProtocol.swift; sourceTree = "<group>"; };
 		328B313E2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AIEnglishQuestonServiceProtocol+.swift"; sourceTree = "<group>"; };
 		328B31402C97FF3400013CF8 /* AIServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIServiceManager.swift; sourceTree = "<group>"; };
+		328B31432C9A963100013CF8 /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
+		328B31452C9A9E6400013CF8 /* SystemDefine+HomeEnableFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemDefine+HomeEnableFunction.swift"; sourceTree = "<group>"; };
+		328B31472C9AA16800013CF8 /* RecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingView.swift; sourceTree = "<group>"; };
+		328B31492C9AA20500013CF8 /* ConversationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViews.swift; sourceTree = "<group>"; };
+		328B314B2C9ABB2700013CF8 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		328B314D2C9AC15F00013CF8 /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
+		328B314F2C9AC50F00013CF8 /* AIAudioServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAudioServiceProtocol.swift; sourceTree = "<group>"; };
+		328B31512C9BB4E900013CF8 /* AIAudioServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAudioServiceManager.swift; sourceTree = "<group>"; };
+		328B31532C9BF7BD00013CF8 /* AudioPlayProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayProtocol.swift; sourceTree = "<group>"; };
 		329B3F832C796DBE004D7570 /* EnglishQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishQuestion.swift; sourceTree = "<group>"; };
 		329B3F852C7C2F2E004D7570 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
 		329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyWordQuestionGenerator.swift; sourceTree = "<group>"; };
@@ -466,6 +484,7 @@
 				327D28642C57314B00F6ED68 /* SharedGroupStorage.swift */,
 				94215CAA2C73851000F4DDF1 /* CacheManager.swift */,
 				329B3F852C7C2F2E004D7570 /* TimerManager.swift */,
+				328B314B2C9ABB2700013CF8 /* AudioManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -501,6 +520,7 @@
 		32800EE82C1C225500FE5786 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
+				328B31422C9A8CF000013CF8 /* ConversationViewController */,
 				327D286A2C59E0C700F6ED68 /* RichTextEditor */,
 				32690FD22C3E763100700192 /* VoicePicker */,
 				32690FC22C3BA06100700192 /* Base */,
@@ -548,6 +568,7 @@
 				32B7E6E32C6DC1150032ABFD /* DataCacheProtocol.swift */,
 				32B4D7092C742BA300CA4C40 /* SpeechTextDelegate.swift */,
 				329B3F8B2C7F1377004D7570 /* ExamQuestionProtocol.swift */,
+				328B31532C9BF7BD00013CF8 /* AudioPlayProtocol.swift */,
 			);
 			path = protocol;
 			sourceTree = "<group>";
@@ -559,6 +580,7 @@
 				328B31332C943A8C00013CF8 /* AIVocabularyServiceManager.swift */,
 				329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */,
 				328B31402C97FF3400013CF8 /* AIServiceManager.swift */,
+				328B31512C9BB4E900013CF8 /* AIAudioServiceManager.swift */,
 			);
 			path = AI;
 			sourceTree = "<group>";
@@ -571,8 +593,19 @@
 				328B31352C94406D00013CF8 /* AIVocabularyServiceProtocol+.swift */,
 				328B313C2C97DEC900013CF8 /* AIEnglishQuestonServiceProtocol.swift */,
 				328B313E2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift */,
+				328B314F2C9AC50F00013CF8 /* AIAudioServiceProtocol.swift */,
 			);
 			path = AI;
+			sourceTree = "<group>";
+		};
+		328B31422C9A8CF000013CF8 /* ConversationViewController */ = {
+			isa = PBXGroup;
+			children = (
+				328B31432C9A963100013CF8 /* ConversationViewController.swift */,
+				328B31492C9AA20500013CF8 /* ConversationViews.swift */,
+				328B314D2C9AC15F00013CF8 /* ConversationViewModel.swift */,
+			);
+			path = ConversationViewController;
 			sourceTree = "<group>";
 		};
 		32B4D70D2C7446DB00CA4C40 /* _flipCardViewContoller */ = {
@@ -669,6 +702,7 @@
 			isa = PBXGroup;
 			children = (
 				320421962C1933EC00D72203 /* SystemDefine.swift */,
+				328B31452C9A9E6400013CF8 /* SystemDefine+HomeEnableFunction.swift */,
 				32C495612C7F2F8B00AB1360 /* SystemDefine+EnglishExam.swift */,
 				32C495692C8AF61000AB1360 /* AppColors.swift */,
 				32C4956F2C927BEF00AB1360 /* ServiceKey.swift */,
@@ -742,6 +776,7 @@
 				32C495672C80594200AB1360 /* RadioButtonGroupView.swift */,
 				32C4956B2C8B0C2E00AB1360 /* SpeakButton.swift */,
 				32C4956D2C8E92BD00AB1360 /* AnimationButton.swift */,
+				328B31472C9AA16800013CF8 /* RecordingView.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -963,12 +998,14 @@
 				322A2D012C194C88007A8075 /* UITableView+.swift in Sources */,
 				32690FCD2C3D2F2400700192 /* MyNoteViewController.swift in Sources */,
 				32B7E6DC2C6B31FE0032ABFD /* FSPagerViewObjcCompat.m in Sources */,
+				328B31482C9AA16800013CF8 /* RecordingView.swift in Sources */,
 				32B7E6AF2C69C3650032ABFD /* WordModels.swift in Sources */,
 				328B312F2C9413BD00013CF8 /* GeminiAIService.swift in Sources */,
 				327D286F2C5A10DC00F6ED68 /* NoActionTextView.swift in Sources */,
 				320421972C1933EC00D72203 /* SystemDefine.swift in Sources */,
 				329B3F842C796DBE004D7570 /* EnglishQuestion.swift in Sources */,
 				328B313F2C97DFB000013CF8 /* AIEnglishQuestonServiceProtocol+.swift in Sources */,
+				328B31502C9AC50F00013CF8 /* AIAudioServiceProtocol.swift in Sources */,
 				3204219B2C193B4100D72203 /* ChatViews.swift in Sources */,
 				94A6CFC42C39EBD500B1E4E3 /* HistoryViewModel.swift in Sources */,
 				32B7E6AD2C69C2C10032ABFD /* TOEICWordDecoder.swift in Sources */,
@@ -976,6 +1013,7 @@
 				32B4D71C2C7832E900CA4C40 /* EnglishExamViewController.swift in Sources */,
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */,
+				328B31522C9BB4E900013CF8 /* AIAudioServiceManager.swift in Sources */,
 				32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */,
 				328B31412C97FF3400013CF8 /* AIServiceManager.swift in Sources */,
 				329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */,
@@ -984,9 +1022,11 @@
 				32B7E6B92C69E5610032ABFD /* MyVocabularyViews.swift in Sources */,
 				32B4D7192C77448700CA4C40 /* StarButton.swift in Sources */,
 				32C4956C2C8B0C2E00AB1360 /* SpeakButton.swift in Sources */,
+				328B314A2C9AA20500013CF8 /* ConversationViews.swift in Sources */,
 				322A2D062C198BA8007A8075 /* MessageModel.swift in Sources */,
 				32C495682C80594200AB1360 /* RadioButtonGroupView.swift in Sources */,
 				327D28652C57314B00F6ED68 /* SharedGroupStorage.swift in Sources */,
+				328B31462C9A9E6400013CF8 /* SystemDefine+HomeEnableFunction.swift in Sources */,
 				32800EF32C20105800FE5786 /* LoginViewModel.swift in Sources */,
 				32800EF92C202F8800FE5786 /* UIView+.swift in Sources */,
 				32B7E6B52C69DBD50032ABFD /* VocabularyModel.swift in Sources */,
@@ -1004,6 +1044,7 @@
 				323E88A82C353D2200401F50 /* MainTabBarController.swift in Sources */,
 				32B7E6C02C6B277E0032ABFD /* VocabularyViewModel.swift in Sources */,
 				32B7E6BE2C6B27750032ABFD /* VocabularyViews.swift in Sources */,
+				328B314E2C9AC15F00013CF8 /* ConversationViewModel.swift in Sources */,
 				328B31362C94406D00013CF8 /* AIVocabularyServiceProtocol+.swift in Sources */,
 				32E264342C1BE75C0083EC63 /* Extensions.swift in Sources */,
 				32B4D71E2C78332000CA4C40 /* EnglishExamViewModel.swift in Sources */,
@@ -1037,9 +1078,11 @@
 				32690FCB2C3D2F0600700192 /* SettingViewController.swift in Sources */,
 				32690FC42C3CCF4B00700192 /* RemoteImageAttachment.swift in Sources */,
 				32B4D70F2C745F4500CA4C40 /* FlipCardViews.swift in Sources */,
+				328B314C2C9ABB2700013CF8 /* AudioManager.swift in Sources */,
 				32C77FC92C18504E00F335FE /* SceneDelegate.swift in Sources */,
 				32B7E6E42C6DC1150032ABFD /* DataCacheProtocol.swift in Sources */,
 				32800EEF2C1C239300FE5786 /* ControllerView.swift in Sources */,
+				328B31542C9BF7BD00013CF8 /* AudioPlayProtocol.swift in Sources */,
 				329B3F882C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift in Sources */,
 				3241BE502C44B3FC0047BB71 /* DatabaseManager.swift in Sources */,
 				943CFF912C5CBE7E00B96812 /* TextEditorViews.swift in Sources */,
@@ -1050,6 +1093,7 @@
 				32800EFC2C211B8D00FE5786 /* LaunchViewController.swift in Sources */,
 				32B7E6DE2C6B31FE0032ABFD /* FSPageViewTransformer.swift in Sources */,
 				3241BE552C4DF0C70047BB71 /* NoteViewModel.swift in Sources */,
+				328B31442C9A963100013CF8 /* ConversationViewController.swift in Sources */,
 				942395EB2C56A95000E65150 /* ImageManager.swift in Sources */,
 				32800EF52C20220500FE5786 /* BaseUIViewController.swift in Sources */,
 				32D54DA62C787D9C000A9E97 /* ExamQuestionSelectorViewController.swift in Sources */,

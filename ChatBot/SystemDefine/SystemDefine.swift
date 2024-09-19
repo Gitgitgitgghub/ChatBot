@@ -93,62 +93,6 @@ extension SystemDefine {
         case error(error: Error)
     }
     
-    //MARK: - 首頁按鈕功能
-    enum HomeEnableFunction: RawRepresentable, CaseIterable {
-        
-        /// 聊天
-        case Chat
-        /// 語法糾正
-        case GrammarCorrection
-        /// 文法考試
-        case GrammarExam
-        /// 閱讀測驗
-        case readingTest
-        
-        var rawValue: Int {
-            switch self {
-            case .Chat: return 0
-            case .GrammarCorrection: return 1
-            case .GrammarExam: return 2
-            case .readingTest: return 3
-            }
-        }
-        var title: String {
-            switch self {
-            case .Chat: return "聊天"
-            case .GrammarCorrection: return "語法糾正"
-            case .GrammarExam: return "文法考試"
-            case .readingTest: return "閱讀測驗"
-            }
-        }
-        var enable: Bool {
-            switch self {
-            case .Chat: return true
-            case .GrammarCorrection: return true
-            case .GrammarExam: return true
-            case .readingTest: return true
-            }
-        }
-        var prompt: String {
-            switch self {
-            case .GrammarCorrection: return "Help me correct the grammar mistakes in the following English sentence. List the corrected sentence directly, then list each mistake in Traditional Chinese, including why it's wrong and how to fix it."
-            default: return ""
-            }
-        }
-        
-        typealias RawValue = Int
-        
-        init?(rawValue: Int) {
-            switch rawValue {
-            case 0: self = .Chat
-            case 1: self = .GrammarCorrection
-            case 2: self = .GrammarExam
-            case 3: self = .readingTest
-            default: return nil
-            }
-        }
-    }
-    
 }
 
 

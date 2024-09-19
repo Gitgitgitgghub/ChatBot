@@ -89,15 +89,29 @@ extension BaseUIViewController {
         case .authorized:
             completion()
         case .denied:
-            self.showAccessDeniedAlert(message: "請前往設置已允許訪問相冊。")
+            self.showAccessDeniedAlert(message: "請前往設置以允許訪問相冊。")
         @unknown default:
             break
         }
     }
     
-    func showAccessDeniedAlert(message: String) {
+    func requestMicrophoneAccess() {
+        AVAudioApplication.requestRecordPermission { [unowned self] allowed in
+            if allowed {
+                print("麥克風使用允許")
+            } else {
+                self.showAccessDeniedAlert(message: "請前往設置以允許使用麥克風", cancelHandler: { [unowned self] _ in
+                    DispatchQueue.main.async {
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                })
+            }
+        }
+    }
+    
+    func showAccessDeniedAlert(message: String, cancelHandler: ((UIAlertAction) -> (Void))? = nil) {
         let alert = UIAlertController(title: "訪問被拒絕", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: cancelHandler))
         alert.addAction(UIAlertAction(title: "設置", style: .default, handler: { _ in
             if let url = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
