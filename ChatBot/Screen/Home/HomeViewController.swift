@@ -35,9 +35,20 @@ class HomeViewController: BaseUIViewController {
             case .readingTest:
                 ScreenLoader.toScreen(screen: .englishExam(questionType: .reading, vocabularies: []), viewController: self)
             case .conversation:
-                ScreenLoader.toScreen(screen: .conversation, viewController: self)
+                self.showConversationScenarioSelector()
             }
         }
+    }
+    
+    private func showConversationScenarioSelector() {
+        let alert = UIAlertController(title: "請選擇對話場景", message: nil, preferredStyle: .actionSheet)
+        SystemDefine.Conversation.scenarios.forEach { scenario in
+            alert.addAction(.init(title: scenario.scenarioTranslation, style: .default, handler: { _ in
+                ScreenLoader.toScreen(screen: .conversation(scenario: scenario), viewController: self)
+            }))
+        }
+        alert.addAction(.init(title: "取消", style: .cancel))
+        present(alert, animated: true)
     }
     
     /// 至聊天Vc

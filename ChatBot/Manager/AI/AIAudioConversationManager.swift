@@ -24,14 +24,18 @@ struct TextToSpeechResult {
 
 /// 對話情境
 struct Scenario: Codable {
-    /// 情境
+    /// 情境名稱
     var scenario: String
+    /// 情境描述
+    var description: String
     /// ai扮演的角色
     var aiRole: String
     /// 用戶的角色
     var userRole: String
     /// 情境
     var scenarioTranslation: String
+    /// 情境
+    var descriptionTranslation: String
     /// ai扮演的角色
     var aiRoleTranslation: String
     /// 用戶的角色

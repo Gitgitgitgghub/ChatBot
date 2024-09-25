@@ -19,10 +19,19 @@ class ConversationViewController: BaseUIViewController {
             return false
         }
     }
-    private let viewModel = ConversationViewModel()
+    private let viewModel: ConversationViewModel
     private lazy var views = ConversationViews(view: self.view)
     private var tableView: UITableView {
         return views.tableView
+    }
+    
+    init(scenario: Scenario) {
+        viewModel = ConversationViewModel(scenario: scenario)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {

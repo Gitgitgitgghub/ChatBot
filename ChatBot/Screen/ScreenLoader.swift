@@ -42,7 +42,7 @@ class ScreenLoader {
         /// 英文測驗
         case englishExam(questionType: SystemDefine.EnglishExam.QuestionType, vocabularies: [VocabularyModel] = [])
         /// 語音對話
-        case conversation
+        case conversation(scenario: Scenario)
     }
     
     static func loadScreen(screen: Screen) -> UIViewController {
@@ -64,8 +64,8 @@ class ScreenLoader {
         case .flipCard: return FlipCardViewContoller()
         case .englishExam(questionType: let questionType, vocabularies: let vocabularies):
             return EnglishExamViewController(questionType: questionType, vocabularies: vocabularies)
-        case .conversation:
-            return ConversationViewController()
+        case .conversation(let scenario):
+            return ConversationViewController(scenario: scenario)
         }
     }
     

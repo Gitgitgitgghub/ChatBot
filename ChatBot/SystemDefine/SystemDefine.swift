@@ -10,8 +10,6 @@ import UIKit
 
 
 
-let reallyVeryConfidential = "c2stcHJvai1hTDhJU1diMk1aS0dMWUxyTjZkUlQzQmxia0ZKQmRyRnZhNnMyY3pYTXloUEZMUDY="
-
 let godzilla = "https://cdn.wowscreen.com.tw/uploadfile/202309/goods_030567_395649.jpg"
 
 let swiftImage = "https://developer.apple.com/assets/elements/icons/swift/swift-96x96_2x.png"

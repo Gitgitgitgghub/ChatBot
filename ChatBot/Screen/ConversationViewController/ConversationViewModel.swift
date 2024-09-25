@@ -38,10 +38,10 @@ class ConversationViewModel: BaseViewModel<ConversationViewModel.InputEvent, Con
     private(set) var audioResults: [AudioResult] = []
     var audioPlaybackMode: AudioPlaybackMode = .audioPlayer
     
-    override init() {
+    init(scenario: Scenario?) {
         super.init()
         audioMagager.delegate = self
-        initialScenario()
+        initialScenario(initialScenario: scenario)
     }
     
     func bindInputEvent() {
@@ -78,17 +78,10 @@ class ConversationViewModel: BaseViewModel<ConversationViewModel.InputEvent, Con
     }
     
     /// 初始化情境
-    private func initialScenario() {
-        let publisher = conversationManager.generateScenario()
-            .map { [weak self] scenario in
-                scenario.printScenario()
-                self?.conversationManager.setInitialScenario(initialScenario: scenario)
-                return scenario
-            }
-            .flatMap { _ in
-                return self.conversationManager.generateAIResponse()
-            }
-            .eraseToAnyPublisher()
+    private func initialScenario(initialScenario: Scenario?) {
+        guard let initialScenario = initialScenario else { return }
+        conversationManager.setInitialScenario(initialScenario: initialScenario)
+        let publisher = conversationManager.generateAIResponse()
         performAction(publisher)
             .sink { _ in
                 
