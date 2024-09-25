@@ -120,7 +120,7 @@ class ConversationViewController: BaseUIViewController {
     }
     
     override func handleBackAction() {
-        viewModel.transform(inputEvent: .deleteAllAudioFile)
+        viewModel.transform(inputEvent: .release)
     }
 }
 

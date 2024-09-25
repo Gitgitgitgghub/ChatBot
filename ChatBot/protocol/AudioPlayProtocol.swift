@@ -35,7 +35,7 @@ class AudioPlayer {
             audioPlayer?.play()
             print("正在播放音頻：\(url)")
         } catch {
-            print("播放音頻失敗: \(error)")
+            print("播放音頻失敗: \(url)\n\(error)")
         }
     }
 

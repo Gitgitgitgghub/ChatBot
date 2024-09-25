@@ -15,7 +15,7 @@ class ConversationViewModel: BaseViewModel<ConversationViewModel.InputEvent, Con
         case stopRecording
         case userInput(input: String)
         case playAudio(indexPath: IndexPath)
-        case deleteAllAudioFile
+        case release
         case hintButtonClicked(indexPath: IndexPath)
     }
     
@@ -57,8 +57,8 @@ class ConversationViewModel: BaseViewModel<ConversationViewModel.InputEvent, Con
                     self.userInput(input: input)
                 case .playAudio(indexPath: let indexPath):
                     self.playAudio(indexPath: indexPath)
-                case .deleteAllAudioFile:
-                    self.deleteAllAudioFile()
+                case .release:
+                    self.release()
                 case .hintButtonClicked(indexPath: let indexPath):
                     self.hintButtonClicked(indexPath: indexPath)
                 }
@@ -94,7 +94,9 @@ class ConversationViewModel: BaseViewModel<ConversationViewModel.InputEvent, Con
             .store(in: &subscriptions)
     }
     
-    private func deleteAllAudioFile() {
+    private func release() {
+        audioMagager.stopRecording()
+        audioMagager.stopAudio()
         audioMagager.deleteAllFilesInDirectory()
     }
     

@@ -60,7 +60,9 @@ extension BaseUIViewController: UIGestureRecognizerDelegate {
     
     // 當手勢開始時調用
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        handleBackAction()
+        if enableSwipeToGoBack {
+            handleBackAction()
+        }
         return enableSwipeToGoBack
     }
     
