@@ -14,9 +14,11 @@ import Photos
 class BaseUIViewController: UIViewController {
     
     var subscriptions = Set<AnyCancellable>()
+    var enableSwipeToGoBack = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setBackButtonAndGestureRecognizer()
     }
     
     /// 觀察鍵盤顯示與否
@@ -43,6 +45,34 @@ class BaseUIViewController: UIViewController {
             vc.dismiss(animated: true)
             completion?()
         }
+    }
+    
+    
+    
+}
+
+//MARK: - UIGestureRecognizerDelegate 處理右滑，設定返回按鈕
+extension BaseUIViewController: UIGestureRecognizerDelegate {
+    
+    @objc func handleBackAction() {
+        
+    }
+    
+    // 當手勢開始時調用
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        handleBackAction()
+        return enableSwipeToGoBack
+    }
+    
+    @objc func customBackAction() {
+        navigationController?.popViewController(animated: true)
+        handleBackAction()
+    }
+    
+    private func setBackButtonAndGestureRecognizer() {
+        let backButton = UIBarButtonItem(title: "返回", image: .init(systemName: "chevron.left"), target: self, action: #selector(customBackAction))
+        self.navigationItem.leftBarButtonItem = backButton
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
 }

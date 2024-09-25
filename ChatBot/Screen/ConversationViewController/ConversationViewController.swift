@@ -11,7 +11,14 @@ import UIKit
 
 class ConversationViewController: BaseUIViewController {
     
-    
+    override var enableSwipeToGoBack: Bool {
+        set {
+            //super.enableSwipeToGoBack = newValue
+        }
+        get {
+            return false
+        }
+    }
     private let viewModel = ConversationViewModel()
     private lazy var views = ConversationViews(view: self.view)
     private var tableView: UITableView {
@@ -51,14 +58,35 @@ class ConversationViewController: BaseUIViewController {
                     self.volumeChanged(value: value)
                 case .reloadData:
                     self.tableView.reloadData()
+                case .showScenario(scenario: let scenario):
+                    self.showScenario(scenario: scenario)
+                case .showTranslation(translation: let translation):
+                    self.showTranslation(translation: translation)
                 }
             }
             .store(in: &subscriptions)
         viewModel.loadingStatus
             .sink { [weak self] status in
-                self?.views.showLoadingView(status: status, with: "加載中..")
+                switch status {
+                case .error(error: let error):
+                    self?.showToast(message: error.localizedDescription)
+                default:
+                    self?.views.showLoadingView(status: status, with: "加載中..")
+                }
             }
             .store(in: &subscriptions)
+    }
+    
+    private func showTranslation(translation: String) {
+        let alert = UIAlertController(title: "翻譯", message: translation, preferredStyle: .alert)
+        alert.addAction(.init(title: "關閉", style: .cancel))
+        present(alert, animated: true)
+    }
+    
+    private func showScenario(scenario: Scenario?) {
+        guard let scenario = scenario else { return }
+        views.scenarioView.isVisible = true
+        views.scenarioView.bindScenario(scenario: scenario)
     }
     
     private func volumeChanged(value: Float) {
@@ -67,20 +95,36 @@ class ConversationViewController: BaseUIViewController {
     
     @objc private func recoderButtonClicked() {
         views.recordingView.isVisible = !views.recordingView.isVisible
-        //views.recordingView.isRecording ? viewModel.transform(inputEvent: .startRecording) : viewModel.transform(inputEvent: .stopRecording)
-//        let vc = UIAlertController(title: "儲存筆記", message: "請輸入標題", preferredStyle: .alert)
-//        vc.addTextField { textField in
-//            textField.text = ""
-//        }
-//        vc.addAction(.init(title: "保存", style: .default, handler: { action in
-//            self.viewModel.transform(inputEvent: .userInput(input: vc.textFields?.first?.text ?? "123"))
-//        }))
-//        vc.addAction(.init(title: "取消", style: .cancel))
-//        present(vc, animated: true)
+
+    }
+    
+    private func showInputAlert() {
+        let vc = UIAlertController(title: "儲存筆記", message: "請輸入標題", preferredStyle: .alert)
+        vc.addTextField { textField in
+            textField.text = ""
+        }
+        vc.addAction(.init(title: "保存", style: .default, handler: { action in
+            self.viewModel.transform(inputEvent: .userInput(input: vc.textFields?.first?.text ?? "123"))
+        }))
+        vc.addAction(.init(title: "取消", style: .cancel))
+        present(vc, animated: true)
+    }
+    
+    override func handleBackAction() {
+        viewModel.transform(inputEvent: .deleteAllAudioFile)
     }
 }
 
-extension ConversationViewController: UITableViewDelegate, UITableViewDataSource {
+//MARK: - UITableViewDelegate, UITableViewDataSource, AudioCellDelegate
+extension ConversationViewController: UITableViewDelegate, UITableViewDataSource, AudioCellDelegate {
+    
+    func hintButtonClicked(indexPath: IndexPath) {
+        viewModel.transform(inputEvent: .hintButtonClicked(indexPath: indexPath))
+    }
+    
+    func spekaButtonClicked(indexPath: IndexPath) {
+        viewModel.transform(inputEvent: .playAudio(indexPath: indexPath))
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.audioResults.count
@@ -92,16 +136,20 @@ extension ConversationViewController: UITableViewDelegate, UITableViewDataSource
         case .ai:
             let cell = tableView.dequeueReusableCell(with: ConversationViews.SystemCell.self, for: indexPath)
             cell.bindAudioResult(audioResult: audioResult, indexPath: indexPath)
+            cell.delegate = self
             return cell
         case .user:
             let cell = tableView.dequeueReusableCell(with: ConversationViews.UserCell.self, for: indexPath)
             cell.bindAudioResult(audioResult: audioResult, indexPath: indexPath)
+            cell.delegate = self
             return cell
         default: return UITableViewCell()
         }
     }
     
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+    }
     
     
 }

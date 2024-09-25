@@ -35,8 +35,15 @@ enum AIResponseFormat: String {
     case text
 }
 
+enum NaturalLanguage: String {
+    case TraditionalChinese
+    case English
+}
+
 protocol AIServiceProtocol: AnyObject, ImageFileHandler {
     
+    var aiSymbol: String { get }
+    var userSymbol: String { get }
     /// chatResult decode
     func decodeChatResult<T>(_ type: T.Type, from result: ChatResult) throws -> T where T : Decodable
     /// chatResult decode
@@ -45,6 +52,8 @@ protocol AIServiceProtocol: AnyObject, ImageFileHandler {
     func chat(messages: [ChatMessage], responseFormat: AIResponseFormat) -> AnyPublisher<ChatMessage, Error>
     
     func chat(prompt: String, responseFormat: AIResponseFormat) -> AnyPublisher<ChatMessage, Error>
+    
+    func translation(input: String, to language: NaturalLanguage) -> AnyPublisher<ChatMessage, Error>
     
     func test() -> AnyPublisher<Void, Error>
     

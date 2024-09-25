@@ -103,11 +103,24 @@ class SpeechVoiceManager {
         utterance.voice = voice
         utterance.preUtteranceDelay = 0.1
         synthesizer.speak(utterance)
-        // 分割的方式來製造停頓
-//        let utterances = getAVSpeechUtterances(text: text, voice: voice)
-//        for utterance in utterances {
-//            synthesizer.speak(utterance)
-//        }
+    }
+    
+    func pause() {
+        if synthesizer.isSpeaking {
+            synthesizer.pauseSpeaking(at: .immediate)
+        }
+    }
+    
+    func stop() {
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
+    }
+    
+    func resume() {
+        if synthesizer.isPaused {
+            synthesizer.continueSpeaking()
+        }
     }
     
     /// 清除字串中的標點符號不然會一起唸出來＝＝

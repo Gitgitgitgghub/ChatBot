@@ -13,7 +13,8 @@ import NaturalLanguage
 
 
 class OpenAIService: AIServiceProtocol {
-    
+    var aiSymbol: String = "assistant"
+    var userSymbol: String = "user"
     let openAI: OpenAI
     let model: Model
     
@@ -39,6 +40,12 @@ class OpenAIService: AIServiceProtocol {
             .eraseToAnyPublisher()
     }
     
+    func translation(input: String, to language: NaturalLanguage) -> AnyPublisher<ChatMessage, any Error> {
+        let prompt = """
+                    translate this sentence "\(input)" into \(language)
+                    """
+        return chat(prompt: prompt, responseFormat: .text)
+    }
     
     
 //    func createImage(prompt: String, size: ImagesQuery.Size) -> AnyPublisher<ImagesResult, any Error> {
@@ -105,7 +112,7 @@ extension OpenAIService: AIAudioServiceProtocol {
             .eraseToAnyPublisher()
     }
     
-    func textToSpeech(text: String)  -> AnyPublisher<Data, Error> {
+    func textToSpeech(text: String)  -> AnyPublisher<Data?, Error> {
         let query = AudioSpeechQuery(model: .tts_1, input: text, voice: .alloy, responseFormat: .aac, speed: 1)
         return openAI.audioCreateSpeech(query: query)
             .subscribe(on: DispatchQueue.global())

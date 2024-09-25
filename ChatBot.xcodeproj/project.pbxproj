@@ -81,7 +81,7 @@
 		328B314C2C9ABB2700013CF8 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B314B2C9ABB2700013CF8 /* AudioManager.swift */; };
 		328B314E2C9AC15F00013CF8 /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B314D2C9AC15F00013CF8 /* ConversationViewModel.swift */; };
 		328B31502C9AC50F00013CF8 /* AIAudioServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B314F2C9AC50F00013CF8 /* AIAudioServiceProtocol.swift */; };
-		328B31522C9BB4E900013CF8 /* AIAudioServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31512C9BB4E900013CF8 /* AIAudioServiceManager.swift */; };
+		328B31522C9BB4E900013CF8 /* AIAudioConversationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31512C9BB4E900013CF8 /* AIAudioConversationManager.swift */; };
 		328B31542C9BF7BD00013CF8 /* AudioPlayProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328B31532C9BF7BD00013CF8 /* AudioPlayProtocol.swift */; };
 		329B3F842C796DBE004D7570 /* EnglishQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F832C796DBE004D7570 /* EnglishQuestion.swift */; };
 		329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329B3F852C7C2F2E004D7570 /* TimerManager.swift */; };
@@ -245,7 +245,7 @@
 		328B314B2C9ABB2700013CF8 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 		328B314D2C9AC15F00013CF8 /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
 		328B314F2C9AC50F00013CF8 /* AIAudioServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAudioServiceProtocol.swift; sourceTree = "<group>"; };
-		328B31512C9BB4E900013CF8 /* AIAudioServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAudioServiceManager.swift; sourceTree = "<group>"; };
+		328B31512C9BB4E900013CF8 /* AIAudioConversationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAudioConversationManager.swift; sourceTree = "<group>"; };
 		328B31532C9BF7BD00013CF8 /* AudioPlayProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayProtocol.swift; sourceTree = "<group>"; };
 		329B3F832C796DBE004D7570 /* EnglishQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishQuestion.swift; sourceTree = "<group>"; };
 		329B3F852C7C2F2E004D7570 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
@@ -580,7 +580,7 @@
 				328B31332C943A8C00013CF8 /* AIVocabularyServiceManager.swift */,
 				329B3F872C7C56C7004D7570 /* VocabularyWordQuestionGenerator.swift */,
 				328B31402C97FF3400013CF8 /* AIServiceManager.swift */,
-				328B31512C9BB4E900013CF8 /* AIAudioServiceManager.swift */,
+				328B31512C9BB4E900013CF8 /* AIAudioConversationManager.swift */,
 			);
 			path = AI;
 			sourceTree = "<group>";
@@ -1013,7 +1013,7 @@
 				32B4D71C2C7832E900CA4C40 /* EnglishExamViewController.swift in Sources */,
 				32C77FF72C18509A00F335FE /* ChatViewController.swift in Sources */,
 				32B4D70A2C742BA300CA4C40 /* SpeechTextDelegate.swift in Sources */,
-				328B31522C9BB4E900013CF8 /* AIAudioServiceManager.swift in Sources */,
+				328B31522C9BB4E900013CF8 /* AIAudioConversationManager.swift in Sources */,
 				32690FC62C3CE62A00700192 /* ImageFileHandler.swift in Sources */,
 				328B31412C97FF3400013CF8 /* AIServiceManager.swift in Sources */,
 				329B3F862C7C2F2E004D7570 /* TimerManager.swift in Sources */,

@@ -25,4 +25,8 @@ class AIChatManager {
         return service.chat(prompt: prompt, responseFormat: responseFormat)
     }
     
+    func translation(input: String, to language: NaturalLanguage) -> AnyPublisher<ChatMessage, Error> {
+        return service.translation(input: input, to: language)
+    }
+    
 }

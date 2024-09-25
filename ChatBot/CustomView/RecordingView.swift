@@ -80,14 +80,15 @@ class RecordingView: UIView, AVAudioRecorderDelegate {
     }
     
     @objc private func recordButtonTapped() {
+        isRecording.toggle()
         if isRecording {
-            startRecordingButton.setTitle("開始錄音", for: .normal)
+            startRecordingButton.setTitle("停止錄音", for: .normal)
             delegate?.startRecording()
         } else {
-            startRecordingButton.setTitle("停止錄音", for: .normal)
+            startRecordingButton.setTitle("開始錄音", for: .normal)
+            isVisible = false
             delegate?.stopRecording()
         }
-        isRecording.toggle()
     }
     
     

@@ -20,10 +20,10 @@ protocol AudioManagerDelegate: AnyObject {
 class AudioManager: NSObject, AVAudioRecorderDelegate {
     
     static let shared = AudioManager()
-    
+    private(set) var audioPlayer = AudioPlayer()
     private(set) var audioRecorder: AVAudioRecorder?
+    private(set) var speechManager = SpeechVoiceManager.shared
     private(set) var timer: Timer?
-    var audioPlayer: AVAudioPlayer?
     let settings = [
         AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
         AVSampleRateKey: 12000,
@@ -53,6 +53,20 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
     func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0].appendingPathComponent("conversationRecord")
+    }
+    
+    func deleteAllFilesInDirectory() {
+        let fileManager = FileManager.default
+        let directoryURL = getDocumentsDirectory()
+        do {
+            let fileURLs = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
+            for fileURL in fileURLs {
+                try fileManager.removeItem(at: fileURL)
+                print("Deleted file: \(fileURL)")
+            }
+        } catch {
+            print("Error while deleting files: \(error)")
+        }
     }
     
     func startRecording() {
@@ -125,5 +139,31 @@ class AudioManager: NSObject, AVAudioRecorderDelegate {
 }
 
 extension AudioManager : AudioPlayProtocol {
+    
+    func speech(text: String) {
+        stopAudio()
+        speechManager.speak(text: text)
+    }
+    
+    func playAudio(from url: URL, repeatPlayback: Bool = false) {
+        stopAudio()
+        audioPlayer.playAudio(from: url, repeatPlayback: repeatPlayback)
+    }
+    
+    func pauseAudio() {
+        audioPlayer.pauseAudio()
+        speechManager.pause()
+    }
+    
+    func resumeAudio() {
+        audioPlayer.resumeAudio()
+        speechManager.resume()
+    }
+    
+    func stopAudio() {
+        audioPlayer.stopAudio()
+        speechManager.stop()
+    }
+    
     
 }

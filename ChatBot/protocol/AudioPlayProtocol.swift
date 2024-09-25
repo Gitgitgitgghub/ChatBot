@@ -9,9 +9,8 @@ import Foundation
 import AVFoundation
 
 protocol AudioPlayProtocol: AnyObject {
-    
-    var audioPlayer: AVAudioPlayer? { set get }
-    
+    /// 播放文字
+    func speech(text: String)
     /// 播放音頻
     func playAudio(from url: URL, repeatPlayback: Bool)
     /// 暫停播放
@@ -22,7 +21,9 @@ protocol AudioPlayProtocol: AnyObject {
     func stopAudio()
 }
 
-extension AudioPlayProtocol {
+class AudioPlayer {
+    
+    var audioPlayer: AVAudioPlayer?
     
     // 播放音頻
     func playAudio(from url: URL, repeatPlayback: Bool = false) {
@@ -31,7 +32,6 @@ extension AudioPlayProtocol {
             audioPlayer?.prepareToPlay()
             // 設置是否重複播放
             audioPlayer?.numberOfLoops = repeatPlayback ? -1 : 0
-
             audioPlayer?.play()
             print("正在播放音頻：\(url)")
         } catch {
@@ -60,5 +60,4 @@ extension AudioPlayProtocol {
         audioPlayer?.stop()
         print("音頻停止")
     }
-    
 }
