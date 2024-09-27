@@ -20,6 +20,10 @@ class LoginViewModel: BaseViewModel<LoginViewModel.InputEvent, LoginViewModel.Ou
         setupBindings()
     }
     
+    required init() {
+        fatalError("init() has not been implemented")
+    }
+    
     deinit {
         unbindings()
         print("LoginViewModel deinit")

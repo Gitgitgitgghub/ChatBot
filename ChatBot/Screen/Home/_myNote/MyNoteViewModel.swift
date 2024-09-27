@@ -22,21 +22,15 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
     
     @Published var myNotes: [MyNote] = []
     
-    func bind() {
-        inputSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .fetchAllNote:
-                    self.fetchAllNote()
-                case .deleteNote(indexPath: let indexPath):
-                    self.deleteNote(indexPath: indexPath)
-                case .addNote(let title, attributedString: let attributedString):
-                    self.addNote(title: title, attributedString: attributedString)
-                }
-            }
-            .store(in: &subscriptions)
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .fetchAllNote:
+            self.fetchAllNote()
+        case .deleteNote(indexPath: let indexPath):
+            self.deleteNote(indexPath: indexPath)
+        case .addNote(let title, attributedString: let attributedString):
+            self.addNote(title: title, attributedString: attributedString)
+        }
     }
     
     private func addNote(title: String?, attributedString: NSAttributedString?) {
@@ -46,12 +40,12 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
             .sink { [weak self] completion in
                 switch completion {
                 case .failure(let error):
-                    self?.outputSubject.send(.toast(message: "新增筆記失敗：\(error.localizedDescription)", reload: false))
+                    self?.sendOutputEvent(.toast(message: "新增筆記失敗：\(error.localizedDescription)", reload: false))
                 case .finished: break
                 }
                 
             } receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.toast(message: "新增筆記成功", reload: false))
+                self?.sendOutputEvent(.toast(message: "新增筆記成功", reload: false))
             }
             .store(in: &subscriptions)
     }
@@ -66,7 +60,7 @@ class MyNoteViewModel: BaseViewModel<MyNoteViewModel.InputEvent, MyNoteViewModel
                 
             } receiveValue: { [weak self] _ in
                 self?.myNotes.removeAll(where: { $0.id == id })
-                self?.outputSubject.send(.toast(message: "刪除成功 ！", reload: true))
+                self?.sendOutputEvent(.toast(message: "刪除成功 ！", reload: true))
             }
             .store(in: &subscriptions)
     }

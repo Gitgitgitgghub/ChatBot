@@ -33,19 +33,15 @@ class TextEditorViewModel: BaseViewModel<TextEditorViewModel.InputEvent, TextEdi
         return .systemFont(ofSize: 16)
     }
     
-    func bindInputEvent() {
-        inputSubject
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .addAttribute(key: let key, value: let value):
-                    self.addAttribute(key: key, value: value)
-                case .toggleActionButton(indexPath: let indexPath):
-                    self.toggleActionButton(indexPath: indexPath)
-                case .reapplyTypingAttributes:
-                    self.reapplyTypingAttributes()
-                }
-            }.store(in: &subscriptions)
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .addAttribute(key: let key, value: let value):
+            self.addAttribute(key: key, value: value)
+        case .toggleActionButton(indexPath: let indexPath):
+            self.toggleActionButton(indexPath: indexPath)
+        case .reapplyTypingAttributes:
+            self.reapplyTypingAttributes()
+        }
     }
     
     private func reapplyTypingAttributes() {
@@ -57,7 +53,7 @@ class TextEditorViewModel: BaseViewModel<TextEditorViewModel.InputEvent, TextEdi
             typingAttributes[attribute] = value
             handleFontChange(key: attribute, value: value)
         }
-        outputSubject.send(.typingAttributesChange(typingAttributes: typingAttributes))
+        sendOutputEvent(.typingAttributesChange(typingAttributes: typingAttributes))
     }
     
     /// 把關於字體相關的參數更新到actions ui上
@@ -74,7 +70,7 @@ class TextEditorViewModel: BaseViewModel<TextEditorViewModel.InputEvent, TextEdi
             actionUIStatusModel.fontName = font.familyName
         default: return
         }
-        outputSubject.send(.actionUIChange)
+        sendOutputEvent(.actionUIChange)
     }
     
     func findActionIndex(targetAction: Action) -> Int? {
@@ -104,7 +100,7 @@ class TextEditorViewModel: BaseViewModel<TextEditorViewModel.InputEvent, TextEdi
     /// 處理有切換狀態的按鈕
     private func toggleActionButton(indexPath: IndexPath) {
         actionUIStatusModel.toggleActionButton(selectedAction: actions[indexPath.item])
-        outputSubject.send(.actionUIChange)
+        sendOutputEvent(.actionUIChange)
     }
     
     /// 取得該顯示的字型

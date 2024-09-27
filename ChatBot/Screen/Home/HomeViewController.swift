@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 
-class HomeViewController: BaseUIViewController {
+class HomeViewController: UIViewController {
     
     private lazy var views = HomeViews(view: self.view)
     

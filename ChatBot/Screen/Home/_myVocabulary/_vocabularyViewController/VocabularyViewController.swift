@@ -8,17 +8,16 @@
 import Foundation
 import UIKit
 
-class VocabularyViewController: BaseUIViewController {
+class VocabularyViewController: BaseUIViewController<VocabularyViewModel> {
 
-    private let viewModel: VocabularyViewModel
+   
     private lazy var views = VocabularyViews(view: self.view)
     private var pagerView: FSPagerView {
         return views.pagerView
     }
     
     init(vocabularies: [VocabularyModel], startIndex: Int) {
-        self.viewModel = .init(vocabularies: vocabularies, startIndex: startIndex)
-        super.init(nibName: nil, bundle: nil)
+        super.init(viewModel: .init(vocabularies: vocabularies, startIndex: startIndex))
     }
     
     required init?(coder: NSCoder) {
@@ -28,8 +27,7 @@ class VocabularyViewController: BaseUIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
-        bind()
-        viewModel.transform(inputEvent: .initialVocabularies)
+        sendInputEvent(.initialVocabularies)
     }
     
     private func initUI() {
@@ -43,36 +41,28 @@ class VocabularyViewController: BaseUIViewController {
     }
     
     @objc private func starButtonClicked() {
-        viewModel.transform(inputEvent: .toggleStar(index: pagerView.currentIndex))
+        sendInputEvent(.toggleStar(index: pagerView.currentIndex))
     }
     
     @objc private func moreButtonClicked() {
-        viewModel.transform(inputEvent: .fetchMoreSentence(index: pagerView.currentIndex))
+        sendInputEvent(.fetchMoreSentence(index: pagerView.currentIndex))
     }
     
-    private func bind() {
-        viewModel.bindInput()
-        viewModel.outputSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .toast(message: let message):
-                    self.showToast(message: message)
-                case .changeTitle(title: let title):
-                    self.title = title
-                case .updateStar(isStar: let isStar):
-                    self.updateStar(isStar: isStar)
-                case .reloadUI(scrollTo: let scrollTo, isStar: let isStar):
-                    self.updateUI(scrollTo: scrollTo, isStar: isStar)
-                }
-            }
-            .store(in: &subscriptions)
-        viewModel.loadingStatus
-            .sink { [weak self] status in
-                self?.views.showLoadingView(status: status, with: "讀取中...")
-            }
-            .store(in: &subscriptions)
+    override func handleOutputEvent(_ outputEvent: VocabularyViewModel.OutputEvent) {
+        switch outputEvent {
+        case .toast(message: let message):
+            self.showToast(message: message)
+        case .changeTitle(title: let title):
+            self.title = title
+        case .updateStar(isStar: let isStar):
+            self.updateStar(isStar: isStar)
+        case .reloadUI(scrollTo: let scrollTo, isStar: let isStar):
+            self.updateUI(scrollTo: scrollTo, isStar: isStar)
+        }
+    }
+    
+    override func onLoadingStatusChanged(status: LoadingStatus) {
+        views.showLoadingView(status: status, with: "讀取中...")
     }
     
     private func updateStar(isStar: Bool) {
@@ -94,7 +84,7 @@ extension VocabularyViewController: FSPagerViewDelegate, FSPagerViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         guard let index = indexPaths.last?.item else { return }
-        viewModel.transform(inputEvent: .fetchVocabularies(index: index))
+        sendInputEvent(.fetchVocabularies(index: index))
     }
     
     func numberOfItems(in pagerView: FSPagerView) -> Int {
@@ -108,6 +98,6 @@ extension VocabularyViewController: FSPagerViewDelegate, FSPagerViewDataSource, 
     }
     
     func pagerViewDidEndDecelerating(_ pagerView: FSPagerView) {
-        viewModel.transform(inputEvent: .currentIndexChange(index: pagerView.currentIndex))
+        sendInputEvent(.currentIndexChange(index: pagerView.currentIndex))
     }
 }

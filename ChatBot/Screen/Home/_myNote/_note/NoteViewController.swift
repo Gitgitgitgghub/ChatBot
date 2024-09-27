@@ -10,15 +10,13 @@ import UIKit
 import GRDB
   
 
-class NoteViewController: BaseUIViewController {
+class NoteViewController: BaseUIViewController<NoteViewModel> {
     
-    private(set) var myNote: MyNote
-    private lazy var viewModel = NoteViewModel(myNote: self.myNote)
+
     private lazy var views = NoteViews(view: self.view)
     
     init(myNote: MyNote) {
-        self.myNote = myNote
-        super.init(nibName: nil, bundle: nil)
+        super.init(viewModel: .init(myNote: myNote))
     }
     
     required init?(coder: NSCoder) {
@@ -45,18 +43,36 @@ class NoteViewController: BaseUIViewController {
     @objc private func rightItemButtonClick() {
         let vc = UIAlertController(title: "你想要？", message: nil, preferredStyle: .actionSheet)
         vc.addAction(.init(title: "刪除筆記", style: .default, handler: { action in
-            self.viewModel.transform(inputEvent: .deleteNote)
+            self.sendInputEvent(.deleteNote)
         }))
         vc.addAction(.init(title: "取消", style: .cancel))
         present(vc, animated: true)
     }
     
     @objc private func addComment() {
-        viewModel.transform(inputEvent: .addComment)
+        sendInputEvent(.addComment)
+    }
+    
+    override func handleOutputEvent(_ outputEvent: NoteViewModel.OutputEvent) {
+        switch outputEvent {
+        case .toast(message: let message, reload: let reload):
+            self.showToast(message: message)
+            if reload {
+                self.views.tableView.reloadData()
+            }
+        case .openEditor(editData: let editData, isNote: let isEditNote, useHtmlEdotir: let useHtmlEdotir):
+            self.openEditorVc(isHtml: useHtmlEdotir, editData: editData, isEditNote: isEditNote)
+        case .deleteNoteSuccess:
+            self.showToast(message: "刪除成功，１秒後反回上一頁", autoDismiss: 1) { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            }
+        case .deleteCommentSuccess:
+            self.showToast(message: "刪除筆記成功", autoDismiss: 1)
+            self.views.tableView.reloadSections(.init(integer: 1), with: .automatic)
+        }
     }
     
     private func bind() {
-        viewModel.bind()
         viewModel.$myNote
             .receive(on: RunLoop.main)
             .sink { [weak self] myNote in
@@ -65,35 +81,13 @@ class NoteViewController: BaseUIViewController {
                 self.views.tableView.reloadData()
             }
             .store(in: &subscriptions)
-        viewModel.outputSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .toast(message: let message, reload: let reload):
-                    self.showToast(message: message)
-                    if reload {
-                        self.views.tableView.reloadData()
-                    }
-                case .openEditor(editData: let editData, isNote: let isEditNote, useHtmlEdotir: let useHtmlEdotir):
-                    self.openEditorVc(isHtml: useHtmlEdotir, editData: editData, isEditNote: isEditNote)
-                case .deleteNoteSuccess:
-                    self.showToast(message: "刪除成功，１秒後反回上一頁", autoDismiss: 1) { [weak self] in
-                        self?.navigationController?.popViewController(animated: true)
-                    }
-                case .deleteCommentSuccess:
-                    self.showToast(message: "刪除筆記成功", autoDismiss: 1)
-                    self.views.tableView.reloadSections(.init(integer: 1), with: .automatic)
-                }
-            }
-            .store(in: &subscriptions)
     }
     
     /// 開啟編輯畫面
     private func openEditorVc(isHtml: Bool, editData: Data?, isEditNote: Bool) {
         if isHtml {
             let vc = ScreenLoader.loadScreen(screen: .HTMLEditor(content: editData, inputBackgroundColor:  SystemDefine.Message.aiMgsBackgroundColor, completion: { [weak self] result in
-                self?.viewModel.transform(inputEvent: .modifyNote(attr: result))
+                self?.sendInputEvent(.modifyNote(attr: result))
             }))
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true)
@@ -108,7 +102,7 @@ class NoteViewController: BaseUIViewController {
 extension NoteViewController: TextEditorViewControllerDelegate {
     
     func onSave(title: String?, attributedString: NSAttributedString?) {
-        viewModel.transform(inputEvent: .modifyNote(attr: attributedString))
+        sendInputEvent(.modifyNote(attr: attributedString))
     }
     
 }
@@ -148,9 +142,9 @@ extension NoteViewController: UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: false)
         switch viewModel.sections[indexPath.section] {
         case .note:
-            viewModel.transform(inputEvent: .editNote)
+            sendInputEvent(.editNote)
         case .comment:
-            viewModel.transform(inputEvent: .editComment(indexPath: indexPath))
+            sendInputEvent(.editComment(indexPath: indexPath))
         }
     }
     
@@ -161,7 +155,7 @@ extension NoteViewController: UITableViewDataSource, UITableViewDelegate {
             return nil
         case .comment:
             let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { (action, view, completionHandler) in
-                self.viewModel.transform(inputEvent: .deleteComment(indexPath: indexPath))
+                self.sendInputEvent(.deleteComment(indexPath: indexPath))
                 completionHandler(true)
             }
             return .init(actions: [deleteAction])

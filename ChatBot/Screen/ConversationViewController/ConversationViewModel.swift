@@ -44,26 +44,25 @@ class ConversationViewModel: BaseViewModel<ConversationViewModel.InputEvent, Con
         initialScenario(initialScenario: scenario)
     }
     
-    func bindInputEvent() {
-        inputSubject
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .startRecording:
-                    self.controlRecorder(isStart: true)
-                case .stopRecording:
-                    self.controlRecorder(isStart: false)
-                case .userInput(input: let input):
-                    self.userInput(input: input)
-                case .playAudio(indexPath: let indexPath):
-                    self.playAudio(indexPath: indexPath)
-                case .release:
-                    self.release()
-                case .hintButtonClicked(indexPath: let indexPath):
-                    self.hintButtonClicked(indexPath: indexPath)
-                }
-            }
-            .store(in: &subscriptions)
+    required init() {
+        fatalError("init() has not been implemented")
+    }
+    
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .startRecording:
+            self.controlRecorder(isStart: true)
+        case .stopRecording:
+            self.controlRecorder(isStart: false)
+        case .userInput(input: let input):
+            self.userInput(input: input)
+        case .playAudio(indexPath: let indexPath):
+            self.playAudio(indexPath: indexPath)
+        case .release:
+            self.release()
+        case .hintButtonClicked(indexPath: let indexPath):
+            self.hintButtonClicked(indexPath: indexPath)
+        }
     }
     
     private func hintButtonClicked(indexPath: IndexPath) {
@@ -72,7 +71,7 @@ class ConversationViewModel: BaseViewModel<ConversationViewModel.InputEvent, Con
             .sink { _ in
                 
             } receiveValue: { [weak self] chatMessage in
-                self?.outputSubject.send(.showTranslation(translation: chatMessage.message))
+                self?.sendOutputEvent(.showTranslation(translation: chatMessage.message))
             }
             .store(in: &subscriptions)
     }
@@ -89,7 +88,7 @@ class ConversationViewModel: BaseViewModel<ConversationViewModel.InputEvent, Con
                 guard let `self` = self else { return }
                 self.playAudio(audioResult: result)
                 self.handleResponse(audioResults: [result])
-                self.outputSubject.send(.showScenario(scenario: conversationManager.scenario))
+                self.sendOutputEvent(.showScenario(scenario: conversationManager.scenario))
             }
             .store(in: &subscriptions)
     }
@@ -105,7 +104,7 @@ class ConversationViewModel: BaseViewModel<ConversationViewModel.InputEvent, Con
             audioResult.printResult()
         }
         self.audioResults.append(contentsOf: audioResults)
-        outputSubject.send(.reloadData)
+        sendOutputEvent(.reloadData)
     }
     
     /// 用輸入匡模擬講話(測試用)
@@ -162,7 +161,7 @@ extension ConversationViewModel: AudioManagerDelegate {
     }
     
     func volumeChanged(decibels: Float) {
-        outputSubject.send(.volumeChanged(value: decibels))
+        sendOutputEvent(.volumeChanged(value: decibels))
     }
     
     

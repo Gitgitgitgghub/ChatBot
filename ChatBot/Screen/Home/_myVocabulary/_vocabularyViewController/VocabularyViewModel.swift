@@ -41,28 +41,27 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
         self.currentIndex = startIndex
     }
     
+    required init() {
+        fatalError("init() has not been implemented")
+    }
+    
     deinit {
         cacheManager.clearCache()
     }
     
-    func bindInput() {
-        inputSubject
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .fetchVocabularies(let index):
-                    self.fetchVocabularies(index: index)
-                case .initialVocabularies:
-                    self.initialVocabularies()
-                case .currentIndexChange(index: let index):
-                    self.currentIndexChange(index: index)
-                case .toggleStar(index: let index):
-                    self.toggleStar(index: index)
-                case .fetchMoreSentence(index: let index):
-                    self.fetchMoreSentence(index: index)
-                }
-            }
-            .store(in: &subscriptions)
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .fetchVocabularies(let index):
+            self.fetchVocabularies(index: index)
+        case .initialVocabularies:
+            self.initialVocabularies()
+        case .currentIndexChange(index: let index):
+            self.currentIndexChange(index: index)
+        case .toggleStar(index: let index):
+            self.toggleStar(index: index)
+        case .fetchMoreSentence(index: let index):
+            self.fetchMoreSentence(index: index)
+        }
     }
     
     /// 切換星星
@@ -73,10 +72,10 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
                     vocabulary.isStar.toggle()
-                    self?.outputSubject.send(.toast(message: "操作失敗：\(error.localizedDescription)"))
+                    self?.sendOutputEvent(.toast(message: "操作失敗：\(error.localizedDescription)"))
                 }
             } receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.updateStar(isStar: vocabulary.isStar))
+                self?.sendOutputEvent(.updateStar(isStar: vocabulary.isStar))
             }
             .store(in: &subscriptions)
     }
@@ -99,8 +98,8 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
         let suffix = vocabularies.first?.wordEntry.word.first?.uppercased() ?? ""
         let total = vocabularies.count
         let index = currentIndex + 1
-        outputSubject.send(.changeTitle(title: prefix + suffix + ":" + "(\(index)/\(total))"))
-        outputSubject.send(.updateStar(isStar: vocabularies[currentIndex].isStar))
+        sendOutputEvent(.changeTitle(title: prefix + suffix + ":" + "(\(index)/\(total))"))
+        sendOutputEvent(.updateStar(isStar: vocabularies[currentIndex].isStar))
     }
     
     private func currentIndexChange(index: Int) {
@@ -121,7 +120,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
         setupFetchWordDetailsPipeline()
         fetchVocabularies(index: startIndex)
         displayEnable = true
-        outputSubject.send(.reloadUI(scrollTo: startIndex, isStar: vocabularies[startIndex].isStar))
+        sendOutputEvent(.reloadUI(scrollTo: startIndex, isStar: vocabularies[startIndex].isStar))
         updateUI()
     }
     
@@ -193,7 +192,7 @@ class VocabularyViewModel: BaseViewModel<VocabularyViewModel.InputEvent, Vocabul
     
     private func reloadCurrentIndex(index: Int) {
         guard index == currentIndex else { return }
-        outputSubject.send(.reloadUI(isStar: vocabularies[index].isStar))
+        sendOutputEvent(.reloadUI(isStar: vocabularies[index].isStar))
     }
     
     /// 處理ai回覆的資料

@@ -9,17 +9,24 @@ import UIKit
 import Combine
 import OpenAI
 
-class LoginViewController: BaseUIViewController {
+class LoginViewController: BaseUIViewController<LoginViewModel> {
     
     private lazy var views = LogingViews(view: self.view)
-    private lazy var viewModel = LoginViewModel(validation: UserValidation())
     var loginMethod: LogingMethod = .account
     /// 登入方式
     enum LogingMethod {
         case account
         case key
     }
-
+    
+    override init() {
+        super.init(viewModel: .init(validation: .init()))
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
@@ -40,6 +47,17 @@ class LoginViewController: BaseUIViewController {
         views.platformButton.addTarget(self, action: #selector(swtichPlatform), for: .touchUpInside)
     }
     
+    override func onLoadingStatusChanged(status: LoadingStatus) {
+        views.showLoadingView(status: status)
+        switch status {
+        case .error(error: let error):
+            loginFailed(errorMessage: error.localizedDescription)
+        case .success:
+            loginSuccess()
+        default: break
+        }
+    }
+    
     private func bind() {
         viewModel.validation.$isLoginButtonEnabled
             .sink { [weak self] isEnable in
@@ -49,19 +67,6 @@ class LoginViewController: BaseUIViewController {
         viewModel.validation.$errorMessage
             .sink { [weak self] errorMessgae in
                 self?.views.errorLabel.text = errorMessgae
-            }
-            .store(in: &subscriptions)
-        viewModel.loadingStatus
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                self?.views.showLoadingView(status: status)
-                switch status {
-                case .error(error: let error):
-                    self?.loginFailed(errorMessage: error.localizedDescription)
-                case .success:
-                    self?.loginSuccess()
-                default: break
-                }
             }
             .store(in: &subscriptions)
         viewModel.validation.$loginMethod

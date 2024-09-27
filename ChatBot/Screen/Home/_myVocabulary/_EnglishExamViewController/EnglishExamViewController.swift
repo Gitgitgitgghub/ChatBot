@@ -9,17 +9,15 @@ import Foundation
 import UIKit
 
 
-class EnglishExamViewController: BaseUIViewController {
+class EnglishExamViewController: BaseUIViewController<EnglishExamViewModel> {
     
-    private let viewModel: EnglishExamViewModel
     private lazy var views = EnglishExamViews(view: self.view, questionType: self.viewModel.questionType)
     private var pagerView: FSPagerView {
         return views.pagerView
     }
     
     init(questionType: SystemDefine.EnglishExam.QuestionType, vocabularies: [VocabularyModel]) {
-        self.viewModel = .init(questionType: questionType, vocabularies: vocabularies)
-        super.init(nibName: nil, bundle: nil)
+        super.init(viewModel: .init(questionType: questionType, vocabularies: vocabularies))
     }
     
     required init?(coder: NSCoder) {
@@ -30,7 +28,7 @@ class EnglishExamViewController: BaseUIViewController {
         super.viewDidLoad()
         initUI()
         bind()
-        viewModel.transform(inputEvent: .fetchQuestion)
+        sendInputEvent(.fetchQuestion)
     }
     
     private func initUI() {
@@ -43,42 +41,38 @@ class EnglishExamViewController: BaseUIViewController {
     }
     
     @objc private func paustExam() {
-        viewModel.transform(inputEvent: .pauseExam)
+        sendInputEvent(.pauseExam)
     }
     
     @objc private func addNote() {
-        viewModel.transform(inputEvent: .addToNote)
+        sendInputEvent(.addToNote)
+    }
+    
+    override func handleOutputEvent(_ outputEvent: EnglishExamViewModel.OutputEvent) {
+        switch outputEvent {
+        case .indexChange(let newIndex):
+            self.indexChange(newIndex: newIndex)
+        case .scrollToNextQuestion(let index):
+            self.pagerView.scrollToItem(at: index, animated: true)
+        case .updateTimer(string: let string):
+            self.views.timerLabel.attributedText = string
+        case .toast(message: let message):
+            self.showToast(message: message) { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            }
+        }
+    }
+    
+    override func onLoadingStatusChanged(status: LoadingStatus) {
+        views.showLoadingView(status: status, with: "AI正在產生題目中")
     }
     
     private func bind() {
-        viewModel.bindInputEvent()
-        viewModel.outputSubject
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .indexChange(let newIndex):
-                    self.indexChange(newIndex: newIndex)
-                case .scrollToNextQuestion(let index):
-                    self.pagerView.scrollToItem(at: index, animated: true)
-                case .updateTimer(string: let string):
-                    self.views.timerLabel.attributedText = string
-                case .toast(message: let message):
-                    self.showToast(message: message) { [weak self] in
-                        self?.navigationController?.popViewController(animated: true)
-                    }
-                }
-            }
-            .store(in: &subscriptions)
         viewModel.$examState
             .sink { [weak self] state in
                 self?.examState(state: state)
                 self?.setAddNoteButtonVisible(state: state)
                 self?.updatePauseButtonUI(state: state)
-            }
-            .store(in: &subscriptions)
-        viewModel.loadingStatus
-            .sink { [weak self] status in
-                self?.views.showLoadingView(status: status, with: "AI正在產生題目中")
             }
             .store(in: &subscriptions)
     }
@@ -95,7 +89,7 @@ class EnglishExamViewController: BaseUIViewController {
             let vc = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
             vc.message = "點擊恢復考試"
             vc.addAction(.init(title: "恢復考試", style: .default, handler: { _ in
-                self.viewModel.transform(inputEvent: .startExam)
+                self.sendInputEvent(.startExam)
             }))
             vc.addAction(.init(title: "放棄離開", style: .destructive, handler: { _ in
                 self.navigationController?.popViewController(animated: true)
@@ -114,7 +108,7 @@ class EnglishExamViewController: BaseUIViewController {
         let vc = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
         vc.message = "點擊開始考試"
         vc.addAction(.init(title: "開始考試", style: .default, handler: { _ in
-            self.viewModel.transform(inputEvent: .startExam)
+            self.sendInputEvent(.startExam)
         }))
         present(vc, animated: true)
         views.pauseButton.isEnabled = true
@@ -147,12 +141,12 @@ class EnglishExamViewController: BaseUIViewController {
         let vc = UIAlertController(title: "答題結果", message: message, preferredStyle: .alert)
         if wrongCount > 0 {
             vc.addAction(.init(title: "重做錯題", style: .default, handler: { _ in
-                self.viewModel.transform(inputEvent: .retakeExam)
+                self.sendInputEvent(.retakeExam)
                 self.pagerView.scrollToItem(at: 0, animated: false)
             }))
         }
         vc.addAction(.init(title: "查看解答", style: .default, handler: { _ in
-            self.viewModel.transform(inputEvent: .switchAnswerMode)
+            self.sendInputEvent(.switchAnswerMode)
         }))
         vc.addAction(.init(title: "離開", style: .destructive, handler: { _ in
             self.navigationController?.popViewController(animated: true)
@@ -166,7 +160,7 @@ class EnglishExamViewController: BaseUIViewController {
 extension EnglishExamViewController: QuestionCardDelegate {
     
     func onOptionSelected(question: EnglishExamQuestion, selectedOption: String?) {
-        viewModel.transform(inputEvent: .onOptionSelected(question: question, selectedOption: selectedOption))
+        sendInputEvent(.onOptionSelected(question: question, selectedOption: selectedOption))
     }
     
 }
@@ -175,7 +169,7 @@ extension EnglishExamViewController: QuestionCardDelegate {
 extension EnglishExamViewController: FSPagerViewDelegate, FSPagerViewDataSource {
     
     func pagerViewDidEndDecelerating(_ pagerView: FSPagerView) {
-        viewModel.transform(inputEvent: .currentIndexChange(currentIndex: pagerView.currentIndex))
+        sendInputEvent(.currentIndexChange(currentIndex: pagerView.currentIndex))
     }
     
     func numberOfItems(in pagerView: FSPagerView) -> Int {
@@ -186,7 +180,7 @@ extension EnglishExamViewController: FSPagerViewDelegate, FSPagerViewDataSource 
         guard let cell = pagerView.dequeueReusableCell(withReuseIdentifier: EnglishExamViews.VocabularyExamQuestionCell.self.className, at: index) as? EnglishExamViews.VocabularyExamQuestionCell else {
             return FSPagerViewCell()
         }
-        viewModel.transform(inputEvent: .currentIndexChange(currentIndex: index))
+        sendInputEvent(.currentIndexChange(currentIndex: index))
         cell.bindEnglishQuestion(question: viewModel.questions[index], isAnswerMode: viewModel.examState == .answerMode)
         cell.delegate = self
         return cell

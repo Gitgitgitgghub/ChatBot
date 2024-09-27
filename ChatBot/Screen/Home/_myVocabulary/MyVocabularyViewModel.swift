@@ -55,28 +55,26 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
     private let searchSubject = CurrentValueSubject<String, Never>("")
     private(set) var displayMode: DisplayMode = .normalMode
     
-    
-    func bindInputEvent() {
-        inputSubject
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .initialVocabulary:
-                    self.initialVocabulary()
-                case .toggleExpanding(section: let section):
-                    self.toggleExpanding(section: section)
-                case .toggleStar(indexPath: let indexPath):
-                    self.toggleStar(indexPath: indexPath)
-                case .reloadExpandingSection:
-                    self.reloadExpandingSection()
-                case .searchVocabularyDatabase(text: let text):
-                    self.searchVocabulary(text: text)
-                case .fetchVocabularyModel(let word):
-                    self.fetchVocabularyModel(word: word)
-                }
-            }
-            .store(in: &subscriptions)
+    required init() {
+        super.init()
         setupSearchPipeline()
+    }
+    
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .initialVocabulary:
+            self.initialVocabulary()
+        case .toggleExpanding(section: let section):
+            self.toggleExpanding(section: section)
+        case .toggleStar(indexPath: let indexPath):
+            self.toggleStar(indexPath: indexPath)
+        case .reloadExpandingSection:
+            self.reloadExpandingSection()
+        case .searchVocabularyDatabase(text: let text):
+            self.searchVocabulary(text: text)
+        case .fetchVocabularyModel(let word):
+            self.fetchVocabularyModel(word: word)
+        }
     }
     
     func toggleStar(indexPath: IndexPath) {
@@ -86,10 +84,10 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
                     vocabulary.isStar.toggle()
-                    self?.outputSubject.send(.toast(message: "操作失敗：\(error.localizedDescription)"))
+                    self?.sendOutputEvent(.toast(message: "操作失敗：\(error.localizedDescription)"))
                 }
             } receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.reloadRows(indexPath: [indexPath]))
+                self?.sendOutputEvent(.reloadRows(indexPath: [indexPath]))
             }
             .store(in: &subscriptions)
     }
@@ -99,7 +97,7 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         case .normalMode:
             guard let expandingIndex = sectionDatas.firstIndex(where: { $0.isExpanding }) else { return }
             fetchExpandingSectionVocabulary(expandingIndex: expandingIndex) { [weak self] in
-                self?.outputSubject.send(.reloadSections(sections: [expandingIndex]))
+                self?.sendOutputEvent(.reloadSections(sections: [expandingIndex]))
             }
         case .searchMode:
             searchVocabulary(text: searchSubject.value)
@@ -133,10 +131,10 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
         if willExpandingSection >= 0 {
             reloadSections.append(willExpandingSection)
             fetchExpandingSectionVocabulary(expandingIndex: willExpandingSection) { [weak self] in
-                self?.outputSubject.send(.reloadSections(sections: reloadSections))
+                self?.sendOutputEvent(.reloadSections(sections: reloadSections))
             }
         }else {
-            outputSubject.send(.reloadSections(sections: reloadSections))
+            sendOutputEvent(.reloadSections(sections: reloadSections))
         }
     }
     
@@ -163,7 +161,7 @@ class MyVocabularyViewModel: BaseViewModel<MyVocabularyViewModel.InputEvent, MyV
             } receiveValue: { [weak self] sectionDataArray in
                 guard let `self` = self else { return }
                 self.sectionDatas = sectionDataArray
-                self.outputSubject.send(.reloadAll)
+                self.sendOutputEvent(.reloadAll)
             }
             .store(in: &subscriptions)
     }
@@ -204,8 +202,8 @@ extension MyVocabularyViewModel {
     private func searchVocabulary(text: String) {
         if text.isEmpty {
             displayMode = .normalMode
-            outputSubject.send(.reloadAll)
-            self.outputSubject.send(.setEmptyButtonVisible(isVisible: false))
+            sendOutputEvent(.reloadAll)
+            self.sendOutputEvent(.setEmptyButtonVisible(isVisible: false))
         }else {
             displayMode = .searchMode
             searchSubject.send(text)
@@ -221,8 +219,8 @@ extension MyVocabularyViewModel {
             } receiveValue: { [weak self] vocabularies in
                 guard let `self` = self else { return }
                 self.searchDatas = vocabularies
-                self.outputSubject.send(.reloadAll)
-                self.outputSubject.send(.setEmptyButtonVisible(isVisible: vocabularies.isEmpty))
+                self.sendOutputEvent(.reloadAll)
+                self.sendOutputEvent(.setEmptyButtonVisible(isVisible: vocabularies.isEmpty))
                 completion?(vocabularies.isEmpty)
             }
             .store(in: &subscriptions)
@@ -239,7 +237,7 @@ extension MyVocabularyViewModel {
                         .sink { [weak self] completion in
                             if case .failure(let failure) = completion {
                                 print("fetchVocabularyData failure: \(failure.localizedDescription)")
-                                self?.outputSubject.send(.toast(message: failure.localizedDescription))
+                                self?.sendOutputEvent(.toast(message: failure.localizedDescription))
                             }
                         } receiveValue: { vocabularyModel in
                             self.fetchVocabularyComplete(vocabularyModel: vocabularyModel)
@@ -259,7 +257,7 @@ extension MyVocabularyViewModel {
             .sink { [weak self] completion in
                 if case .failure(let failure) = completion {
                     print("checkSpellingAndFetchVocabularyModel failure: \(failure.localizedDescription)")
-                    self?.outputSubject.send(.toast(message: failure.localizedDescription))
+                    self?.sendOutputEvent(.toast(message: failure.localizedDescription))
                 }
             } receiveValue: { [weak self] result in
                 guard let `self` = self else { return }
@@ -268,9 +266,9 @@ extension MyVocabularyViewModel {
                     self.fetchVocabularyComplete(vocabularyModel: vocabularyModel)
                 case .failure(let error):
                     if case .wordNotFound(let suggestion) = error {
-                        self.outputSubject.send(.wordNotFound(sggestion: suggestion))
+                        self.sendOutputEvent(.wordNotFound(sggestion: suggestion))
                     }else {
-                        self.outputSubject.send(.toast(message: error.localizedDescription))
+                        self.sendOutputEvent(.toast(message: error.localizedDescription))
                     }
                 }
             }
@@ -287,8 +285,8 @@ extension MyVocabularyViewModel {
             }
             .store(in: &subscriptions)
         self.searchDatas = [vocabularyModel]
-        self.outputSubject.send(.reloadAll)
-        self.outputSubject.send(.setEmptyButtonVisible(isVisible: false))
+        self.sendOutputEvent(.reloadAll)
+        self.sendOutputEvent(.setEmptyButtonVisible(isVisible: false))
     }
     
 }

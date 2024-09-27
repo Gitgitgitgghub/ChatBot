@@ -15,7 +15,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     
     /// 啟動模式
     @Published var chatLaunchMode: ChatViewController.ChatLaunchMode
-    @Published var inputMessage: String? = "mock"
+    @Published var inputMessage: String? = ""
     @Published var pickedImageInfo: [UIImagePickerController.InfoKey : Any]?
     /// 展示資料
     @Published var displayMessages: [ChatMessage] = []
@@ -52,6 +52,10 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         super.init()
         self.setupPreloadPipeline()
         self.handleLaunchMode()
+    }
+    
+    required init() {
+        fatalError("init() has not been implemented")
     }
     
     deinit {
@@ -105,26 +109,21 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         }
     }
     
-    func bindInput() {
-        inputSubject
-            .sink { [weak self] inputEvent in
-                guard let `self` = self else { return }
-                switch inputEvent {
-                case .sendMessage:
-                    self.sendMessageEvent()
-                case .createImage: break
-                case .editImage: break
-                case .preloadAttributedString(let startIndex):
-                    self.preloadAttributedStringEvent(startIndex: startIndex)
-                case .saveMessages:
-                    self.saveMessages()
-                case .retrySendMessage:
-                    self.retrySendMessage()
-                case .saveMessageToMyNote(let noteTitle, let indexPath):
-                    self.saveMessageToMyNote(noteTitle: noteTitle, indexPath: indexPath)
-                }
-            }
-            .store(in: &subscriptions)
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .sendMessage:
+            self.sendMessageEvent()
+        case .createImage: break
+        case .editImage: break
+        case .preloadAttributedString(let startIndex):
+            self.preloadAttributedStringEvent(startIndex: startIndex)
+        case .saveMessages:
+            self.saveMessages()
+        case .retrySendMessage:
+            self.retrySendMessage()
+        case .saveMessageToMyNote(let noteTitle, let indexPath):
+            self.saveMessageToMyNote(noteTitle: noteTitle, indexPath: indexPath)
+        }
     }
     
     func getAttributeString(index: Int) -> NSAttributedString? {
@@ -209,7 +208,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
                     .eraseToAnyPublisher()
             }
             .sink(receiveValue: { [weak self] indexs in
-                self?.outputSubject.send(.parseComplete(indexs: indexs.map{ IndexPath(row: $0, section: 0) }))
+                self?.sendOutputEvent(.parseComplete(indexs: indexs.map{ IndexPath(row: $0, section: 0) }))
             })
             .store(in: &subscriptions)
     }
@@ -233,12 +232,12 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             .sink { [weak self] completion in
                 switch completion {
                 case .failure(let error):
-                    self?.outputSubject.send(.saveChatMessageError(error: error))
+                    self?.sendOutputEvent(.saveChatMessageError(error: error))
                 case .finished: break
                 }
                 
             } receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.saveChatMessageSuccess)
+                self?.sendOutputEvent(.saveChatMessageSuccess)
             }
             .store(in: &subscriptions)
     }
@@ -254,19 +253,16 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
         defer {
             self.inputMessage = ""
         }
-        let publisher = appendInputMessage ? appendNewMessage(newMessage: chatMessage) : 
+        let publisher = appendInputMessage ? appendNewMessage(newMessage: chatMessage) :
         Just<Void>(())
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
-        for message in displayMessages {
-            print(message.role)
-        }
-        publisher
+        performAction(publisher
             .flatMap({ self.chatService.chat(messages: self.displayMessages) })
             .flatMap({ chatMessage in
                 print("回應訊息： \(String(describing: chatMessage.message))")
                 return self.appendNewMessage(newMessage: chatMessage)
-            })
+            }).eraseToAnyPublisher())
             .sink { _ in
                 
             } receiveValue: { _ in
@@ -293,7 +289,7 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
     /// 儲存聊天訊息
     private func saveMessages() {
         guard displayMessages.isNotEmpty else {
-            outputSubject.send(.saveChatMessageError(error: NSError(domain: "沒有聊天訊息", code: 1)))
+            sendOutputEvent(.saveChatMessageError(error: NSError(domain: "沒有聊天訊息", code: 1)))
             return
         }
         ChatRoomManager.shared.saveChatRoom(chatRoom, messages: displayMessages)
@@ -301,13 +297,14 @@ class ChatViewModel: BaseViewModel<ChatViewModel.InputEvent, ChatViewModel.OutPu
             .sink { [weak self] completion in
                 switch completion {
                 case .failure(let error):
-                    self?.outputSubject.send(.saveChatMessageError(error: error))
+                    self?.sendOutputEvent(.saveChatMessageError(error: error))
                 case .finished: break
                 }
                 
             } receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.saveChatMessageSuccess)
+                self?.sendOutputEvent(.saveChatMessageSuccess)
             }
             .store(in: &subscriptions)
     }
 }
+

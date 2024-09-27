@@ -8,21 +8,19 @@
 import Foundation
 import UIKit
 
-class HistoryViewController: BaseUIViewController {
+class HistoryViewController: BaseUIViewController<HistoryViewModel> {
     
     lazy var views = HistoryViews(view: self.view)
-    let viewModel = HistoryViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
-        viewModel.bind()
         bind()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.transform(inputEvent: .fetchChatRooms)
+        sendInputEvent(.fetchChatRooms)
     }
     
     private func initUI() {
@@ -30,6 +28,13 @@ class HistoryViewController: BaseUIViewController {
         views.tableView.dataSource = self
         views.tableView.register(cellType: HistoryViews.ChatRoomCell.self)
         views.editButton.addTarget(self, action: #selector(editButtonClicked), for: .touchUpInside)
+    }
+    
+    override func handleOutputEvent(_ outputEvent: HistoryViewModel.OutputEvent) {
+        switch outputEvent {
+        case .toast(let message, _):
+            self.showToast(message: message, autoDismiss: 1.5)
+        }
     }
     
     /// 綁定各種事件
@@ -42,22 +47,12 @@ class HistoryViewController: BaseUIViewController {
                 self.views.tableView.reloadData()
             }
             .store(in: &subscriptions)
-        viewModel.outputSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .toast(let message, _):
-                    self.showToast(message: message, autoDismiss: 1.5)
-                }
-            }
-            .store(in: &subscriptions)
     }
     
     @objc private func editButtonClicked() {
         let vc = UIAlertController(title: "你想要？", message: nil, preferredStyle: .actionSheet)
         vc.addAction(.init(title: "刪除所有聊天記錄", style: .default, handler: { action in
-            self.viewModel.transform(inputEvent: .deleteAllChatRoom)
+            self.sendInputEvent(.deleteAllChatRoom)
         }))
         vc.addAction(.init(title: "取消", style: .cancel))
         present(vc, animated: true)
@@ -88,7 +83,7 @@ extension HistoryViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { (action, view, completionHandler) in
-            self.viewModel.transform(inputEvent: .deleteChatRoom(indexPath: indexPath))
+            self.sendInputEvent(.deleteChatRoom(indexPath: indexPath))
             completionHandler(true)
         }
         return .init(actions: [deleteAction])

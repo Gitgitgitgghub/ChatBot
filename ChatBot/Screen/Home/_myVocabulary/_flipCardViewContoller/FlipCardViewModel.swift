@@ -30,23 +30,17 @@ class FlipCardViewModel: BaseViewModel<FlipCardViewModel.InputEvent, FlipCardVie
     private(set) var flippedStates: [Int: Bool] = [:]
     private let vocabularyManager = VocabularyManager.share
     
-    func bindInputEvent() {
-        inputSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .fetchVocabularies:
-                    self.fetchVocabularies()
-                case .flipCard(index: let index):
-                    self.flipCard(index: index)
-                case .currentPageChange(index: let index):
-                    self.currentPageChange(index: index)
-                case .toggleStar(let index):
-                    self.toggleStar(index: index)
-                }
-            }
-            .store(in: &subscriptions)
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .fetchVocabularies:
+            self.fetchVocabularies()
+        case .flipCard(index: let index):
+            self.flipCard(index: index)
+        case .currentPageChange(index: let index):
+            self.currentPageChange(index: index)
+        case .toggleStar(let index):
+            self.toggleStar(index: index)
+        }
     }
     
     private func currentPageChange(index: Int) {
@@ -68,10 +62,10 @@ class FlipCardViewModel: BaseViewModel<FlipCardViewModel.InputEvent, FlipCardVie
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
                     vocabulary.isStar.toggle()
-                    self?.outputSubject.send(.toast(message: "操作失敗：\(error.localizedDescription)"))
+                    self?.sendOutputEvent(.toast(message: "操作失敗：\(error.localizedDescription)"))
                 }
             } receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.reloadCurrent)
+                self?.sendOutputEvent(.reloadCurrent)
             }
             .store(in: &subscriptions)
     }
@@ -80,7 +74,7 @@ class FlipCardViewModel: BaseViewModel<FlipCardViewModel.InputEvent, FlipCardVie
         var current = flippedStates[index] ?? false
         current.toggle()
         flippedStates[index] = current
-        outputSubject.send(.flipCard(index: index))
+        sendOutputEvent(.flipCard(index: index))
     }
     
     private func fetchVocabularies() {

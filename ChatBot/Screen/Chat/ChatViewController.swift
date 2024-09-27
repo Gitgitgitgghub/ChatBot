@@ -11,17 +11,15 @@ import Combine
 import AVFAudio
 import NVActivityIndicatorView
 
-class ChatViewController: BaseUIViewController {
+class ChatViewController: BaseUIViewController<ChatViewModel> {
     
-    private lazy var viewModel = ChatViewModel(service: AIServiceManager.shared.service, chatLaunchMode: self.chatLaunchMode)
+    
     private lazy var views = ChatViews(view: self.view)
     private var updatePublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
-    private let chatLaunchMode: ChatLaunchMode
     private let synthesizer = AVSpeechSynthesizer()
     
     init(chatLaunchMode: ChatLaunchMode) {
-        self.chatLaunchMode = chatLaunchMode
-        super.init(nibName: nil, bundle: nil)
+        super.init(viewModel: ChatViewModel(service: AIServiceManager.shared.service, chatLaunchMode: chatLaunchMode))
     }
     
     required init?(coder: NSCoder) {
@@ -87,8 +85,6 @@ class ChatViewController: BaseUIViewController {
     
     /// 執行一些綁定動作
     private func bind() {
-        // 綁定viewModel的inputEvent
-        viewModel.bindInput()
         // 綁定要顯示的訊息
         viewModel.$displayMessages
             .receive(on: RunLoop.main)
@@ -106,33 +102,6 @@ class ChatViewController: BaseUIViewController {
             .eraseToAnyPublisher()
             .assign(to: \.text, on: views.chatInputView.messageInputTextField)
             .store(in: &subscriptions)
-        // 綁定outputEvent
-        viewModel.outputSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .parseComplete(indexs: let indexs):
-                    self.parseCompletiom(indexs: indexs)
-                case .saveChatMessageSuccess:
-                    self.saveChatMessageComplettion()
-                case .saveChatMessageError(error: let error):
-                    self.saveChatMessageComplettion(error: error)
-                }
-            }
-            .store(in: &subscriptions)
-        // 綁定讀取狀態
-        viewModel.loadingStatus
-            .receive(on: RunLoop.main)
-            .sink { [weak self] status in
-                self?.views.showLoadingView(status: status)
-                switch status {
-                case .error(error: let error):
-                    self?.handleError(error: error)
-                default:break
-                }
-            }
-            .store(in: &subscriptions)
         /// 綁定launchMode變化
         viewModel.$chatLaunchMode
             .receive(on: RunLoop.main)
@@ -142,10 +111,30 @@ class ChatViewController: BaseUIViewController {
             .store(in: &subscriptions)
     }
     
+    override func handleOutputEvent(_ outputEvent: ChatViewModel.OutPutEvent) {
+        switch outputEvent {
+        case .parseComplete(indexs: let indexs):
+            self.parseCompletiom(indexs: indexs)
+        case .saveChatMessageSuccess:
+            self.saveChatMessageComplettion()
+        case .saveChatMessageError(error: let error):
+            self.saveChatMessageComplettion(error: error)
+        }
+    }
+    
+    override func onLoadingStatusChanged(status: LoadingStatus) {
+        views.showLoadingView(status: status)
+        switch status {
+        case .error(error: let error):
+            handleError(error: error)
+        default:break
+        }
+    }
+    
     private func handleError(error: Error) {
         let vc = UIAlertController(title: "發生錯誤", message: error.localizedDescription, preferredStyle: .alert)
         vc.addAction(.init(title: "重新發送", style: .default, handler: { action in
-            self.viewModel.transform(inputEvent: .retrySendMessage)
+            self.sendInputEvent(.retrySendMessage)
         }))
         vc.addAction(.init(title: "取消", style: .cancel))
         present(vc, animated: true)
@@ -172,7 +161,7 @@ class ChatViewController: BaseUIViewController {
     /// 請求背景預加載
     private func requestPreload() {
         guard let visibleRows = views.messageTableView.indexPathsForVisibleRows, !visibleRows.isEmpty else { return }
-        viewModel.transform(inputEvent: .preloadAttributedString(currentIndex: visibleRows.first!.row))
+        sendInputEvent(.preloadAttributedString(currentIndex: visibleRows.first!.row))
     }
     
     /// 顯示儲存筆記輸入title的alertVC
@@ -211,17 +200,17 @@ class ChatViewController: BaseUIViewController {
     }
     
     @objc private func sendMessage() {
-        //viewModel.transform(inputEvent: .createImage)
+        //sendInputEvent(.createImage)
         dismissKeyboard()
-        //viewModel.transform(inputEvent: .editImage)
-        viewModel.transform(inputEvent: .sendMessage)
+        //sendInputEvent(.editImage)
+        sendInputEvent(.sendMessage)
     }
     
     /// 點navigationBar右上方的點點
     @objc private func rightItemButtonClick() {
         let vc = UIAlertController(title: "你想要？", message: nil, preferredStyle: .actionSheet)
         vc.addAction(.init(title: "保存聊天記錄", style: .default, handler: { action in
-            self.viewModel.transform(inputEvent: .saveMessages)
+            self.sendInputEvent(.saveMessages)
         }))
         vc.addAction(.init(title: "語音設定", style: .default, handler: { action in
             let vc = VoicePickerViewController()
@@ -335,7 +324,7 @@ extension ChatViewController:  UITableViewDelegate, UITableViewDataSource {
                 }
                 let action2 = UIAction(title: "儲存到筆記", image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off) { (action) in
                     self.showNoteTitleInputView { noteTitle in
-                        self.viewModel.transform(inputEvent: .saveMessageToMyNote(noteTitle: noteTitle, indexPath: indexPath))
+                        self.sendInputEvent(.saveMessageToMyNote(noteTitle: noteTitle, indexPath: indexPath))
                     }
                 }
                 return UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: [action1, action2])

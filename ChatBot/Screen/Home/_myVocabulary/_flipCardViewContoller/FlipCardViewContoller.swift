@@ -8,9 +8,8 @@
 import Foundation
 
 
-class FlipCardViewContoller: BaseUIViewController {
+class FlipCardViewContoller: BaseUIViewController<FlipCardViewModel> {
     
-    private let viewModel = FlipCardViewModel()
     private lazy var views = FlipCardViews(view: self.view)
     private var pagerView: FSPagerView {
         return views.pagerView
@@ -20,7 +19,7 @@ class FlipCardViewContoller: BaseUIViewController {
         super.viewDidLoad()
         initUI()
         bind()
-        viewModel.transform(inputEvent: .fetchVocabularies)
+        sendInputEvent(.fetchVocabularies)
     }
     
     private func initUI() {
@@ -33,26 +32,22 @@ class FlipCardViewContoller: BaseUIViewController {
     }
     
     private func bind() {
-        viewModel.bindInputEvent()
         viewModel.$vocabularies
             .sink { [weak self] _ in
                 self?.pagerView.reloadData()
             }
             .store(in: &subscriptions)
-        viewModel.outputSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .flipCard(index: let index):
-                    self.flipCard(index: index)
-                case .toast(message: let message):
-                    self.showToast(message: message)
-                case .reloadCurrent:
-                    self.pagerView.reloadData()
-                }
-            }
-            .store(in: &subscriptions)
+    }
+    
+    override func handleOutputEvent(_ outputEvent: FlipCardViewModel.OutputEvent) {
+        switch outputEvent {
+        case .flipCard(index: let index):
+            self.flipCard(index: index)
+        case .toast(message: let message):
+            self.showToast(message: message)
+        case .reloadCurrent:
+            self.pagerView.reloadData()
+        }
     }
     
     @objc private func examButtonClicked() {
@@ -63,7 +58,7 @@ class FlipCardViewContoller: BaseUIViewController {
     }
     
     @objc private func flipCardButtonClicked() {
-        viewModel.transform(inputEvent: .flipCard(index: pagerView.currentIndex))
+        sendInputEvent(.flipCard(index: pagerView.currentIndex))
     }
     
     private func flipCard(index: Int) {
@@ -84,12 +79,12 @@ extension FlipCardViewContoller: FSPagerViewDelegate, FSPagerViewDataSource {
         guard let cell = pagerView.dequeueReusableCell(withReuseIdentifier: FlipCardViews.CardContentCell.className, at: index) as? FlipCardViews.CardContentCell else { return FSPagerViewCell() }
         cell.bindVocabulary(vocabulary: viewModel.vocabularies[index], index: index, total: viewModel.vocabularies.count, isFlipped: viewModel.flippedStates[index] ?? false)
         cell.delegate = self
-        viewModel.transform(inputEvent: .currentPageChange(index: index))
+        sendInputEvent(.currentPageChange(index: index))
         return cell
     }
     
     func pagerView(_ pagerView: FSPagerView, didSelectItemAt index: Int) {
-        viewModel.transform(inputEvent: .flipCard(index: index))
+        sendInputEvent(.flipCard(index: index))
     }
     
 }
@@ -97,7 +92,7 @@ extension FlipCardViewContoller: FSPagerViewDelegate, FSPagerViewDataSource {
 extension FlipCardViewContoller: FlipCardViewsDelegate {
     
     func onClickStar(index: Int) {
-        viewModel.transform(inputEvent: .toggleStar(index: index))
+        sendInputEvent(.toggleStar(index: index))
     }
     
     

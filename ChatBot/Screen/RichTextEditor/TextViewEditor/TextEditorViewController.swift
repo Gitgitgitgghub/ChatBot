@@ -16,14 +16,13 @@ protocol TextEditorViewControllerDelegate: AnyObject {
 }
 
 
-class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
+class TextEditorViewController: BaseUIViewController<TextEditorViewModel>, TextEditorViewsProtocol {
     
     typealias Action = ActionUIStatusModel.Action
     
     let content: Data?
     let inputBackgroundColor: UIColor
     weak var delegate: TextEditorViewControllerDelegate?
-    let viewModel = TextEditorViewModel()
     var attr: NSMutableAttributedString?
     lazy var views = TextEditorViews(view: self.view)
     
@@ -38,7 +37,7 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
         self.content = content
         self.inputBackgroundColor = inputBackgroundColor
         self.delegate = delegate
-        super.init(nibName: nil, bundle: nil)
+        super.init(viewModel: .init())
     }
     
     required init?(coder: NSCoder) {
@@ -48,7 +47,6 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
-        bind()
         observeKeyboard()
     }
     
@@ -68,19 +66,13 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "保存", style: .plain, target: self, action: #selector(save))
     }
     
-    private func bind() {
-        viewModel.bindInputEvent()
-        viewModel.outputSubject
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .typingAttributesChange(let typingAttributes):
-                    self.textView.typingAttributes = typingAttributes
-                case .actionUIChange:
-                    self.views.actionCollectionView.reloadData()
-                }
-            }
-            .store(in: &subscriptions)
+    override func handleOutputEvent(_ outputEvent: TextEditorViewModel.OutputEvent) {
+        switch outputEvent {
+        case .typingAttributesChange(let typingAttributes):
+            self.textView.typingAttributes = typingAttributes
+        case .actionUIChange:
+            self.views.actionCollectionView.reloadData()
+        }
     }
     
     private func setupTextView() {
@@ -123,7 +115,7 @@ class TextEditorViewController: BaseUIViewController, TextEditorViewsProtocol {
     }
     
     func onActionButtonClick(action: Action, indexPath: IndexPath) {
-        viewModel.transform(inputEvent: .toggleActionButton(indexPath: indexPath))
+        sendInputEvent(.toggleActionButton(indexPath: indexPath))
         switch action {
         case .bold:
             makeBold()
@@ -324,7 +316,7 @@ extension TextEditorViewController {
             self.textView.textStorage.replaceCharacters(in: selectedRange, with: attributedString)
             /// 這邊要重新設定不然後續輸入的文字也會成為超連結的一部分
             self.textView.selectedRange = NSRange(location: selectedRange.location + linkText.count, length: 0)
-            self.viewModel.transform(inputEvent: .reapplyTypingAttributes)
+            self.sendInputEvent(.reapplyTypingAttributes)
         }
     }
     
@@ -408,7 +400,7 @@ extension TextEditorViewController {
             }
         }
         textView.textStorage.endEditing()
-        viewModel.transform(inputEvent: .addAttribute(key: attribute, value: value))
+        sendInputEvent(.addAttribute(key: attribute, value: value))
     }
 }
 

@@ -9,25 +9,16 @@ import Foundation
 import UIKit
 
 
-class ConversationViewController: BaseUIViewController {
+class ConversationViewController: BaseUIViewController<ConversationViewModel> {
     
-    override var enableSwipeToGoBack: Bool {
-        set {
-            //super.enableSwipeToGoBack = newValue
-        }
-        get {
-            return false
-        }
-    }
-    private let viewModel: ConversationViewModel
+
     private lazy var views = ConversationViews(view: self.view)
     private var tableView: UITableView {
         return views.tableView
     }
     
     init(scenario: Scenario) {
-        viewModel = ConversationViewModel(scenario: scenario)
-        super.init(nibName: nil, bundle: nil)
+        super.init(viewModel: .init(scenario: scenario))
     }
     
     required init?(coder: NSCoder) {
@@ -38,12 +29,11 @@ class ConversationViewController: BaseUIViewController {
         super.viewDidLoad()
         requestMicrophoneAccess()
         initUI()
-        bind()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        viewModel.transform(inputEvent: .stopRecording)
+        sendInputEvent(.release)
     }
     
     private func initUI() {
@@ -57,33 +47,26 @@ class ConversationViewController: BaseUIViewController {
         views.recordingView.delegate = self
     }
     
-    private func bind() {
-        viewModel.bindInputEvent()
-        viewModel.outputSubject
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .volumeChanged(value: let value):
-                    self.volumeChanged(value: value)
-                case .reloadData:
-                    self.tableView.reloadData()
-                case .showScenario(scenario: let scenario):
-                    self.showScenario(scenario: scenario)
-                case .showTranslation(translation: let translation):
-                    self.showTranslation(translation: translation)
-                }
-            }
-            .store(in: &subscriptions)
-        viewModel.loadingStatus
-            .sink { [weak self] status in
-                switch status {
-                case .error(error: let error):
-                    self?.showToast(message: error.localizedDescription)
-                default:
-                    self?.views.showLoadingView(status: status, with: "加載中..")
-                }
-            }
-            .store(in: &subscriptions)
+    override func handleOutputEvent(_ outputEvent: ConversationViewModel.OutputEvent) {
+        switch outputEvent {
+        case .volumeChanged(value: let value):
+            self.volumeChanged(value: value)
+        case .reloadData:
+            self.tableView.reloadData()
+        case .showScenario(scenario: let scenario):
+            self.showScenario(scenario: scenario)
+        case .showTranslation(translation: let translation):
+            self.showTranslation(translation: translation)
+        }
+    }
+    
+    override func onLoadingStatusChanged(status: LoadingStatus) {
+        switch status {
+        case .error(error: let error):
+            showToast(message: error.localizedDescription)
+        default:
+            views.showLoadingView(status: status, with: "加載中..")
+        }
     }
     
     private func showTranslation(translation: String) {
@@ -113,14 +96,10 @@ class ConversationViewController: BaseUIViewController {
             textField.text = ""
         }
         vc.addAction(.init(title: "保存", style: .default, handler: { action in
-            self.viewModel.transform(inputEvent: .userInput(input: vc.textFields?.first?.text ?? "123"))
+            self.sendInputEvent(.userInput(input: vc.textFields?.first?.text ?? "123"))
         }))
         vc.addAction(.init(title: "取消", style: .cancel))
         present(vc, animated: true)
-    }
-    
-    override func handleBackAction() {
-        viewModel.transform(inputEvent: .release)
     }
 }
 
@@ -128,11 +107,11 @@ class ConversationViewController: BaseUIViewController {
 extension ConversationViewController: UITableViewDelegate, UITableViewDataSource, AudioCellDelegate {
     
     func hintButtonClicked(indexPath: IndexPath) {
-        viewModel.transform(inputEvent: .hintButtonClicked(indexPath: indexPath))
+        sendInputEvent(.hintButtonClicked(indexPath: indexPath))
     }
     
     func spekaButtonClicked(indexPath: IndexPath) {
-        viewModel.transform(inputEvent: .playAudio(indexPath: indexPath))
+        sendInputEvent(.playAudio(indexPath: indexPath))
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -166,11 +145,11 @@ extension ConversationViewController: UITableViewDelegate, UITableViewDataSource
 extension ConversationViewController: RecordingViewDelegate {
     
     func startRecording() {
-        viewModel.transform(inputEvent: .startRecording)
+        sendInputEvent(.startRecording)
     }
     
     func stopRecording() {
-        viewModel.transform(inputEvent: .stopRecording)
+        sendInputEvent(.stopRecording)
     }
     
 }

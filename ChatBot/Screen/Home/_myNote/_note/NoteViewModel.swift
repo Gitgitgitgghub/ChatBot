@@ -48,22 +48,22 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
         self.myNote = myNote
     }
     
-    func bind() {
-        inputSubject
-            .sink { [weak self] event in
-                switch event {
-                case .modifyNote(attr: let attr):
-                    self?.modifyNote(attr: attr)
-                case .deleteNote:
-                    self?.deleteNote()
-                case .deleteComment(indexPath: let indexPath):
-                    self?.deleteComment(indexPath: indexPath)
-                default:
-                    self?.inputEvent = event
-                    self?.chooseEditString()
-                }
-            }
-            .store(in: &subscriptions)
+    required init() {
+        fatalError("init() has not been implemented")
+    }
+    
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .modifyNote(attr: let attr):
+            modifyNote(attr: attr)
+        case .deleteNote:
+            deleteNote()
+        case .deleteComment(indexPath: let indexPath):
+            deleteComment(indexPath: indexPath)
+        default:
+            self.inputEvent = inputEvent
+            chooseEditString()
+        }
     }
     
     private func deleteNote() {
@@ -73,7 +73,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
             .sink { _ in
                 
             } receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.deleteNoteSuccess)
+                self?.sendOutputEvent(.deleteNoteSuccess)
             }
             .store(in: &subscriptions)
 
@@ -87,7 +87,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
                 
             } receiveValue: { [weak self] _ in
                 self?.myNote.comments.removeAll(where: { $0.id == removalId })
-                self?.outputSubject.send(.deleteCommentSuccess)
+                self?.sendOutputEvent(.deleteCommentSuccess)
             }
             .store(in: &subscriptions)
     }
@@ -111,7 +111,7 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
             usingHtml = myNote.stringDocumentType == .html
         default: return
         }
-        outputSubject.send(.openEditor(editData: editData, isNote: isEditNote, useHtmlEdotir: usingHtml))
+        sendOutputEvent(.openEditor(editData: editData, isNote: isEditNote, useHtmlEdotir: usingHtml))
     }
     
     private func saveNote(note: MyNote, actionName: String) {
@@ -119,10 +119,10 @@ class NoteViewModel: BaseViewModel<NoteViewModel.InputEvent, NoteViewModel.Outpu
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.toast(message: "\(actionName)失敗: \(error.localizedDescription)", reload: false))
+                    self?.sendOutputEvent(.toast(message: "\(actionName)失敗: \(error.localizedDescription)", reload: false))
                 }
             } receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.toast(message: "\(actionName)成功", reload: true))
+                self?.sendOutputEvent(.toast(message: "\(actionName)成功", reload: true))
             }
             .store(in: &subscriptions)
     }

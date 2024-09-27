@@ -9,9 +9,8 @@ import Foundation
 import UIKit
 
 
-class MyVocabularyViewController: BaseUIViewController {
+class MyVocabularyViewController: BaseUIViewController<MyVocabularyViewModel> {
     
-    private let viewModel = MyVocabularyViewModel()
     private lazy var views = MyVocabularyViews(view: self.view)
     private var tableView: UITableView {
         return views.tableView
@@ -19,14 +18,13 @@ class MyVocabularyViewController: BaseUIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        bind()
         initUI()
-        viewModel.transform(inputEvent: .initialVocabulary)
+        sendInputEvent(.initialVocabulary)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.transform(inputEvent: .reloadExpandingSection)
+        sendInputEvent(.reloadExpandingSection)
     }
     
     private func initUI() {
@@ -38,41 +36,33 @@ class MyVocabularyViewController: BaseUIViewController {
         views.emptyLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(emptyLabelClicked)))
     }
     
-    private func bind() {
-        viewModel.bindInputEvent()
-        viewModel.outputSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .reloadRows(indexPath: let indexPath):
-                    self.tableView.reloadRows(at: indexPath, with: .automatic)
-                case .reloadAll:
-                    self.tableView.reloadData()
-                case .reloadSections(sections: let sections):
-                    self.tableView.reloadSections(.init(sections), with: .automatic)
-                case .toast(message: let message):
-                    self.showToast(message: message)
-                case .setEmptyButtonVisible(isVisible: let isVisible):
-                    self.views.emptyLabel.isVisible = isVisible
-                    self.view.bringSubviewToFront(self.views.emptyLabel)
-                case .wordNotFound(sggestion: let sggestion):
-                    self.wordNotFound(sggestion: sggestion)
-                }
-            }
-            .store(in: &subscriptions)
-        viewModel.loadingStatus
-            .sink { [weak self] status in
-                self?.views.showLoadingView(status: status, with: "正在搜索中...")
-            }
-            .store(in: &subscriptions)
+    override func handleOutputEvent(_ outputEvent: MyVocabularyViewModel.OutputEvent) {
+        switch outputEvent {
+        case .reloadRows(indexPath: let indexPath):
+            self.tableView.reloadRows(at: indexPath, with: .automatic)
+        case .reloadAll:
+            self.tableView.reloadData()
+        case .reloadSections(sections: let sections):
+            self.tableView.reloadSections(.init(sections), with: .automatic)
+        case .toast(message: let message):
+            self.showToast(message: message)
+        case .setEmptyButtonVisible(isVisible: let isVisible):
+            self.views.emptyLabel.isVisible = isVisible
+            self.view.bringSubviewToFront(self.views.emptyLabel)
+        case .wordNotFound(sggestion: let sggestion):
+            self.wordNotFound(sggestion: sggestion)
+        }
+    }
+    
+    override func onLoadingStatusChanged(status: LoadingStatus) {
+        views.showLoadingView(status: status, with: "正在搜索中...")
     }
     
     private func wordNotFound(sggestion: String?) {
         if let suggestion = sggestion {
             let alert = UIAlertController(title: "找不到該單字", message: "試試\(suggestion)?", preferredStyle: .alert)
             alert.addAction(.init(title: "確認", style: .default, handler: { _ in
-                self.viewModel.transform(inputEvent: .fetchVocabularyModel(word: suggestion))
+                self.sendInputEvent(.fetchVocabularyModel(word: suggestion))
             }))
             alert.addAction(.init(title: "取消", style: .cancel))
             present(alert, animated: true)
@@ -82,12 +72,12 @@ class MyVocabularyViewController: BaseUIViewController {
     }
     
     @objc private func emptyLabelClicked(_ sender: UIGestureRecognizer) {
-        viewModel.transform(inputEvent: .fetchVocabularyModel())
+        sendInputEvent(.fetchVocabularyModel())
     }
     
     @objc private func toggleExpanding(sender: UITapGestureRecognizer) {
         guard let section = sender.view?.tag else { return }
-        viewModel.transform(inputEvent: .toggleExpanding(section: section))
+        sendInputEvent(.toggleExpanding(section: section))
     }
 }
 
@@ -95,7 +85,7 @@ class MyVocabularyViewController: BaseUIViewController {
 extension MyVocabularyViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.transform(inputEvent: .searchVocabularyDatabase(text: searchText))
+        sendInputEvent(.searchVocabularyDatabase(text: searchText))
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -103,7 +93,7 @@ extension MyVocabularyViewController: UISearchBarDelegate {
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.transform(inputEvent: .searchVocabularyDatabase(text: ""))
+        sendInputEvent(.searchVocabularyDatabase(text: ""))
         searchBar.text = ""
         searchBar.resignFirstResponder()
         searchBar.setShowsCancelButton(false, animated: true)
@@ -129,7 +119,7 @@ extension MyVocabularyViewController: UITableViewDataSource, UITableViewDelegate
     }
     
     func onStarButtonClicked(indexPath: IndexPath) {
-        viewModel.transform(inputEvent: .toggleStar(indexPath: indexPath))
+        sendInputEvent(.toggleStar(indexPath: indexPath))
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

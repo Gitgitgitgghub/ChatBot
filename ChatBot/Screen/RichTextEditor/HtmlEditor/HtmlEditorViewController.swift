@@ -10,7 +10,7 @@ import WebKit
 import Photos
 import ZMarkupParser
 
-class HtmlEditorViewController: BaseUIViewController {
+class HtmlEditorViewController: BaseUIViewController<BaseViewModel<Any, Any>> {
     
     lazy var webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
         .apply { webView in
@@ -41,7 +41,7 @@ class HtmlEditorViewController: BaseUIViewController {
         self.content = content
         self.completion = completion
         self.inputBackgroundColor = inputBackgroundColor
-        super.init(nibName: nil, bundle: nil)
+        super.init(viewModel: .init())
     }
     
     required init?(coder: NSCoder) {

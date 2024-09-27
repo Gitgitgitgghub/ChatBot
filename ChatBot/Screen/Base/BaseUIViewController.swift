@@ -11,14 +11,78 @@ import Combine
 import AVFoundation
 import Photos
 
-class BaseUIViewController: UIViewController {
+protocol ViewControllerProtocol: AnyObject where Self: UIViewController {
     
+    associatedtype ViewModel: ViewModelProtocol
+    var viewModel: ViewModel { get }
+    var enableSwipeToGoBack: Bool { get }
+    func sendInputEvent(_ inputEvent: ViewModel.Input)
+    
+}
+
+extension ViewControllerProtocol {
+    
+    func sendInputEvent(_ inputEvent: ViewModel.Input) {
+        viewModel.transform(inputEvent: inputEvent)
+    }
+    
+}
+
+
+class BaseUIViewController<VM: ViewModelProtocol>: UIViewController, ViewControllerProtocol {
+    
+    var viewModel: VM
     var subscriptions = Set<AnyCancellable>()
     var enableSwipeToGoBack = true
     
+    init() {
+        viewModel = VM()
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    init(viewModel: VM) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        subscriptions.removeAll()
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        print("ViewController: \(className) had been deinited")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setBackButtonAndGestureRecognizer()
+        setupSwipeBack()  // 設置是否允許右滑返回
+        setupBindings()
+        setupButton()
+        observeKeyboard()
+    }
+    
+    // Swipe 返回邏輯
+    private func setupSwipeBack() {
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = enableSwipeToGoBack
+    }
+    
+    /// 設置綁定 ViewModel 的輸出事件和其他通用行為
+    private func setupBindings() {
+        viewModel.outputSubject
+            .receive(on: RunLoop.main)
+            .sink { [weak self] outputEvent in
+                self?.handleOutputEvent(outputEvent)
+            }
+            .store(in: &subscriptions)
+        viewModel.loadingStatus
+            .receive(on: RunLoop.main)
+            .sink { [weak self] status in
+                self?.onLoadingStatusChanged(status: status)
+            }
+            .store(in: &subscriptions)
     }
     
     /// 觀察鍵盤顯示與否
@@ -27,16 +91,29 @@ class BaseUIViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
+    
+    private func setupButton() {
+        let backButton = UIBarButtonItem(title: "返回", image: .init(systemName: "chevron.left"), target: self, action: #selector(customBackAction))
+        self.navigationItem.leftBarButtonItem = backButton
+    }
+    
+    /// 處理 ViewModel 的輸出事件
+    func handleOutputEvent(_ outputEvent: VM.Output) {
+        fatalError("Subclasses must override `handleOutputEvent`")
+    }
+    
+    /// 提供給子類重寫的 hook
+    func onLoadingStatusChanged(status: LoadingStatus) {
+        // 可以在這裡顯示 loading UI
+    }
+    
+    @objc func customBackAction() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     @objc func keyboardShow(_ notification: Notification) { }
     
     @objc func keyboardHide(_ notification: Notification) { }
-    
-    deinit {
-        subscriptions.removeAll()
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-        print("ViewController: \(className) had been deinited")
-    }
     
     func showToast(title: String = "", message: String, autoDismiss after: Double = 1.5, completion: (() -> ())? = nil) {
         let vc = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -48,34 +125,6 @@ class BaseUIViewController: UIViewController {
     }
     
     
-    
-}
-
-//MARK: - UIGestureRecognizerDelegate 處理右滑，設定返回按鈕
-extension BaseUIViewController: UIGestureRecognizerDelegate {
-    
-    @objc func handleBackAction() {
-        
-    }
-    
-    // 當手勢開始時調用
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        if enableSwipeToGoBack {
-            handleBackAction()
-        }
-        return enableSwipeToGoBack
-    }
-    
-    @objc func customBackAction() {
-        navigationController?.popViewController(animated: true)
-        handleBackAction()
-    }
-    
-    private func setBackButtonAndGestureRecognizer() {
-        let backButton = UIBarButtonItem(title: "返回", image: .init(systemName: "chevron.left"), target: self, action: #selector(customBackAction))
-        self.navigationItem.leftBarButtonItem = backButton
-        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
-    }
     
 }
 

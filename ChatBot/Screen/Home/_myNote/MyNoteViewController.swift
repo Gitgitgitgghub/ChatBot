@@ -7,21 +7,19 @@
 
 import UIKit
 
-class MyNoteViewController: BaseUIViewController {
+class MyNoteViewController: BaseUIViewController<MyNoteViewModel> {
     
     private lazy var views = MyNoteViews(view: self.view)
-    private let viewModel = MyNoteViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
-        viewModel.bind()
         bind()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.transform(inputEvent: .fetchAllNote)
+        sendInputEvent(.fetchAllNote)
     }
     
     private func initUI() {
@@ -31,22 +29,19 @@ class MyNoteViewController: BaseUIViewController {
         views.addNoteButton.addTarget(self, action: #selector(addNote), for: .touchUpInside)
     }
     
+    override func handleOutputEvent(_ outputEvent: MyNoteViewModel.OutputEvent) {
+        switch outputEvent {
+        case .toast(message: let message, reload: _):
+            self.showToast(message: message)
+        }
+    }
+    
     private func bind() {
         viewModel.$myNotes
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 guard let `self` = self else { return }
                 self.views.tableView.reloadData()
-            }
-            .store(in: &subscriptions)
-        viewModel.outputSubject
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .toast(message: let message, reload: _):
-                    self.showToast(message: message)
-                }
             }
             .store(in: &subscriptions)
     }
@@ -61,7 +56,7 @@ class MyNoteViewController: BaseUIViewController {
 extension MyNoteViewController: TextEditorViewControllerDelegate {
     
     func onSave(title: String?, attributedString: NSAttributedString?) {
-        viewModel.transform(inputEvent: .addNote(title: title, attributedString: attributedString))
+        sendInputEvent(.addNote(title: title, attributedString: attributedString))
     }
     
 }
@@ -88,7 +83,7 @@ extension MyNoteViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { (action, view, completionHandler) in
-            self.viewModel.transform(inputEvent: .deleteNote(indexPath: indexPath))
+            self.sendInputEvent(.deleteNote(indexPath: indexPath))
             completionHandler(true)
         }
         return .init(actions: [deleteAction])

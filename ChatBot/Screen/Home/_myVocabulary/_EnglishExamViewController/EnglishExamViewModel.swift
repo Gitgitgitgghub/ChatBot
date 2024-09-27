@@ -67,34 +67,14 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
         self.questionType = questionType
         questionGenerator = VocabularyWordQuestionGenerator(vocabularyManager: vocabularyManager, englishQuestionService: AIServiceManager.shared.service as! AIEnglishQuestonServiceProtocol, questionType: questionType, vocabularies: vocabularies)
         super.init()
+        setTimerPipeline()
     }
     
-    func bindInputEvent() {
-        inputSubject
-            .sink { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .fetchQuestion:
-                    self.fetchQuestion()
-                case .currentIndexChange(currentIndex: let currentIndex):
-                    self.currentIndexChange(currentIndex: currentIndex)
-                case .onOptionSelected(question: let question, selectedOption: let selectedOption):
-                    self.onOptionSelected(question: question, selectedOption: selectedOption)
-                case .retakeExam:
-                    self.retakeExam()
-                case .startExam:
-                    self.startExam()
-                case .pauseExam:
-                    self.pauseExam()
-                case .resumeExam:
-                    self.resumeExam()
-                case .switchAnswerMode:
-                    self.switchAnswerMode()
-                case .addToNote:
-                    self.addToNote()
-                }
-            }
-            .store(in: &subscriptions)
+    required init() {
+        fatalError("init() has not been implemented")
+    }
+    
+    private func setTimerPipeline() {
         timerManager.$counter
             .receive(on: RunLoop.main)
             .map({ second in
@@ -108,22 +88,45 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
                 return attr
             })
             .sink { [weak self] timerText in
-                self?.outputSubject.send(.updateTimer(string: timerText))
+                self?.sendOutputEvent(.updateTimer(string: timerText))
             }
             .store(in: &subscriptions)
     }
     
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .fetchQuestion:
+            self.fetchQuestion()
+        case .currentIndexChange(currentIndex: let currentIndex):
+            self.currentIndexChange(currentIndex: currentIndex)
+        case .onOptionSelected(question: let question, selectedOption: let selectedOption):
+            self.onOptionSelected(question: question, selectedOption: selectedOption)
+        case .retakeExam:
+            self.retakeExam()
+        case .startExam:
+            self.startExam()
+        case .pauseExam:
+            self.pauseExam()
+        case .resumeExam:
+            self.resumeExam()
+        case .switchAnswerMode:
+            self.switchAnswerMode()
+        case .addToNote:
+            self.addToNote()
+        }
+    }
+    
     private func addToNote() {
         guard let note = getNote() else {
-            outputSubject.send(.toast(message: "該題型未開放加入筆記"))
+            sendOutputEvent(.toast(message: "該題型未開放加入筆記"))
             return }
         NoteManager.shared.saveNote(note)
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.toast(message: error.localizedDescription))
+                    self?.sendOutputEvent(.toast(message: error.localizedDescription))
                 }
             } receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.toast(message: "儲存成功"))
+                self?.sendOutputEvent(.toast(message: "儲存成功"))
             }
             .store(in: &subscriptions)
     }
@@ -155,7 +158,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
         }else {
             examState = .paused
             timerManager.stopTimer()
-            outputSubject.send(.updateTimer(string: .init(string: "已暫停", attributes: [.foregroundColor : UIColor.systemRed])))
+            sendOutputEvent(.updateTimer(string: .init(string: "已暫停", attributes: [.foregroundColor : UIColor.systemRed])))
         }
     }
     
@@ -197,7 +200,7 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
                 wrongAnswerQuestions.append(updatedQuestion)
             }
             if let nextIndex = hasNextQuestion() {
-                outputSubject.send(.scrollToNextQuestion(index: nextIndex))
+                sendOutputEvent(.scrollToNextQuestion(index: nextIndex))
             }else {
                 examState = .ended(correctCount: correctAnswerQuestions.count, wrongCount: wrongAnswerQuestions.count)
                 timerManager.stopTimer()
@@ -239,14 +242,14 @@ class EnglishExamViewModel: BaseViewModel<EnglishExamViewModel.InputEvent, Engli
     
     private func currentIndexChange(currentIndex: Int) {
         self.currentIndex = currentIndex
-        outputSubject.send(.indexChange(newIndex: currentIndex))
+        sendOutputEvent(.indexChange(newIndex: currentIndex))
     }
     
     private func fetchQuestion() {
         performAction(questionGenerator.generateQuestion(limit: limit))
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.toast(message: error.localizedDescription))
+                    self?.sendOutputEvent(.toast(message: error.localizedDescription))
                 }
             } receiveValue: { [weak self] questions in
                 guard let `self` = self else { return }

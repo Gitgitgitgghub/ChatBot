@@ -22,23 +22,15 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
     
     @Published var chatRooms: [ChatRoom] = []
     
-    func bind() {
-        inputSubject
-            .eraseToAnyPublisher()
-            .sink { _ in
-                
-            } receiveValue: { [weak self] event in
-                guard let `self` = self else { return }
-                switch event {
-                case .fetchChatRooms:
-                    self.fetchChatRooms()
-                case .deleteAllChatRoom:
-                    self.deleteAllChatRoom()
-                case .deleteChatRoom(indexPath: let indexPath):
-                    self.deleteChatRoom(indexPath: indexPath)
-                }
-            }
-            .store(in: &subscriptions)
+    override func handleInputEvent(inputEvent: InputEvent) {
+        switch inputEvent {
+        case .fetchChatRooms:
+            self.fetchChatRooms()
+        case .deleteAllChatRoom:
+            self.deleteAllChatRoom()
+        case .deleteChatRoom(indexPath: let indexPath):
+            self.deleteChatRoom(indexPath: indexPath)
+        }
     }
     
     private func deleteChatRoom(indexPath: IndexPath) {
@@ -49,12 +41,12 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
                 switch completion {
                 case .finished: break
                 case .failure(let error):
-                    self?.outputSubject.send(.toast(message: "刪除失敗： \(error.localizedDescription)"))
+                    self?.sendOutputEvent(.toast(message: "刪除失敗： \(error.localizedDescription)"))
                 }
                 
             } receiveValue: { [weak self] _ in
                 self?.chatRooms.remove(at: indexPath.row)
-                self?.outputSubject.send(.toast(message: "刪除成功 ！", reload: true))
+                self?.sendOutputEvent(.toast(message: "刪除成功 ！", reload: true))
             }
             .store(in: &subscriptions)
     }
@@ -67,12 +59,12 @@ class HistoryViewModel: BaseViewModel<HistoryViewModel.InputEvent, HistoryViewMo
                 switch completion {
                 case .finished: break
                 case .failure(let error):
-                    self?.outputSubject.send(.toast(message: "刪除失敗： \(error.localizedDescription)"))
+                    self?.sendOutputEvent(.toast(message: "刪除失敗： \(error.localizedDescription)"))
                 }
                 
             } receiveValue: { [weak self] _ in
                 self?.chatRooms.removeAll()
-                self?.outputSubject.send(.toast(message: "刪除成功 ！", reload: true))
+                self?.sendOutputEvent(.toast(message: "刪除成功 ！", reload: true))
             }
             .store(in: &subscriptions)
     }
