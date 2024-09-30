@@ -275,7 +275,7 @@ extension EnglishExamViews {
         }
         private(set) var question: EnglishExamQuestion?
         weak var delegate: QuestionCardDelegate?
-        private(set) var optionButtons: [UIButton] = []
+        private(set) var optionButtons: [PaddingLabel] = []
         private(set) var isAnswerMode: Bool = false
         
         override init(frame: CGRect) {
@@ -358,9 +358,14 @@ extension EnglishExamViews {
             for (i, option) in question.options.enumerated() {
                 let button = dequeueReusableOptionsButton(index: i)
                 button.tag = i
-                button.setTitle(option, for: .normal)
+                button.text = option
                 button.isUserInteractionEnabled = !isAnswerMode
-                button.setTitleColor(.white, for: .normal)
+                button.textColor = .white
+                button.numberOfLines = 0
+                let newHeight = button.sizeThatFits(.init(width: UIScreen.main.bounds.width - 100, height: CGFloat.greatestFiniteMagnitude)).height
+                button.snp.updateConstraints { make in
+                    make.height.equalTo(newHeight > 40.0 ? newHeight : 40.0)
+                }
                 optionsStackView.addArrangedSubview(button)
                 if isAnswerMode {
                     //按钮颜色 正確答案綠色 用戶選擇的但答錯紅色 其他為咖啡色
@@ -385,7 +390,7 @@ extension EnglishExamViews {
         }
         
         /// 復用舊按鈕
-        private func dequeueReusableOptionsButton(index: Int) -> UIButton {
+        private func dequeueReusableOptionsButton(index: Int) -> PaddingLabel {
             if let button = optionButtons.getOrNil(index: index) {
                 return button
             }else {
@@ -396,17 +401,17 @@ extension EnglishExamViews {
         }
         
         /// 產生全新的按鈕
-        private func generateOptionButton() -> UIButton {
-            let button = UIButton(type: .custom).apply {
-                $0.setTitleColor(.white, for: .normal)
+        private func generateOptionButton() -> PaddingLabel {
+            let button = PaddingLabel(withInsets: .init(top: 5, left: 5, bottom: 5, right: 5)).apply {
+                $0.textColor = .white
                 $0.backgroundColor = .systemBrown
                 $0.cornerRadius = 10
                 $0.isUserInteractionEnabled = true
-                $0.addTarget(self, action: #selector(optionsSelected), for: .touchUpInside)
-                $0.titleLabel?.numberOfLines = 0
+                $0.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(optionsSelected)))
+                $0.numberOfLines = 0
                 $0.snp.makeConstraints { make in
-                    make.height.greaterThanOrEqualTo(40)
                     make.width.equalTo(UIScreen.main.bounds.width - 100)
+                    make.height.equalTo(40)
                 }
             }
             return button
